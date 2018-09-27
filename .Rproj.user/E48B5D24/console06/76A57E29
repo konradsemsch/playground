@@ -1,285 +1,63 @@
-]0;~/R/myblog[?1034h[36mkonrad[m@[32mkonradino:[33;1m~/R/myblog[m$ [K[36mkonrad[m@[32mkonradino:[33;1m~/R/myblog[m$ git sstatus
-git: 'sstatus' is not a git command. See 'git --help'.
-
-The most similar command is
-	status
-]0;~/R/myblog[36mkonrad[m@[32mkonradino:[33;1m~/R/myblog[m$ git status
+git status
 On branch master
-Your branch is up to date with 'origin/master'.
-
-Changes not staged for commit:
-  (use "git add/rm <file>..." to update what will be committed)
-  (use "git checkout -- <file>..." to discard changes in working directory)
-
-	[31mmodified:   config.toml[m
-	[31mdeleted:    content/post/2015-07-23-r-rmarkdown.Rmd[m
-	[31mdeleted:    content/post/2015-07-23-r-rmarkdown.html[m
-	[31mdeleted:    content/post/Cover-image-showcase.md[m
-	[31mdeleted:    content/post/Elements-showcase.md[m
-	[31mdeleted:    content/post/Hidden-pagination-showcase.md[m
-	[31mdeleted:    content/post/Hidden-social-section-showcase.md[m
-	[31mdeleted:    content/post/Hidden-tag-section-showcase.md[m
-	[31mdeleted:    content/post/Image-gallery-showcase.md[m
-	[31mdeleted:    content/post/Tags-plugins-showcase.md[m
-	[31mdeleted:    content/post/Video-integrations-showcase.md[m
-	[31mdeleted:    content/post/Welcome-to-the-new-Tranquilpeak.md[m
-	[31mdeleted:    content/post/highlighted-code-showcase.md[m
-	[31mdeleted:    "content/post/\344\270\255\346\226\207\346\270\254\350\251\246.md"[m
-	[31mdeleted:    "content/post/\346\227\245\346\234\254\350\252\236\343\203\206\343\202\271\343\203\210.md"[m
-	[31mmodified:   static/post/2015-07-23-r-rmarkdown_files/figure-html/pie-1.png[m
-
-Untracked files:
-  (use "git add <file>..." to include in what will be committed)
-
-	[31mpublic/[m
-	[31mstatic/images/[m
-
-no changes added to commit (use "git add" and/or "git commit -a")
-]0;~/R/myblog[36mkonrad[m@[32mkonradino:[33;1m~/R/myblog[m$ git add .
-]0;~/R/myblog[36mkonrad[m@[32mkonradino:[33;1m~/R/myblog[m$ git commit -m "almost completed the basic setup"
-[master f1e7235] almost completed the basic setup
- Committer: Konrad <konrad@konradino.local>
-Your name and email address were configured automatically based
-on your username and hostname. Please check that they are accurate.
-You can suppress this message by setting them explicitly:
-
-    git config --global user.name "Your Name"
-    git config --global user.email you@example.com
-
-After doing this, you may fix the identity used for this commit with:
-
-    git commit --amend --reset-author
-
- 154 files changed, 37009 insertions(+), 1863 deletions(-)
- delete mode 100644 content/post/2015-07-23-r-rmarkdown.html
- delete mode 100644 content/post/Cover-image-showcase.md
- delete mode 100644 content/post/Elements-showcase.md
- delete mode 100644 content/post/Hidden-pagination-showcase.md
- delete mode 100644 content/post/Hidden-social-section-showcase.md
- delete mode 100644 content/post/Hidden-tag-section-showcase.md
- delete mode 100644 content/post/Image-gallery-showcase.md
- delete mode 100644 content/post/Tags-plugins-showcase.md
- delete mode 100644 content/post/Video-integrations-showcase.md
- delete mode 100644 content/post/Welcome-to-the-new-Tranquilpeak.md
- delete mode 100644 content/post/highlighted-code-showcase.md
- delete mode 100644 "content/post/\344\270\255\346\226\207\346\270\254\350\251\246.md"
- delete mode 100644 "content/post/\346\227\245\346\234\254\350\252\236\343\203\206\343\202\271\343\203\210.md"
- create mode 100644 public/2013/01/japanese-test/index.html
- create mode 100644 public/2013/02/image-gallery-showcase/index.html
- create mode 100644 public/2013/10/chinese-test/index.html
- create mode 100644 public/2014/08/hidden-pagination-showcase/index.html
- create mode 100644 public/2014/08/hidden-social-section-showcase/index.html
- create mode 100644 public/2014/08/hidden-tag-section-showcase/index.html
- create mode 100644 public/2014/08/video-integrations-showcase/index.html
- create mode 100644 public/2014/10/tags-plugins-showcase/index.html
- create mode 100644 public/2015/03/highlighted-code-showcase/index.html
- create mode 100644 public/2015/05/cover-image-showcase/index.html
- create mode 100644 public/2015/05/elements-showcase/index.html
- create mode 100644 public/2015/06/welcome-to-tranquilpeak-0.4.3-beta/index.html
- create mode 100644 public/2015/07/hello-r-markdown/index.html
- create mode 100644 public/404.html
- create mode 100644 public/archives/index.html
- create mode 100644 public/archives/index.xml
- create mode 100644 public/archives/page/1/index.html
- create mode 100644 public/assets/images/background.jpg
- create mode 100644 public/assets/images/background.png
- create mode 100644 public/categories/features/index.html
- create mode 100644 public/categories/features/index.xml
- create mode 100644 public/categories/features/page/1/index.html
- create mode 100644 public/categories/features/page/2/index.html
- create mode 100644 public/categories/index.html
- create mode 100644 public/categories/index.xml
- create mode 100644 public/categories/r/index.html
- create mode 100644 public/categories/r/index.xml
- create mode 100644 public/categories/r/page/1/index.html
- create mode 100644 public/categories/releases/index.html
- create mode 100644 public/categories/releases/index.xml
- create mode 100644 public/categories/releases/page/1/index.html
- create mode 100644 public/categories/tranquilpeak/index.html
- create mode 100644 public/categories/tranquilpeak/index.xml
- create mode 100644 public/categories/tranquilpeak/page/1/index.html
- create mode 100644 public/categories/tranquilpeak/page/2/index.html
- create mode 100644 public/css/style-jsjn0006wyhpyzivf6yceb31gvpjatbcs3qzjvlumobfnugccvobqwxnnaj8.min.css
- create mode 100644 public/images/background.png
- create mode 100644 public/images/background2.jpg
- create mode 100644 public/images/cover-v1.2.0.jpg
- create mode 100644 public/images/cover.jpg
- create mode 100644 public/images/profile.jpg
- create mode 100644 public/images/profile.png
- create mode 100644 public/img/background.jpg
- create mode 100644 public/img/background.png
- create mode 100644 public/img/profile.jpg
- create mode 100644 public/img/profile.png
- create mode 100644 public/img/showcase.png
- create mode 100644 public/index.html
- create mode 100644 public/index.xml
- create mode 100644 public/js/script-qi9wbxp2ya2j6p7wx1i6tgavftewndznf4v0hy2gvivk1rxgc3lm7njqb6bz.min.js
- create mode 100644 public/page/1/index.html
- create mode 100644 public/page/2/index.html
- rename {content => public}/post/2015-07-23-r-rmarkdown.Rmd (100%)
- create mode 100644 public/post/2015-07-23-r-rmarkdown_files/figure-html/pie-1.png
- create mode 100644 public/post/index.html
- create mode 100644 public/post/index.xml
- create mode 100644 public/post/page/1/index.html
- create mode 100644 public/post/page/2/index.html
- create mode 100644 public/sitemap.xml
- create mode 100644 public/tags/chinese/index.html
- create mode 100644 public/tags/chinese/index.xml
- create mode 100644 public/tags/chinese/page/1/index.html
- create mode 100644 public/tags/cover-image/index.html
- create mode 100644 public/tags/cover-image/index.xml
- create mode 100644 public/tags/cover-image/page/1/index.html
- create mode 100644 public/tags/dailymotion/index.html
- create mode 100644 public/tags/dailymotion/index.xml
- create mode 100644 public/tags/dailymotion/page/1/index.html
- create mode 100644 public/tags/disqus/index.html
- create mode 100644 public/tags/disqus/index.xml
- create mode 100644 public/tags/disqus/page/1/index.html
- create mode 100644 public/tags/github-theme/index.html
- create mode 100644 public/tags/github-theme/index.xml
- create mode 100644 public/tags/github-theme/page/1/index.html
- create mode 100644 public/tags/google-analytics/index.html
- create mode 100644 public/tags/google-analytics/index.xml
- create mode 100644 public/tags/google-analytics/page/1/index.html
- create mode 100644 public/tags/gravatar/index.html
- create mode 100644 public/tags/gravatar/index.xml
- create mode 100644 public/tags/gravatar/page/1/index.html
- create mode 100644 public/tags/hexo-theme/index.html
- create mode 100644 public/tags/hexo-theme/index.xml
- create mode 100644 public/tags/hexo-theme/page/1/index.html
- create mode 100644 public/tags/highlight-code/index.html
- create mode 100644 public/tags/highlight-code/index.xml
- create mode 100644 public/tags/highlight-code/page/1/index.html
- create mode 100644 public/tags/html-elements/index.html
- create mode 100644 public/tags/html-elements/index.xml
- create mode 100644 public/tags/html-elements/page/1/index.html
- create mode 100644 public/tags/image-gallery/index.html
- create mode 100644 public/tags/image-gallery/index.xml
- create mode 100644 public/tags/image-gallery/page/1/index.html
- create mode 100644 public/tags/index.html
- create mode 100644 public/tags/index.xml
- create mode 100644 public/tags/japanese/index.html
- create mode 100644 public/tags/japanese/index.xml
- create mode 100644 public/tags/japanese/page/1/index.html
- create mode 100644 public/tags/markdown/index.html
- create mode 100644 public/tags/markdown/index.xml
- create mode 100644 public/tags/markdown/page/1/index.html
- create mode 100644 public/tags/page/1/index.html
- create mode 100644 public/tags/pagination/index.html
- create mode 100644 public/tags/pagination/index.xml
- create mode 100644 public/tags/pagination/page/1/index.html
- create mode 100644 public/tags/plot/index.html
- create mode 100644 public/tags/plot/index.xml
- create mode 100644 public/tags/plot/page/1/index.html
- create mode 100644 public/tags/r-markdown/index.html
- create mode 100644 public/tags/r-markdown/index.xml
- create mode 100644 public/tags/r-markdown/page/1/index.html
- create mode 100644 public/tags/regression/index.html
- create mode 100644 public/tags/regression/index.xml
- create mode 100644 public/tags/regression/page/1/index.html
- create mode 100644 public/tags/responsive/index.html
- create mode 100644 public/tags/responsive/index.xml
- create mode 100644 public/tags/responsive/page/1/index.html
- create mode 100644 public/tags/social/index.html
- create mode 100644 public/tags/social/index.xml
- create mode 100644 public/tags/social/page/1/index.html
- create mode 100644 public/tags/tag-plugins/index.html
- create mode 100644 public/tags/tag-plugins/index.xml
- create mode 100644 public/tags/tag-plugins/page/1/index.html
- create mode 100644 public/tags/tags/index.html
- create mode 100644 public/tags/tags/index.xml
- create mode 100644 public/tags/tags/page/1/index.html
- create mode 100644 public/tags/test/index.html
- create mode 100644 public/tags/test/index.xml
- create mode 100644 public/tags/test/page/1/index.html
- create mode 100644 public/tags/videos-integration/index.html
- create mode 100644 public/tags/videos-integration/index.xml
- create mode 100644 public/tags/videos-integration/page/1/index.html
- create mode 100644 public/tags/vimeo/index.html
- create mode 100644 public/tags/vimeo/index.xml
- create mode 100644 public/tags/vimeo/page/1/index.html
- create mode 100644 public/tags/youtube/index.html
- create mode 100644 public/tags/youtube/index.xml
- create mode 100644 public/tags/youtube/page/1/index.html
- create mode 100644 static/images/background.png
- create mode 100644 static/images/profile.png
- rewrite static/post/2015-07-23-r-rmarkdown_files/figure-html/pie-1.png (98%)
-]0;~/R/myblog[36mkonrad[m@[32mkonradino:[33;1m~/R/myblog[m$ [Kgit push origin             rmeote      emote -v
-git: 'emote' is not a git command. See 'git --help'.
-
-The most similar command is
-	remote
-]0;~/R/myblog[36mkonrad[m@[32mkonradino:[33;1m~/R/myblog[m$ git remote -v
-origin	git@github.com:konradsemsch/myblog.git (fetch)
-origin	git@github.com:konradsemsch/myblog.git (push)
-]0;~/R/myblog[36mkonrad[m@[32mkonradino:[33;1m~/R/myblog[m$ git push orign     igin master
-Enumerating objects: 271, done.
-Counting objects:   0% (1/271)   Counting objects:   1% (3/271)   Counting objects:   2% (6/271)   Counting objects:   3% (9/271)   Counting objects:   4% (11/271)   Counting objects:   5% (14/271)   Counting objects:   6% (17/271)   Counting objects:   7% (19/271)   Counting objects:   8% (22/271)   Counting objects:   9% (25/271)   Counting objects:  10% (28/271)   Counting objects:  11% (30/271)   Counting objects:  12% (33/271)   Counting objects:  13% (36/271)   Counting objects:  14% (38/271)   Counting objects:  15% (41/271)   Counting objects:  16% (44/271)   Counting objects:  17% (47/271)   Counting objects:  18% (49/271)   Counting objects:  19% (52/271)   Counting objects:  20% (55/271)   Counting objects:  21% (57/271)   Counting objects:  22% (60/271)   Counting objects:  23% (63/271)   Counting objects:  24% (66/271)   Counting objects:  25% (68/271)   Counting objects:  26% (71/271)   Counting objects:  27% (74/271)   Counting objects:  28% (76/271)   Counting objects:  29% (79/271)   Counting objects:  30% (82/271)   Counting objects:  31% (85/271)   Counting objects:  32% (87/271)   Counting objects:  33% (90/271)   Counting objects:  34% (93/271)   Counting objects:  35% (95/271)   Counting objects:  36% (98/271)   Counting objects:  37% (101/271)   Counting objects:  38% (103/271)   Counting objects:  39% (106/271)   Counting objects:  40% (109/271)   Counting objects:  41% (112/271)   Counting objects:  42% (114/271)   Counting objects:  43% (117/271)   Counting objects:  44% (120/271)   Counting objects:  45% (122/271)   Counting objects:  46% (125/271)   Counting objects:  47% (128/271)   Counting objects:  48% (131/271)   Counting objects:  49% (133/271)   Counting objects:  50% (136/271)   Counting objects:  51% (139/271)   Counting objects:  52% (141/271)   Counting objects:  53% (144/271)   Counting objects:  54% (147/271)   Counting objects:  55% (150/271)   Counting objects:  56% (152/271)   Counting objects:  57% (155/271)   Counting objects:  58% (158/271)   Counting objects:  59% (160/271)   Counting objects:  60% (163/271)   Counting objects:  61% (166/271)   Counting objects:  62% (169/271)   Counting objects:  63% (171/271)   Counting objects:  64% (174/271)   Counting objects:  65% (177/271)   Counting objects:  66% (179/271)   Counting objects:  67% (182/271)   Counting objects:  68% (185/271)   Counting objects:  69% (187/271)   Counting objects:  70% (190/271)   Counting objects:  71% (193/271)   Counting objects:  72% (196/271)   Counting objects:  73% (198/271)   Counting objects:  74% (201/271)   Counting objects:  75% (204/271)   Counting objects:  76% (206/271)   Counting objects:  77% (209/271)   Counting objects:  78% (212/271)   Counting objects:  79% (215/271)   Counting objects:  80% (217/271)   Counting objects:  81% (220/271)   Counting objects:  82% (223/271)   Counting objects:  83% (225/271)   Counting objects:  84% (228/271)   Counting objects:  85% (231/271)   Counting objects:  86% (234/271)   Counting objects:  87% (236/271)   Counting objects:  88% (239/271)   Counting objects:  89% (242/271)   Counting objects:  90% (244/271)   Counting objects:  91% (247/271)   Counting objects:  92% (250/271)   Counting objects:  93% (253/271)   Counting objects:  94% (255/271)   Counting objects:  95% (258/271)   Counting objects:  96% (261/271)   Counting objects:  97% (263/271)   Counting objects:  98% (266/271)   Counting objects:  99% (269/271)   Counting objects: 100% (271/271)   Counting objects: 100% (271/271), done.
-Delta compression using up to 4 threads.
-Compressing objects:   0% (1/180)   Compressing objects:   1% (2/180)   Compressing objects:   2% (4/180)   Compressing objects:   3% (6/180)   Compressing objects:   4% (8/180)   Compressing objects:   5% (9/180)   Compressing objects:   6% (11/180)   Compressing objects:   7% (13/180)   Compressing objects:   8% (15/180)   Compressing objects:   9% (17/180)   Compressing objects:  10% (18/180)   Compressing objects:  11% (20/180)   Compressing objects:  12% (22/180)   Compressing objects:  13% (24/180)   Compressing objects:  14% (26/180)   Compressing objects:  15% (27/180)   Compressing objects:  16% (29/180)   Compressing objects:  17% (31/180)   Compressing objects:  18% (33/180)   Compressing objects:  19% (35/180)   Compressing objects:  20% (36/180)   Compressing objects:  21% (38/180)   Compressing objects:  22% (40/180)   Compressing objects:  23% (42/180)   Compressing objects:  24% (44/180)   Compressing objects:  25% (45/180)   Compressing objects:  26% (47/180)   Compressing objects:  27% (49/180)   Compressing objects:  28% (51/180)   Compressing objects:  29% (53/180)   Compressing objects:  30% (54/180)   Compressing objects:  31% (56/180)   Compressing objects:  32% (58/180)   Compressing objects:  33% (60/180)   Compressing objects:  34% (62/180)   Compressing objects:  35% (63/180)   Compressing objects:  36% (65/180)   Compressing objects:  37% (67/180)   Compressing objects:  38% (69/180)   Compressing objects:  39% (71/180)   Compressing objects:  40% (72/180)   Compressing objects:  41% (74/180)   Compressing objects:  42% (76/180)   Compressing objects:  43% (78/180)   Compressing objects:  44% (80/180)   Compressing objects:  45% (81/180)   Compressing objects:  46% (83/180)   Compressing objects:  47% (85/180)   Compressing objects:  48% (87/180)   Compressing objects:  49% (89/180)   Compressing objects:  50% (90/180)   Compressing objects:  51% (92/180)   Compressing objects:  52% (94/180)   Compressing objects:  53% (96/180)   Compressing objects:  54% (98/180)   Compressing objects:  55% (99/180)   Compressing objects:  56% (101/180)   Compressing objects:  57% (103/180)   Compressing objects:  58% (105/180)   Compressing objects:  59% (107/180)   Compressing objects:  60% (108/180)   Compressing objects:  61% (110/180)   Compressing objects:  62% (112/180)   Compressing objects:  63% (114/180)   Compressing objects:  64% (116/180)   Compressing objects:  65% (117/180)   Compressing objects:  66% (119/180)   Compressing objects:  67% (121/180)   Compressing objects:  68% (123/180)   Compressing objects:  69% (125/180)   Compressing objects:  70% (126/180)   Compressing objects:  71% (128/180)   Compressing objects:  72% (130/180)   Compressing objects:  73% (132/180)   Compressing objects:  74% (134/180)   Compressing objects:  75% (135/180)   Compressing objects:  76% (137/180)   Compressing objects:  77% (139/180)   Compressing objects:  78% (141/180)   Compressing objects:  79% (143/180)   Compressing objects:  80% (144/180)   Compressing objects:  81% (146/180)   Compressing objects:  82% (148/180)   Compressing objects:  83% (150/180)   Compressing objects:  84% (152/180)   Compressing objects:  85% (153/180)   Compressing objects:  86% (155/180)   Compressing objects:  87% (157/180)   Compressing objects:  88% (159/180)   Compressing objects:  89% (161/180)   Compressing objects:  90% (162/180)   Compressing objects:  91% (164/180)   Compressing objects:  92% (166/180)   Compressing objects:  93% (168/180)   Compressing objects:  94% (170/180)   Compressing objects:  95% (171/180)   Compressing objects:  96% (173/180)   Compressing objects:  97% (175/180)   Compressing objects:  98% (177/180)   Compressing objects:  99% (179/180)   Compressing objects: 100% (180/180)   Compressing objects: 100% (180/180), done.
-Writing objects:   0% (1/267)   Writing objects:   1% (3/267)   Writing objects:   2% (6/267)   Writing objects:   4% (11/267)   Writing objects:   5% (16/267)   Writing objects:   6% (17/267)   Writing objects:   7% (19/267)   Writing objects:   8% (23/267)   Writing objects:   9% (25/267)   Writing objects:  10% (27/267)   Writing objects:  11% (30/267)   Writing objects:  12% (33/267)   Writing objects:  13% (35/267)   Writing objects:  14% (38/267)   Writing objects:  15% (41/267)   Writing objects:  16% (43/267)   Writing objects:  17% (46/267)   Writing objects:  18% (49/267)   Writing objects:  19% (51/267)   Writing objects:  20% (56/267)   Writing objects:  21% (57/267)   Writing objects:  22% (59/267)   Writing objects:  22% (59/267), 1.30 MiB | 771.00 KiB/s   Writing objects:  22% (59/267), 1.92 MiB | 651.00 KiB/s   Writing objects:  22% (59/267), 2.54 MiB | 519.00 KiB/s   Writing objects:  22% (59/267), 3.18 MiB | 433.00 KiB/s   Writing objects:  22% (59/267), 3.81 MiB | 366.00 KiB/s   Writing objects:  23% (62/267), 3.81 MiB | 366.00 KiB/s   Writing objects:  24% (65/267), 3.81 MiB | 366.00 KiB/s   Writing objects:  25% (67/267), 3.81 MiB | 366.00 KiB/s   Writing objects:  26% (70/267), 3.81 MiB | 366.00 KiB/s   Writing objects:  27% (73/267), 3.81 MiB | 366.00 KiB/s   Writing objects:  28% (76/267), 3.81 MiB | 366.00 KiB/s   Writing objects:  29% (78/267), 3.81 MiB | 366.00 KiB/s   Writing objects:  30% (81/267), 3.81 MiB | 366.00 KiB/s   Writing objects:  31% (83/267), 3.81 MiB | 366.00 KiB/s   Writing objects:  32% (86/267), 3.81 MiB | 366.00 KiB/s   Writing objects:  33% (89/267), 3.81 MiB | 366.00 KiB/s   Writing objects:  34% (91/267), 3.81 MiB | 366.00 KiB/s   Writing objects:  35% (94/267), 3.81 MiB | 366.00 KiB/s   Writing objects:  35% (94/267), 4.45 MiB | 364.00 KiB/s   Writing objects:  35% (96/267), 5.08 MiB | 351.00 KiB/s   Writing objects:  35% (96/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  36% (97/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  37% (100/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  38% (102/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  39% (105/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  40% (107/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  41% (110/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  42% (113/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  43% (115/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  44% (118/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  45% (121/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  46% (123/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  47% (126/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  48% (129/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  49% (132/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  50% (134/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  51% (137/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  52% (139/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  53% (142/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  54% (145/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  55% (148/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  56% (150/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  57% (153/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  58% (155/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  59% (158/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  60% (161/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  61% (163/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  62% (166/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  63% (169/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  64% (171/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  65% (174/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  66% (177/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  67% (179/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  68% (182/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  69% (185/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  70% (187/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  71% (190/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  72% (193/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  73% (196/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  74% (198/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  75% (201/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  76% (203/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  77% (206/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  78% (209/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  79% (211/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  80% (214/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  81% (217/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  82% (219/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  83% (222/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  84% (225/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  85% (227/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  86% (230/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  87% (233/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  88% (235/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  89% (238/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  90% (241/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  91% (243/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  92% (246/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  93% (249/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  94% (251/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  95% (254/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  96% (257/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  97% (259/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  98% (262/267), 5.72 MiB | 364.00 KiB/s   Writing objects:  99% (265/267), 5.72 MiB | 364.00 KiB/s   Writing objects: 100% (267/267), 5.72 MiB | 364.00 KiB/s   Writing objects: 100% (267/267), 6.07 MiB | 384.00 KiB/s, done.
-Total 267 (delta 110), reused 0 (delta 0)
-remote: Resolving deltas:   0% (0/110)   [Kremote: Resolving deltas:  32% (36/110)   [Kremote: Resolving deltas:  40% (45/110)   [Kremote: Resolving deltas:  62% (69/110)   [Kremote: Resolving deltas:  91% (101/110)   [Kremote: Resolving deltas:  94% (104/110)   [Kremote: Resolving deltas:  97% (107/110)   [Kremote: Resolving deltas:  99% (109/110)   [Kremote: Resolving deltas: 100% (110/110)   [Kremote: Resolving deltas: 100% (110/110), completed with 1 local object.[K
-To github.com:konradsemsch/myblog.git
-   64c4eba..f1e7235  master -> master
-]0;~/R/myblog[36mkonrad[m@[32mkonradino:[33;1m~/R/myblog[m$ git status
-On branch master
-Your branch is up to date with 'origin/master'.
-
-nothing to commit, working tree clean
-]0;~/R/myblog[36mkonrad[m@[32mkonradino:[33;1m~/R/myblog[m$ git status
-On branch master
-Your branch is up to date with 'origin/master'.
-
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git checkout -- <file>..." to discard changes in working directory)
 
-	[31mmodified:   config.toml[m
+	[31mmodified:   .Rproj.user/E48B5D24/console06/76A57E29[m
+	[31mmodified:   .Rproj.user/E48B5D24/console06/INDEX001[m
 
 no changes added to commit (use "git add" and/or "git commit -a")
-]0;~/R/myblog[36mkonrad[m@[32mkonradino:[33;1m~/R/myblog[m$ git add .
-]0;~/R/myblog[36mkonrad[m@[32mkonradino:[33;1m~/R/myblog[m$ gi it status
+]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ git statuspush origin master[12Pstatus
 On branch master
-Your branch is up to date with 'origin/master'.
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
 
-Changes to be committed:
-  (use "git reset HEAD <file>..." to unstage)
+	[31mmodified:   .Rproj.user/E48B5D24/console06/76A57E29[m
+	[31mmodified:   .Rproj.user/E48B5D24/console06/76A57E29.env[m
+	[31mmodified:   .Rproj.user/E48B5D24/console06/INDEX001[m
+	[31mmodified:   .Rproj.user/E48B5D24/sources/prop/762E4FDE[m
+	[31mmodified:   .Rproj.user/E48B5D24/sources/s-AAA6F5D6/85230E90[m
+	[31mmodified:   .Rproj.user/E48B5D24/sources/s-AAA6F5D6/85230E90-contents[m
+	[31mmodified:   config.toml[m
+	[31mmodified:   public/404.html[m
+	[31mmodified:   public/archives/index.html[m
+	[31mmodified:   public/archives/index.xml[m
+	[31mmodified:   public/archives/page/1/index.html[m
+	[31mmodified:   public/index.html[m
+	[31mmodified:   public/index.xml[m
+	[31mmodified:   public/page/1/index.html[m
+	[31mmodified:   public/sitemap.xml[m
+	[31mmodified:   public/tags/index.html[m
+	[31mmodified:   public/tags/index.xml[m
+	[31mmodified:   public/tags/page/1/index.html[m
 
-	[32mmodified:   config.toml[m
-
-]0;~/R/myblog[36mkonrad[m@[32mkonradino:[33;1m~/R/myblog[m$ git commit -m "trying to publish the webste  ite"
-[master b4acf66] trying to publish the website
- Committer: Konrad <konrad@konradino.local>
-Your name and email address were configured automatically based
-on your username and hostname. Please check that they are accurate.
-You can suppress this message by setting them explicitly:
-
-    git config --global user.name "Your Name"
-    git config --global user.email you@example.com
-
-After doing this, you may fix the identity used for this commit with:
-
-    git commit --amend --reset-author
-
- 1 file changed, 1 insertion(+)
-]0;~/R/myblog[36mkonrad[m@[32mkonradino:[33;1m~/R/myblog[m$ [Kgit config user.email "konrad.semshc@    sch@gmai. l.com  om"
-]0;~/R/myblog[36mkonrad[m@[32mkonradino:[33;1m~/R/myblog[m$ [Kgit     st  git status
+no changes added to commit (use "git add" and/or "git commit -a")
+]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ git status
 On branch master
-Your branch is ahead of 'origin/master' by 1 commit.
-  (use "git push" to publish your local commits)
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
 
-nothing to commit, working tree clean
-]0;~/R/myblog[36mkonrad[m@[32mkonradino:[33;1m~/R/myblog[m$ git pish     ush origin master
-Enumerating objects: 5, done.
-Counting objects:  20% (1/5)   Counting objects:  40% (2/5)   Counting objects:  60% (3/5)   Counting objects:  80% (4/5)   Counting objects: 100% (5/5)   Counting objects: 100% (5/5), done.
-Delta compression using up to 4 threads.
-Compressing objects:  33% (1/3)   Compressing objects:  66% (2/3)   Compressing objects: 100% (3/3)   Compressing objects: 100% (3/3), done.
-Writing objects:  33% (1/3)   Writing objects:  66% (2/3)   Writing objects: 100% (3/3)   Writing objects: 100% (3/3), 304 bytes | 304.00 KiB/s, done.
-Total 3 (delta 2), reused 0 (delta 0)
-remote: Resolving deltas:   0% (0/2)   [Kremote: Resolving deltas:  50% (1/2)   [Kremote: Resolving deltas: 100% (2/2)   [Kremote: Resolving deltas: 100% (2/2), completed with 2 local objects.[K
-remote: This repository moved. Please use the new location:[K
-remote:   git@github.com:konradsemsch/playground.git[K
-To github.com:konradsemsch/myblog.git
-   f1e7235..b4acf66  master -> master
-]0;~/R/myblog[36mkonrad[m@[32mkonradino:[33;1m~/R/myblog[m$ [K[36mkonrad[m@[32mkonradino:[33;1m~/R/myblog[m$ 
+	[31mmodified:   .Rproj.user/E48B5D24/console06/76A57E29[m
+	[31mmodified:   .Rproj.user/E48B5D24/console06/76A57E29.env[m
+	[31mmodified:   .Rproj.user/E48B5D24/console06/INDEX001[m
+	[31mmodified:   .Rproj.user/E48B5D24/sources/prop/762E4FDE[m
+	[31mmodified:   .Rproj.user/E48B5D24/sources/s-AAA6F5D6/85230E90[m
+	[31mmodified:   .Rproj.user/E48B5D24/sources/s-AAA6F5D6/85230E90-contents[m
+	[31mmodified:   config.toml[m
+	[31mmodified:   public/404.html[m
+	[31mmodified:   public/archives/index.html[m
+	[31mmodified:   public/archives/index.xml[m
+	[31mmodified:   public/archives/page/1/index.html[m
+	[31mmodified:   public/index.html[m
+	[31mmodified:   public/index.xml[m
+	[31mmodified:   public/page/1/index.html[m
+	[31mmodified:   public/sitemap.xml[m
+	[31mmodified:   public/tags/index.html[m
+	[31mmodified:   public/tags/index.xml[m
+	[31mmodified:   public/tags/page/1/index.html[m
+
+no changes added to commit (use "git add" and/or "git commit -a")
+]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ git add .

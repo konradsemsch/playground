@@ -9,7 +9,7 @@
 # https://omahar.org/post/submitting-a-post-with-blogdown/
 # https://tclavelle.github.io/blog/blogdown_github/
 
-baseURL = "https://romantic-newton-058b31.netlify.com/"
+baseURL = "https://konradsemsch.netlify.com/"
 languageCode = "en-us"
 defaultContentLanguage = "en-us"
 title = "Data Science in Fintech using R"
