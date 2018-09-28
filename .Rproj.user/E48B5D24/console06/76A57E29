@@ -61,3 +61,49 @@ Changes not staged for commit:
 
 no changes added to commit (use "git add" and/or "git commit -a")
 ]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ git add .
+]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ git commit 0m "    -m "i hope it builds"
+[master 8e1008c] i hope it builds
+ Committer: Konrad <konrad@konradino.local>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly:
+
+    git config --global user.name "Your Name"
+    git config --global user.email you@example.com
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 18 files changed, 145 insertions(+), 367 deletions(-)
+ rewrite .Rproj.user/E48B5D24/console06/76A57E29 (98%)
+ rewrite .Rproj.user/E48B5D24/console06/INDEX001 (84%)
+]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ [Kgir config user.email "o konrad.semsch@g,ail    mail.com"
+bash: gir: command not found
+]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ [Kgit     gir config user.email "konrad.semsch@gmail.com"r[1P[1@t
+]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ [Kgit push origin master
+Enumerating objects: 65, done.
+Counting objects:   1% (1/65)   Counting objects:   3% (2/65)   Counting objects:   4% (3/65)   Counting objects:   6% (4/65)   Counting objects:   7% (5/65)   Counting objects:   9% (6/65)   Counting objects:  10% (7/65)   Counting objects:  12% (8/65)   Counting objects:  13% (9/65)   Counting objects:  15% (10/65)   Counting objects:  16% (11/65)   Counting objects:  18% (12/65)   Counting objects:  20% (13/65)   Counting objects:  21% (14/65)   Counting objects:  23% (15/65)   Counting objects:  24% (16/65)   Counting objects:  26% (17/65)   Counting objects:  27% (18/65)   Counting objects:  29% (19/65)   Counting objects:  30% (20/65)   Counting objects:  32% (21/65)   Counting objects:  33% (22/65)   Counting objects:  35% (23/65)   Counting objects:  36% (24/65)   Counting objects:  38% (25/65)   Counting objects:  40% (26/65)   Counting objects:  41% (27/65)   Counting objects:  43% (28/65)   Counting objects:  44% (29/65)   Counting objects:  46% (30/65)   Counting objects:  47% (31/65)   Counting objects:  49% (32/65)   Counting objects:  50% (33/65)   Counting objects:  52% (34/65)   Counting objects:  53% (35/65)   Counting objects:  55% (36/65)   Counting objects:  56% (37/65)   Counting objects:  58% (38/65)   Counting objects:  60% (39/65)   Counting objects:  61% (40/65)   Counting objects:  63% (41/65)   Counting objects:  64% (42/65)   Counting objects:  66% (43/65)   Counting objects:  67% (44/65)   Counting objects:  69% (45/65)   Counting objects:  70% (46/65)   Counting objects:  72% (47/65)   Counting objects:  73% (48/65)   Counting objects:  75% (49/65)   Counting objects:  76% (50/65)   Counting objects:  78% (51/65)   Counting objects:  80% (52/65)   Counting objects:  81% (53/65)   Counting objects:  83% (54/65)   Counting objects:  84% (55/65)   Counting objects:  86% (56/65)   Counting objects:  87% (57/65)   Counting objects:  89% (58/65)   Counting objects:  90% (59/65)   Counting objects:  92% (60/65)   Counting objects:  93% (61/65)   Counting objects:  95% (62/65)   Counting objects:  96% (63/65)   Counting objects:  98% (64/65)   Counting objects: 100% (65/65)   Counting objects: 100% (65/65), done.
+Delta compression using up to 4 threads.
+Compressing objects:   3% (1/29)   Compressing objects:   6% (2/29)   Compressing objects:  10% (3/29)   Compressing objects:  13% (4/29)   Compressing objects:  17% (5/29)   Compressing objects:  20% (6/29)   Compressing objects:  24% (7/29)   Compressing objects:  27% (8/29)   Compressing objects:  31% (9/29)   Compressing objects:  34% (10/29)   Compressing objects:  37% (11/29)   Compressing objects:  41% (12/29)   Compressing objects:  44% (13/29)   Compressing objects:  48% (14/29)   Compressing objects:  51% (15/29)   Compressing objects:  55% (16/29)   Compressing objects:  58% (17/29)   Compressing objects:  62% (18/29)   Compressing objects:  65% (19/29)   Compressing objects:  68% (20/29)   Compressing objects:  72% (21/29)   Compressing objects:  75% (22/29)   Compressing objects:  79% (23/29)   Compressing objects:  82% (24/29)   Compressing objects:  86% (25/29)   Compressing objects:  89% (26/29)   Compressing objects:  93% (27/29)   Compressing objects:  96% (28/29)   Compressing objects: 100% (29/29)   Compressing objects: 100% (29/29), done.
+Writing objects:   2% (1/34)   Writing objects:   5% (2/34)   Writing objects:   8% (3/34)   Writing objects:  11% (4/34)   Writing objects:  14% (5/34)   Writing objects:  17% (6/34)   Writing objects:  20% (7/34)   Writing objects:  23% (8/34)   Writing objects:  26% (9/34)   Writing objects:  29% (10/34)   Writing objects:  32% (11/34)   Writing objects:  35% (12/34)   Writing objects:  38% (13/34)   Writing objects:  41% (14/34)   Writing objects:  44% (15/34)   Writing objects:  47% (16/34)   Writing objects:  50% (17/34)   Writing objects:  52% (18/34)   Writing objects:  55% (19/34)   Writing objects:  58% (20/34)   Writing objects:  61% (21/34)   Writing objects:  64% (22/34)   Writing objects:  67% (23/34)   Writing objects:  70% (24/34)   Writing objects:  73% (25/34)   Writing objects:  76% (26/34)   Writing objects:  79% (27/34)   Writing objects:  82% (28/34)   Writing objects:  85% (29/34)   Writing objects:  88% (30/34)   Writing objects:  91% (31/34)   Writing objects:  94% (32/34)   Writing objects:  97% (33/34)   Writing objects: 100% (34/34)   Writing objects: 100% (34/34), 3.22 KiB | 58.00 KiB/s, done.
+Total 34 (delta 19), reused 0 (delta 0)
+remote: Resolving deltas:   0% (0/19)   [Kremote: Resolving deltas:   5% (1/19)   [Kremote: Resolving deltas:  10% (2/19)   [Kremote: Resolving deltas:  15% (3/19)   [Kremote: Resolving deltas:  21% (4/19)   [Kremote: Resolving deltas:  26% (5/19)   [Kremote: Resolving deltas:  31% (6/19)   [Kremote: Resolving deltas:  36% (7/19)   [Kremote: Resolving deltas:  42% (8/19)   [Kremote: Resolving deltas:  57% (11/19)   [Kremote: Resolving deltas:  63% (12/19)   [Kremote: Resolving deltas:  78% (15/19)   [Kremote: Resolving deltas:  84% (16/19)   [Kremote: Resolving deltas:  89% (17/19)   [Kremote: Resolving deltas:  94% (18/19)   [Kremote: Resolving deltas: 100% (19/19)   [Kremote: Resolving deltas: 100% (19/19), completed with 15 local objects.[K
+To github.com:konradsemsch/playground.git
+   11ead7e..8e1008c  master -> master
+]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ [K[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	[31mmodified:   .Rproj.user/E48B5D24/console06/76A57E29[m
+	[31mmodified:   .Rproj.user/E48B5D24/console06/INDEX001[m
+	[31mmodified:   .Rproj.user/E48B5D24/sources/prop/762E4FDE[m
+	[31mmodified:   .Rproj.user/E48B5D24/sources/s-AAA6F5D6/85230E90[m
+	[31mmodified:   .Rproj.user/E48B5D24/sources/s-AAA6F5D6/85230E90-contents[m
+	[31mmodified:   config.toml[m
+	[31mdeleted:    public/.nojekyll[m
+
+no changes added to commit (use "git add" and/or "git commit -a")
+]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ git add .

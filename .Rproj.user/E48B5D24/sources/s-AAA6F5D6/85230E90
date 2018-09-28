@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "4071506787",
     "id" : "85230E90",
-    "lastKnownWriteTime" : 1538080028,
-    "last_content_update" : 1538080028600,
+    "lastKnownWriteTime" : 1538114918,
+    "last_content_update" : 1538114918714,
     "path" : "~/R/playground/config.toml",
     "project_path" : "config.toml",
     "properties" : {
-        "cursorPosition" : "10,0",
-        "scrollLine" : "0"
+        "cursorPosition" : "20,64",
+        "scrollLine" : "4"
     },
     "relative_order" : 1,
     "source_on_save" : false,
