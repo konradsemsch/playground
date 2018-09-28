@@ -136,3 +136,47 @@ Untracked files:
 
 no changes added to commit (use "git add" and/or "git commit -a")
 ]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ gi  t add .
+]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ git commit m -m "added gitkeep to an empty content folder"
+[master c5ce557] added gitkeep to an empty content folder
+ 2 files changed, 30 insertions(+), 1 deletion(-)
+ create mode 100644 content/.gitkeep
+]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ [Kgit push origin mater   ster
+Enumerating objects: 12, done.
+Counting objects:   8% (1/12)   Counting objects:  16% (2/12)   Counting objects:  25% (3/12)   Counting objects:  33% (4/12)   Counting objects:  41% (5/12)   Counting objects:  50% (6/12)   Counting objects:  58% (7/12)   Counting objects:  66% (8/12)   Counting objects:  75% (9/12)   Counting objects:  83% (10/12)   Counting objects:  91% (11/12)   Counting objects: 100% (12/12)   Counting objects: 100% (12/12), done.
+Delta compression using up to 4 threads.
+Compressing objects:  16% (1/6)   Compressing objects:  33% (2/6)   Compressing objects:  50% (3/6)   Compressing objects:  66% (4/6)   Compressing objects:  83% (5/6)   Compressing objects: 100% (6/6)   Compressing objects: 100% (6/6), done.
+Writing objects:  14% (1/7)   Writing objects:  28% (2/7)   Writing objects:  42% (3/7)   Writing objects:  57% (4/7)   Writing objects:  71% (5/7)   Writing objects:  85% (6/7)   Writing objects: 100% (7/7)   Writing objects: 100% (7/7), 1.30 KiB | 1.30 MiB/s, done.
+Total 7 (delta 3), reused 0 (delta 0)
+remote: Resolving deltas:   0% (0/3)   [Kremote: Resolving deltas:  33% (1/3)   [Kremote: Resolving deltas:  66% (2/3)   [Kremote: Resolving deltas: 100% (3/3)   [Kremote: Resolving deltas: 100% (3/3), completed with 3 local objects.[K
+To github.com:konradsemsch/playground.git
+   a435971..c5ce557  master -> master
+]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	[31mmodified:   .Rproj.user/E48B5D24/console06/76A57E29[m
+	[31mmodified:   .Rproj.user/E48B5D24/sources/prop/762E4FDE[m
+	[31mmodified:   .Rproj.user/E48B5D24/sources/s-AAA6F5D6/85230E90[m
+	[31mmodified:   .Rproj.user/E48B5D24/sources/s-AAA6F5D6/85230E90-contents[m
+	[31mmodified:   config.toml[m
+	[31mmodified:   public/404.html[m
+	[31mmodified:   public/archives/index.html[m
+	[31mmodified:   public/archives/index.xml[m
+	[31mmodified:   public/archives/page/1/index.html[m
+	[31mmodified:   public/index.html[m
+	[31mmodified:   public/index.xml[m
+	[31mmodified:   public/page/1/index.html[m
+	[31mmodified:   public/sitemap.xml[m
+	[31mmodified:   public/tags/index.html[m
+	[31mmodified:   public/tags/index.xml[m
+	[31mmodified:   public/tags/page/1/index.html[m
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+	[31mpublic/images/background_small.png[m
+
+no changes added to commit (use "git add" and/or "git commit -a")
+]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ git add .

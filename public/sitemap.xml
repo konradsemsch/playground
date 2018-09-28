@@ -3,17 +3,17 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://konradsemsch.netlify.com/archives/</loc>
+    <loc>/archives/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://konradsemsch.netlify.com/</loc>
+    <loc>/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://konradsemsch.netlify.com/tags/</loc>
+    <loc>/tags/</loc>
     <priority>0</priority>
   </url>
   
