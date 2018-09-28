@@ -264,3 +264,49 @@ Commit contents options
                           show untracked files, optional modes: all, normal, no. (Default: all)
 
 ]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ [Kgit commit --ammend -m "replaced with small"-[1P
+[master a61fd2e] mend
+ 16 files changed, 143 insertions(+), 80 deletions(-)
+]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ [Kgit push origin master
+Enumerating objects: 61, done.
+Counting objects:   1% (1/61)   Counting objects:   3% (2/61)   Counting objects:   4% (3/61)   Counting objects:   6% (4/61)   Counting objects:   8% (5/61)   Counting objects:   9% (6/61)   Counting objects:  11% (7/61)   Counting objects:  13% (8/61)   Counting objects:  14% (9/61)   Counting objects:  16% (10/61)   Counting objects:  18% (11/61)   Counting objects:  19% (12/61)   Counting objects:  21% (13/61)   Counting objects:  22% (14/61)   Counting objects:  24% (15/61)   Counting objects:  26% (16/61)   Counting objects:  27% (17/61)   Counting objects:  29% (18/61)   Counting objects:  31% (19/61)   Counting objects:  32% (20/61)   Counting objects:  34% (21/61)   Counting objects:  36% (22/61)   Counting objects:  37% (23/61)   Counting objects:  39% (24/61)   Counting objects:  40% (25/61)   Counting objects:  42% (26/61)   Counting objects:  44% (27/61)   Counting objects:  45% (28/61)   Counting objects:  47% (29/61)   Counting objects:  49% (30/61)   Counting objects:  50% (31/61)   Counting objects:  52% (32/61)   Counting objects:  54% (33/61)   Counting objects:  55% (34/61)   Counting objects:  57% (35/61)   Counting objects:  59% (36/61)   Counting objects:  60% (37/61)   Counting objects:  62% (38/61)   Counting objects:  63% (39/61)   Counting objects:  65% (40/61)   Counting objects:  67% (41/61)   Counting objects:  68% (42/61)   Counting objects:  70% (43/61)   Counting objects:  72% (44/61)   Counting objects:  73% (45/61)   Counting objects:  75% (46/61)   Counting objects:  77% (47/61)   Counting objects:  78% (48/61)   Counting objects:  80% (49/61)   Counting objects:  81% (50/61)   Counting objects:  83% (51/61)   Counting objects:  85% (52/61)   Counting objects:  86% (53/61)   Counting objects:  88% (54/61)   Counting objects:  90% (55/61)   Counting objects:  91% (56/61)   Counting objects:  93% (57/61)   Counting objects:  95% (58/61)   Counting objects:  96% (59/61)   Counting objects:  98% (60/61)   Counting objects: 100% (61/61)   Counting objects: 100% (61/61), done.
+Delta compression using up to 4 threads.
+Compressing objects:   3% (1/27)   Compressing objects:   7% (2/27)   Compressing objects:  11% (3/27)   Compressing objects:  14% (4/27)   Compressing objects:  18% (5/27)   Compressing objects:  22% (6/27)   Compressing objects:  25% (7/27)   Compressing objects:  29% (8/27)   Compressing objects:  33% (9/27)   Compressing objects:  37% (10/27)   Compressing objects:  40% (11/27)   Compressing objects:  44% (12/27)   Compressing objects:  48% (13/27)   Compressing objects:  51% (14/27)   Compressing objects:  55% (15/27)   Compressing objects:  59% (16/27)   Compressing objects:  62% (17/27)   Compressing objects:  66% (18/27)   Compressing objects:  70% (19/27)   Compressing objects:  74% (20/27)   Compressing objects:  77% (21/27)   Compressing objects:  81% (22/27)   Compressing objects:  85% (23/27)   Compressing objects:  88% (24/27)   Compressing objects:  92% (25/27)   Compressing objects:  96% (26/27)   Compressing objects: 100% (27/27)   Compressing objects: 100% (27/27), done.
+Writing objects:   3% (1/32)   Writing objects:   6% (2/32)   Writing objects:   9% (3/32)   Writing objects:  12% (4/32)   Writing objects:  15% (5/32)   Writing objects:  18% (6/32)   Writing objects:  21% (7/32)   Writing objects:  25% (8/32)   Writing objects:  28% (9/32)   Writing objects:  31% (10/32)   Writing objects:  34% (11/32)   Writing objects:  37% (12/32)   Writing objects:  40% (13/32)   Writing objects:  43% (14/32)   Writing objects:  46% (15/32)   Writing objects:  50% (16/32)   Writing objects:  53% (17/32)   Writing objects:  56% (18/32)   Writing objects:  59% (19/32)   Writing objects:  62% (20/32)   Writing objects:  65% (21/32)   Writing objects:  68% (22/32)   Writing objects:  71% (23/32)   Writing objects:  75% (24/32)   Writing objects:  78% (25/32)   Writing objects:  81% (26/32)   Writing objects:  84% (27/32)   Writing objects:  87% (28/32)   Writing objects:  90% (29/32)   Writing objects:  93% (30/32)   Writing objects:  96% (31/32)   Writing objects: 100% (32/32)   Writing objects: 100% (32/32), 4.51 KiB | 85.00 KiB/s, done.
+Total 32 (delta 18), reused 0 (delta 0)
+remote: Resolving deltas:   0% (0/18)   [Kremote: Resolving deltas:   5% (1/18)   [Kremote: Resolving deltas:  11% (2/18)   [Kremote: Resolving deltas:  16% (3/18)   [Kremote: Resolving deltas:  22% (4/18)   [Kremote: Resolving deltas:  27% (5/18)   [Kremote: Resolving deltas:  33% (6/18)   [Kremote: Resolving deltas:  38% (7/18)   [Kremote: Resolving deltas:  55% (10/18)   [Kremote: Resolving deltas:  72% (13/18)   [Kremote: Resolving deltas:  88% (16/18)   [Kremote: Resolving deltas:  94% (17/18)   [Kremote: Resolving deltas: 100% (18/18)   [Kremote: Resolving deltas: 100% (18/18), completed with 12 local objects.[K
+To github.com:konradsemsch/playground.git
+   cc659c3..a61fd2e  master -> master
+]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ git log --oneline
+[?1h=[33ma61fd2e[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m mend[m
+[33mcc659c3[m deployed cover image to the cloud[m
+[33m6fc9dab[m decreased background image size[m
+[33mc5ce557[m added gitkeep to an empty content folder[m
+[33ma435971[m another build try on netlify[m
+[33m8e1008c[m i hope it builds[m
+[33m11ead7e[m initial commit[m
+[K[?1l>]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ giut    t status
+On branch master
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	[31mmodified:   .Rproj.user/E48B5D24/console06/76A57E29[m
+	[31mmodified:   .Rproj.user/E48B5D24/sources/prop/762E4FDE[m
+	[31mmodified:   .Rproj.user/E48B5D24/sources/s-AAA6F5D6/85230E90[m
+	[31mmodified:   .Rproj.user/E48B5D24/sources/s-AAA6F5D6/85230E90-contents[m
+	[31mmodified:   config.toml[m
+	[31mmodified:   public/404.html[m
+	[31mmodified:   public/archives/index.html[m
+	[31mmodified:   public/archives/index.xml[m
+	[31mmodified:   public/archives/page/1/index.html[m
+	[31mdeleted:    public/assets/images/background.jpg[m
+	[31mmodified:   public/index.html[m
+	[31mmodified:   public/index.xml[m
+	[31mmodified:   public/page/1/index.html[m
+	[31mmodified:   public/sitemap.xml[m
+	[31mmodified:   public/tags/index.html[m
+	[31mmodified:   public/tags/index.xml[m
+	[31mmodified:   public/tags/page/1/index.html[m
+
+no changes added to commit (use "git add" and/or "git commit -a")
+]0;~/R/playground[36mkonrad[m@[32mkonradino:[33;1m~/R/playground[m$ git add .

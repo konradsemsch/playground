@@ -7,13 +7,13 @@
     "folds" : "",
     "hash" : "0",
     "id" : "85230E90",
-    "lastKnownWriteTime" : 1538116349,
-    "last_content_update" : 1538116349083,
+    "lastKnownWriteTime" : 1538117832,
+    "last_content_update" : 1538117832541,
     "path" : "~/R/playground/config.toml",
     "project_path" : "config.toml",
     "properties" : {
-        "cursorPosition" : "111,98",
-        "scrollLine" : "102"
+        "cursorPosition" : "40,10",
+        "scrollLine" : "14"
     },
     "relative_order" : 1,
     "source_on_save" : false,

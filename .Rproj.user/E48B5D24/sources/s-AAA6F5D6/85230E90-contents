@@ -12,7 +12,7 @@
 baseURL = "https://konradsemsch.netlify.com/"
 languageCode = "en-us"
 defaultContentLanguage = "en-us"
-title = "Data Science in Fintech using R"
+title = "Konrad's playground"
 theme = "hugo-tranquilpeak-theme"
 disqusShortname = "hugo-tranquilpeak-theme"
 # googleAnalytics = "UA-123-45"
@@ -29,7 +29,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
 [author]
   name = "Konrad Semsch"
-  bio = "Data Science in Fintech using R"
+  bio = "Data Science playground using R"
   job = "Senior Data Scientist"
   location = "Berlin, Germany"
   picture = "images/profile.png"
@@ -39,7 +39,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
   weight = 1
   identifier = "home"
   name = "Home"
-  pre = "<i class=\"sidebar-button-icon fa fa-lg fa-home\"></i>"
+  pre = "<b><i class=\"sidebar-button-icon fa fa-lg fa-home\"></i></b>"
   url = "/"
 [[menu.main]]
   weight = 2
@@ -62,10 +62,10 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
 [[menu.links]]
   weight = 1
-  identifier = "cv"
-  name = "CV"
-  pre = "<i class=\"sidebar-button-icon fa fa-lg fa-category\"></i>"
-  url = "/cv"
+  identifier = "lkd"
+  name = "Linkedin"
+  pre = "<i class=\"sidebar-button-icon fa fa-linkedin-square\"></i>"
+  url = "https://www.linkedin.com/in/konradsemsch/"
 
 [[menu.links]]
   weight = 2
@@ -86,7 +86,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
   # If false it will flat categories.
   hierarchicalCategories = true
 
-  description = "Data Science in Fintech using R"
+  description = "Data Science playground using R"
 
   # Customization
   # Define the behavior of the sidebar
