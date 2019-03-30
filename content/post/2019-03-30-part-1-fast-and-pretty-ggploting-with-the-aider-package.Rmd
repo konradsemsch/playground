@@ -1,0 +1,19 @@
+---
+title: 'Part 1: fast and pretty ggploting with the aider package'
+author: Konrad Semsch
+date: '2019-03-30'
+slug: part-1-fast-and-pretty-ggploting-with-the-aider-package
+categories:
+  - plotting
+  - visualization
+tags:
+  - ggplot
+  - aider
+---
+
+This is my first blogpost. Does this work?
+
+```{r}
+head(mtcars)
+```
+
