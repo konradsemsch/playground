@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on Konrad&#39;s playground</title>
-    <link>/post/</link>
-    <description>Recent content in Posts on Konrad&#39;s playground</description>
+    <title>Ggplot2 on Konrad&#39;s playground</title>
+    <link>/tags/ggplot2/</link>
+    <description>Recent content in Ggplot2 on Konrad&#39;s playground</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 30 Mar 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/ggplot2/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>

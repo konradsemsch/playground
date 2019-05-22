@@ -1,0 +1,251 @@
+---
+title: Fast and pretty ggploting with the aider package (part 1)
+author: Konrad Semsch
+date: '2019-03-30'
+slug: fast-and-pretty-ggploting-with-the-aider-package-part-1
+categories:
+  - visualization
+tags:
+  - ggplot2
+  - aider
+---
+
+The ggplot package was like a fresh breeze of wind to the art of data visualization done with R. It enabled doing things that weren't possible before with ease, and quickly gained adoption in the R community. The ggplot package is great and I surely pay my tribute to it, however, with such a great variety of options and flexibility comes a certain price to pay - speed of creating new plots. And I specifically mean creating many different plots: a) quickly and b) that would look great. Plots produced by the ggplot package already look very neat but in the end if the user is looking to give a "wow" effect, one needs to spend a bit of time.
+
+At one point I decided I would like to automate those things and started writing wrapper functions around different ggplot plotting functions which eventually made its way to a package called aider hosted on [github](https://github.com/konradsemsch/aider). The aim of the aider package is to facilitate day-to-day analytical and data science tasks. It's a "catch-them-all" package to do a number of different DS/ ML tasks so it imports a number of different packages - I know, by no means perfect but it's supposed to server a number of purposes in a single analytical task.
+
+So let's finally get down to business and showcase some of the aider's functionalities and create some great looking boxplots! For visualization purposes I will be using the ```credit_data``` data set from the ```recipes``` package. Let's start with something really simple - plotting the marital status by time (requested loan duration).
+
+As you can see, the ```plot_boxplot``` function just needs two basic arguments: the x and y labels variables, and will try to infer all other attrbiutes of the plot automatically. It will populate the title inferred from aesthetics, replace both axis labels with more generic names, attach a standard grey theme, assign a fill color by default and scale the ticks. Already gives much more life to our standard ggplot graph!
+
+```{r include=FALSE}
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+```
+
+```{r}
+
+library(aider)
+library(ggplot2)
+
+data <- recipes::credit_data %>%
+  first_to_lower()
+
+data %>%
+  plot_boxplot(x = marital,
+               y = time)
+
+data %>%
+  ggplot() + 
+  geom_boxplot(aes(marital, time))
+
+```
+
+Now, with just a couple additional lines we can quickly start customizing that basic looking graph. Just populate the fill argument to get a nice looking fill of all your colors!
+
+```{r}
+
+data %>%
+  plot_boxplot(x = marital,
+               y = time,
+               fill = marital)
+
+```
+
+We can also change the theme to ```ipsum``` to make the plot look even more neat.
+
+```{r}
+
+data %>%
+  plot_boxplot(x = marital,
+               y = time,
+               fill = marital,
+               theme_type = "ipsum")
+
+```
+
+Scaling that to multiple facets is not an issue at all:
+
+```{r fig.height=6, fig.width=10}
+
+data %>%
+  plot_boxplot(x = marital,
+               y = time,
+               fill = marital,
+               facet = job,
+               theme_type = "ipsum")
+
+```
+
+And multiple other factors can be included in the function call such as: vertical alignment of afix elements, adding a horizontal/ vertical line to the plot to highlight e.g. an average value or shading the fill color.
+
+```{r fig.height=6, fig.width=8}
+
+data %>%
+  plot_boxplot(x = marital,
+               y = time,
+               fill = marital,
+               facet = job,
+               ticks = 5,
+               vline = 45,
+               angle = 45,
+               alpha = .7,
+               title = "Boxplots requested loan duration job type and marital status",
+               lab_x = "Marital status",
+               lab_y = "Time (requested loan duration)",
+               theme_type = "ipsum")
+
+```
+
+There is a number of other plotting functions in the ```aider``` package so please take a look at it at github and don't hesitate to give me a shout with some feedback. Also the full code to generate the above plots using the ```plot_boxplot``` function is available below. There's a number of quite advanced R programming practices using non-standard evaluation which I will discuss in my next posts. Cheerio!
+
+```{r}
+
+plot_boxplot <- function(df,
+                         x,
+                         y,
+                         fill = NULL,
+                         facet = NULL,
+                         ticks = 10,
+                         angle = 0,
+                         title = TRUE,
+                         subtitle = NULL,
+                         caption = NULL,
+                         lab_x = "Level",
+                         lab_y = "Value range",
+                         legend = TRUE,
+                         vline = c(NaN),
+                         alpha = .7,
+                         quantile_low = 0,
+                         quantile_high = 1,
+                         palette = "cartography",
+                         theme_type = "grey"
+                         ) {
+
+  if (!is.data.frame(df))
+    stop("object must be a data frame")
+
+  if (!is.character(palette))
+    stop("argument must be character")
+
+  var_x     <- rlang::enquo(x)
+  var_y     <- rlang::enquo(y)
+  var_fill  <- rlang::enquo(fill)
+  var_facet <- rlang::enquo(facet)
+
+  limits <- df %>%
+    select(value = !!var_y) %>%
+    summarise(
+      min = stats::quantile(value, quantile_low[[1]], na.rm = TRUE),
+      max = stats::quantile(value, quantile_high[[1]], na.rm = TRUE)
+    )
+
+  plot <- df %>%
+    ggplot() +
+    geom_hline(yintercept = vline, linetype = 2, size = 1, color = "#6E7B8B", alpha = .8) +
+    ggtitle(
+      label = if (title == TRUE) {
+        glue::glue("Boxplot plot of {rlang::quo_text(var_y)} by {rlang::quo_text(var_x)}")
+      } else if (is.character(title)) {
+        title
+      } else {
+        element_blank()
+      }
+    ) +
+    labs(
+      fill = glue::glue("{first_to_upper(rlang::quo_text(var_fill))}:"),
+      x = lab_x,
+      y = lab_y) +
+    labs(
+      subtitle = if (is.null(subtitle)) {element_blank()} else {subtitle}
+    ) +
+    labs(
+      caption = if (is.null(caption)) {element_blank()} else {caption}
+    ) +
+    scale_y_continuous(
+      limits = c(
+        limits$min,
+        limits$max
+      ),
+      breaks = number_ticks(ticks)
+    ) +
+    aider_theme(type = theme_type) +
+    theme(
+      legend.position = ifelse(legend == TRUE, "bottom", "none"),
+      axis.text.x = element_text(angle = angle, hjust = ifelse(angle != 0, 1, .5))
+    )
+
+  if (!rlang::quo_is_null(var_facet)) {
+    plot <- plot +
+      facet_wrap(rlang::quo_text(var_facet), scales = "free_x")
+  }
+
+  if (rlang::quo_is_null(var_fill)) {
+
+    message("Wow, what a beautiful graph!")
+    plot +
+      geom_boxplot(
+        aes_string(
+          x = rlang::quo_text(var_x),
+          y = rlang::quo_text(var_y)
+        ),
+        alpha = alpha,
+        fill = "#1d8fd2"
+      )
+
+  } else {
+
+    levels <- df %>%
+      select(levels = !!var_fill)
+
+    if (!is.null(attributes(palette))) {
+
+      selected_palette <- palette
+
+    } else if (palette == "risk") {
+
+      selected_palette <- select_palette(palette)
+
+    } else {
+
+      selected_palette <- select_palette(palette) %>%
+        tibble::as_data_frame() %>%
+        mutate(
+          rank = row_number(),
+          fill = rank %% (round(n() / length(unique(levels$levels)), 0))
+        ) %>%
+        filter(fill == 0) %>%
+        select(value)
+
+      if (nrow(selected_palette) < length(unique(levels$levels))) {
+        selected_palette <- bind_rows(
+          slice(data_frame(value = select_palette(palette)), 1),
+          selected_palette
+        )
+      } else {
+        selected_palette
+      }
+    }
+
+    message("Damn, this graph is amazing!")
+    plot +
+      geom_boxplot(
+        aes_string(
+          x = rlang::quo_text(var_x),
+          y = rlang::quo_text(var_y),
+          fill = rlang::quo_text(var_fill)
+        ),
+        alpha = alpha
+      ) +
+      scale_fill_manual(values = if (is.data.frame(selected_palette) == TRUE) {
+        selected_palette$value
+      } else {
+        selected_palette
+      }
+      )
+  }
+}
+
+```
+

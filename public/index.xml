@@ -12,13 +12,12 @@
     
     
     <item>
-      <title>Part 1: fast and pretty ggploting with the aider package</title>
-      <link>/2019/03/part-1-fast-and-pretty-ggploting-with-the-aider-package/</link>
+      <title>Fast and pretty ggploting with the aider package (part 1)</title>
+      <link>/2019/03/fast-and-pretty-ggploting-with-the-aider-package-part-1/</link>
       <pubDate>Sat, 30 Mar 2019 00:00:00 +0000</pubDate>
       
-      <guid>/2019/03/part-1-fast-and-pretty-ggploting-with-the-aider-package/</guid>
-      <description>This is my first blogpost. Does this work?
-head(mtcars) ## mpg cyl disp hp drat wt qsec vs am gear carb ## Mazda RX4 21.0 6 160 110 3.90 2.620 16.46 0 1 4 4 ## Mazda RX4 Wag 21.0 6 160 110 3.90 2.875 17.02 0 1 4 4 ## Datsun 710 22.8 4 108 93 3.85 2.320 18.61 1 1 4 1 ## Hornet 4 Drive 21.4 6 258 110 3.</description>
+      <guid>/2019/03/fast-and-pretty-ggploting-with-the-aider-package-part-1/</guid>
+      <description></description>
     </item>
     
   </channel>
