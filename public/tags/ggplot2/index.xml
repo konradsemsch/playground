@@ -17,7 +17,7 @@
       <pubDate>Sat, 30 Mar 2019 00:00:00 +0000</pubDate>
       
       <guid>/2019/03/fast-and-pretty-ggploting-with-the-aider-package-part-1/</guid>
-      <description></description>
+      <description>The ggplot package was like a fresh breeze of wind to the art of data visualization done with R. It enabled doing things that weren’t possible before with ease, and quickly gained adoption in the R community. The ggplot package is great and I surely pay my tribute to it, however, with such a great variety of options and flexibility comes a certain price to pay - speed of creating new plots.</description>
     </item>
     
   </channel>
