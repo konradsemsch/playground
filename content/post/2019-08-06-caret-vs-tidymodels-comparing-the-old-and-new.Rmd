@@ -1,6 +1,6 @@
 ---
-title: "Caret vs. tidymodels - comparing the old and new"
-author: "Konrad Semsch"
+title: Caret vs. tidymodels - comparing the old and new
+author: Konrad Semsch
 date: '2019-08-06'
 keywords: tech
 slug: caret-vs-tidymodels-comparing-the-old-and-new
@@ -23,7 +23,7 @@ In order to write this blog I've been reading carefully all individual packaages
 
 Let's load all the required packages and ```credit_data``` dataset available from ```recipes``` that we will use for modelling.
 
-```{r echo=FALSE}
+```{r}
 
 set.seed(42)
 

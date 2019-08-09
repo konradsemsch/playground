@@ -381,6 +381,9 @@ $(document).ready(function () {
 <div id="simple-exploration" class="section level1">
 <h1>Simple exploration</h1>
 <p>Let’s load all the required packages and <code>credit_data</code> dataset available from <code>recipes</code> that we will use for modelling.</p>
+<pre class="r"><code>set.seed(42)
+
+library(tidymodels)</code></pre>
 <pre><code>## Registered S3 method overwritten by 'xts':
 ##   method     from
 ##   as.zoo.xts zoo</code></pre>
@@ -396,6 +399,7 @@ $(document).ready(function () {
 ## ✖ dplyr::filter()  masks stats::filter()
 ## ✖ dplyr::lag()     masks stats::lag()
 ## ✖ recipes::step()  masks stats::step()</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## Registered S3 method overwritten by 'rvest':
 ##   method            from
 ##   read_xml.response xml2</code></pre>
@@ -409,6 +413,7 @@ $(document).ready(function () {
 ## ✖ stringr::fixed()    masks recipes::fixed()
 ## ✖ dplyr::lag()        masks stats::lag()
 ## ✖ readr::spec()       masks yardstick::spec()</code></pre>
+<pre class="r"><code>library(caret)</code></pre>
 <pre><code>## Loading required package: lattice</code></pre>
 <pre><code>## 
 ## Attaching package: 'caret'</code></pre>
@@ -418,6 +423,7 @@ $(document).ready(function () {
 <pre><code>## The following object is masked from 'package:purrr':
 ## 
 ##     lift</code></pre>
+<pre class="r"><code>library(magrittr)</code></pre>
 <pre><code>## 
 ## Attaching package: 'magrittr'</code></pre>
 <pre><code>## The following object is masked from 'package:tidyr':
@@ -426,12 +432,16 @@ $(document).ready(function () {
 <pre><code>## The following object is masked from 'package:purrr':
 ## 
 ##     set_names</code></pre>
+<pre class="r"><code>library(naniar)
+library(furrr)</code></pre>
 <pre><code>## Loading required package: future</code></pre>
 <pre><code>## 
 ## Attaching package: 'future'</code></pre>
 <pre><code>## The following object is masked from 'package:caret':
 ## 
 ##     cluster</code></pre>
+<pre class="r"><code>plan(multicore)  
+data(&quot;credit_data&quot;)</code></pre>
 <p>In this example I’m building a classification model to distinguish between good and bad loans indicated with column ‘Status’. We have relatively many observations compared to the number of variables available for modelling. I’m converting all columns to lowercase.</p>
 <pre class="r"><code>glimpse(credit_data)</code></pre>
 <pre><code>## Observations: 4,454
