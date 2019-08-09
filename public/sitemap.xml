@@ -3,46 +3,17 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://konradsemsch.netlify.com/2019/03/fast-and-pretty-ggploting-with-the-aider-package-part-1/</loc>
-    <lastmod>2019-03-30T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://konradsemsch.netlify.com/1/01/</loc>
-  </url>
-  
-  <url>
-    <loc>https://konradsemsch.netlify.com/tags/aider/</loc>
-    <lastmod>2019-03-30T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://konradsemsch.netlify.com/archives/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://konradsemsch.netlify.com/tags/ggplot2/</loc>
-    <lastmod>2019-03-30T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://konradsemsch.netlify.com/</loc>
-    <lastmod>2019-03-30T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://konradsemsch.netlify.com/post/</loc>
-    <lastmod>2019-03-30T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://konradsemsch.netlify.com/tags/</loc>
-    <lastmod>2019-03-30T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
