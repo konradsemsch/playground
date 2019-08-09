@@ -29,7 +29,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
 [author]
   name = "Konrad Semsch"
-  bio = "Practitioners view on predictive modelling using R & Python"
+  bio = "Practitioners view on predictive modelling"
   job = "Senior Data Scientist"
   location = "Dortmund, Germany"
   picture = "images/profile.png"
