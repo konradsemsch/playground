@@ -1,7 +1,7 @@
 ---
-title: Caret vs. tidymodels - comparing the old and new
-author: Konrad Semsch
-date: '2019-08-06'
+title: "Caret vs. tidymodels - comparing the old and new"
+author: "Konrad Semsch"
+date: "2019-08-06"
 keywords: tech
 slug: caret-vs-tidymodels-comparing-the-old-and-new
 tags:
