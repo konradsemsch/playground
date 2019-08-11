@@ -12,7 +12,7 @@
 baseURL = "https://konradsemsch.netlify.com/"
 languageCode = "en-us"
 defaultContentLanguage = "en-us"
-title = "Konrad's playground"
+title = "Practitioners view on predictive modelling"
 theme = "hugo-tranquilpeak-theme"
 disqusShortname = "hugo-tranquilpeak-theme"
 # googleAnalytics = "UA-123-45"

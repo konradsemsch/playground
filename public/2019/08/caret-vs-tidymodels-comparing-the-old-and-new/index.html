@@ -28,15 +28,15 @@
     
 
     
-    <meta name="description" content="In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: caret and its successor packages being written by the same author (Max Kuhn) that are wrapped together in a so called tidymodels framework. Tidymodels is a collection of different packages such as: rsample, recipes, parsnip, dials and more that allow for a running an ML project in a tidy format end-to-end.">
-    <meta property="og:description" content="In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: caret and its successor packages being written by the same author (Max Kuhn) that are wrapped together in a so called tidymodels framework. Tidymodels is a collection of different packages such as: rsample, recipes, parsnip, dials and more that allow for a running an ML project in a tidy format end-to-end.">
+    <meta name="description" content="In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: caret and its successor packages being written by the same author (Max Kuhn) that are wrapped together in a so called tidymodels framework. Tidymodels is a collection of different packages such as: rsample, recipes, parsnip, dials and more, that allow running an entire ML project in a tidy format end-to-end.">
+    <meta property="og:description" content="In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: caret and its successor packages being written by the same author (Max Kuhn) that are wrapped together in a so called tidymodels framework. Tidymodels is a collection of different packages such as: rsample, recipes, parsnip, dials and more, that allow running an entire ML project in a tidy format end-to-end.">
     <meta property="og:type" content="blog">
     <meta property="og:title" content="Caret vs. tidymodels - comparing the old and new">
     <meta property="og:url" content="/2019/08/caret-vs-tidymodels-comparing-the-old-and-new/">
-    <meta property="og:site_name" content="Konrad&#39;s playground">
+    <meta property="og:site_name" content="Practitioners view on predictive modelling">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Konrad&#39;s playground">
-    <meta name="twitter:description" content="In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: caret and its successor packages being written by the same author (Max Kuhn) that are wrapped together in a so called tidymodels framework. Tidymodels is a collection of different packages such as: rsample, recipes, parsnip, dials and more that allow for a running an ML project in a tidy format end-to-end.">
+    <meta name="twitter:title" content="Practitioners view on predictive modelling">
+    <meta name="twitter:description" content="In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: caret and its successor packages being written by the same author (Max Kuhn) that are wrapped together in a so called tidymodels framework. Tidymodels is a collection of different packages such as: rsample, recipes, parsnip, dials and more, that allow running an entire ML project in a tidy format end-to-end.">
     
     
 
@@ -74,7 +74,7 @@
       <header id="header" data-behavior="4">
   <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
   <div class="header-title">
-    <a class="header-title-link" href="/">Konrad&#39;s playground</a>
+    <a class="header-title-link" href="/">Practitioners view on predictive modelling</a>
   </div>
   
     
@@ -236,75 +236,29 @@
               
 
 
-<p>In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: <a href="https://github.com/topepo/caret">caret</a> and its successor packages being written by the same author (<a href="https://github.com/topepo">Max Kuhn</a>) that are wrapped together in a so called <a href="https://github.com/tidymodels/tidymodels">tidymodels</a> framework. <code>Tidymodels</code> is a collection of different packages such as: <a href="https://tidymodels.github.io/rsample/">rsample</a>, <a href="https://tidymodels.github.io/recipes/">recipes</a>, <a href="https://tidymodels.github.io/parsnip/">parsnip</a>, <a href="https://tidymodels.github.io/dials/">dials</a> and more that allow for a running an ML project in a tidy format end-to-end.</p>
-<p>Many of them are still in a development phase which will still take a couple good months before they settle down, so I’ll try to keep this post up-to-date over time. Nevertheless, I’ve wanted to take a closer look at what <code>tidymodels</code> have to offer for a while already and thought a blogpost would be a great way to demonstrate that.</p>
+<p>In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: <a href="https://github.com/topepo/caret">caret</a> and its successor packages being written by the same author (<a href="https://github.com/topepo">Max Kuhn</a>) that are wrapped together in a so called <a href="https://github.com/tidymodels/tidymodels">tidymodels</a> framework. <code>Tidymodels</code> is a collection of different packages such as: <a href="https://tidymodels.github.io/rsample/">rsample</a>, <a href="https://tidymodels.github.io/recipes/">recipes</a>, <a href="https://tidymodels.github.io/parsnip/">parsnip</a>, <a href="https://tidymodels.github.io/dials/">dials</a> and more, that allow running an entire ML project in a tidy format end-to-end.</p>
+<p>Many of them are still in a development phase, which will still take a couple good months before they settle down, so I’ll try to keep this post up-to-date over time. Nevertheless, I’ve wanted to take a closer look at what <code>tidymodels</code> have to offer for a while already, and thought a blogpost would be a great way to demonstrate that.</p>
 <p>In order to write this blog I’ve been reading carefully all individual package websites and this excellent <a href="https://www.alexpghayes.com/blog/implementing-the-super-learner-with-tidymodels/">blogpost</a> from Alex Hayes helped me a lot to put things together.</p>
 <div id="initial-setup" class="section level1">
 <h1>Initial setup</h1>
 <p>In the beginning, let’s load all the required packages and the <code>credit_data</code> dataset available from <code>recipes</code> that we will use for modelling. Note also that I’m setting the random seed to make sampling reproducible, as well as set the <a href="https://davisvaughan.github.io/furrr/">furrr</a> plan to <code>multicore</code>. It’s important unless you want this script to run really long on your machine - we’ll be fitting many different models, so making sure you utilize all your local resources will speed things up a lot.</p>
-<pre><code>## Registered S3 method overwritten by &#39;xts&#39;:
-##   method     from
-##   as.zoo.xts zoo</code></pre>
-<pre><code>## ── Attaching packages ────────────────────────────────────────────── tidymodels 0.0.2 ──</code></pre>
-<pre><code>## ✔ broom     0.5.2          ✔ purrr     0.3.2     
-## ✔ dials     0.0.2          ✔ recipes   0.1.6.9000
-## ✔ dplyr     0.8.1          ✔ rsample   0.0.5     
-## ✔ ggplot2   3.2.0          ✔ tibble    2.1.3     
-## ✔ infer     0.4.0.1        ✔ yardstick 0.0.3     
-## ✔ parsnip   0.0.3</code></pre>
-<pre><code>## ── Conflicts ───────────────────────────────────────────────── tidymodels_conflicts() ──
-## ✖ purrr::discard() masks scales::discard()
-## ✖ dplyr::filter()  masks stats::filter()
-## ✖ dplyr::lag()     masks stats::lag()
-## ✖ recipes::step()  masks stats::step()</code></pre>
-<pre><code>## Registered S3 method overwritten by &#39;rvest&#39;:
-##   method            from
-##   read_xml.response xml2</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
-<pre><code>## ✔ readr   1.3.1     ✔ stringr 1.4.0
-## ✔ readr   1.3.1     ✔ forcats 0.4.0</code></pre>
-<pre><code>## ── Conflicts ────────────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ readr::col_factor() masks scales::col_factor()
-## ✖ purrr::discard()    masks scales::discard()
-## ✖ dplyr::filter()     masks stats::filter()
-## ✖ stringr::fixed()    masks recipes::fixed()
-## ✖ dplyr::lag()        masks stats::lag()
-## ✖ readr::spec()       masks yardstick::spec()</code></pre>
-<pre><code>## Loading required package: lattice</code></pre>
-<pre><code>## 
-## Attaching package: &#39;caret&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:yardstick&#39;:
-## 
-##     precision, recall</code></pre>
-<pre><code>## The following object is masked from &#39;package:purrr&#39;:
-## 
-##     lift</code></pre>
-<pre><code>## 
-## Attaching package: &#39;magrittr&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
-## 
-##     extract</code></pre>
-<pre><code>## The following object is masked from &#39;package:purrr&#39;:
-## 
-##     set_names</code></pre>
-<pre><code>## Loading required package: future</code></pre>
-<pre><code>## 
-## Attaching package: &#39;future&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:caret&#39;:
-## 
-##     cluster</code></pre>
-<pre><code>## 
-## Attaching package: &#39;skimr&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:naniar&#39;:
-## 
-##     n_complete</code></pre>
-<pre><code>## The following object is masked from &#39;package:stats&#39;:
-## 
-##     filter</code></pre>
+<pre class="r"><code>set.seed(42)
+options(max.print = 150)
+
+library(tidymodels)
+library(tidyverse)
+library(caret)
+library(magrittr)
+library(naniar)
+library(furrr)
+library(skimr)
+
+plan(multicore)  
+data(&quot;credit_data&quot;)</code></pre>
 </div>
 <div id="data-preparation" class="section level1">
 <h1>Data preparation</h1>
-<p>In this example I’m building a classification model to distinguish between good and bad loans indicated by column ‘Status’. We have relatively many observations compared to the number of variables available for modelling. Before making any other steps let’s convert all columns to lowercase.</p>
+<p>In this example, I’m building a classification model to distinguish between good and bad loans indicated by column ‘Status’. We have relatively many observations compared to the number of variables available for modelling. Before making any other steps let’s convert all columns to lowercase.</p>
 <pre class="r"><code>glimpse(credit_data)</code></pre>
 <pre><code>## Observations: 4,454
 ## Variables: 14
@@ -324,7 +278,7 @@
 ## $ Price     &lt;int&gt; 846, 1658, 2985, 1325, 910, 1645, 1800, 1093, 1957, 14…</code></pre>
 <pre class="r"><code>credit_data %&lt;&gt;%
   set_names(., tolower(names(.)))</code></pre>
-<p>With the help of the excellent <a href="http://naniar.njtierney.com/">naniar</a> package I’m checking the percentage of missing data per each variable. For this particular dataset there are very few missing values so they won’t pose a problem for us in modelling.</p>
+<p>With the help of the excellent <a href="http://naniar.njtierney.com/">naniar</a> package I’m checking the percentage of missing data per each variable. For this particular dataset there are very few missing values so they won’t pose a problem for us during modelling.</p>
 <pre class="r"><code>credit_data %&gt;% miss_var_summary()</code></pre>
 <pre><code>## # A tibble: 14 x 3
 ##    variable  n_miss pct_miss
@@ -349,7 +303,7 @@
 ##  n obs: 4454 
 ##  n variables: 14 
 ## 
-## ── Variable type:factor ────────────────────────────────────────────────────────────────
+## ── Variable type:factor ───────────────────────────────────────────
 ##  variable missing complete    n n_unique
 ##      home       6     4448 4454        6
 ##       job       2     4452 4454        4
@@ -363,7 +317,7 @@
 ##                 no: 3681, yes: 773, NA: 0   FALSE
 ##               goo: 3200, bad: 1254, NA: 0   FALSE
 ## 
-## ── Variable type:integer ───────────────────────────────────────────────────────────────
+## ── Variable type:integer ──────────────────────────────────────────
 ##   variable missing complete    n    mean       sd  p0     p25  p50    p75
 ##        age       0     4454 4454   37.08    10.98  18   28      36   45  
 ##     amount       0     4454 4454 1038.92   474.55 100  700    1000 1300  
@@ -373,6 +327,7 @@
 ##     income     381     4073 4454  141.69    80.75   6   90     125  170  
 ##      price       0     4454 4454 1462.78   628.13 105 1117.25 1400 1691.5
 ##  seniority       0     4454 4454    7.99     8.17   0    2       5   12  
+##       time       0     4454 4454   46.44    14.66   6   36      48   60  
 ##   p100     hist
 ##     68 ▅▇▇▇▅▃▂▁
 ##   5000 ▅▇▃▁▁▁▁▁
@@ -382,8 +337,8 @@
 ##    959 ▇▆▁▁▁▁▁▁
 ##  11140 ▇▆▁▁▁▁▁▁
 ##     48 ▇▃▂▁▁▁▁▁
-##  [ reached getOption(&quot;max.print&quot;) -- omitted 1 row ]</code></pre>
-<p>Another point we need to keep in mind when dealing with credit scoring problems is something called a target <a href="https://machinelearningmastery.com/tactics-to-combat-imbalanced-classes-in-your-machine-learning-dataset/">class imbalace</a>, but in this particular case it’s not that severe. For the sake of comparing programming frameworks and not implementing the best ML model I will ignore it.</p>
+##     72 ▁▁▂▃▁▃▇▁</code></pre>
+<p>Another point we need to keep in mind when dealing with credit scoring problems is something called a target <a href="https://machinelearningmastery.com/tactics-to-combat-imbalanced-classes-in-your-machine-learning-dataset/">class imbalance</a>, but in this particular case it’s not that severe. For the sake of comparing programming frameworks and not implementing the best ML model I will ignore it.</p>
 <pre class="r"><code>table(credit_data$status)</code></pre>
 <pre><code>## 
 ##  bad good 
@@ -493,9 +448,9 @@ train_cv_caret &lt;- rsample2caret(train_cv)
 ## 28    7       gini             5
 ## 29   10       gini             5
 ## 30   13       gini             5</code></pre>
-<p>The great advantage of <code>caret</code> is that it wraps a lot of small code pieces in just one, high-level API call that does all the job for you - fit’s all individual models across CV folds and resamples, selects the best one and fits it already on the entire training dataset. It also makes sure it’s done as fast as possible thanks to parallel processing whenever it’s an enabled option.</p>
+<p>The great advantage of <code>caret</code> is that it wraps a lot of small code pieces in just one, high-level API call that does all the job for you - fits all individual models across CV folds and resamples, selects the best one and fits it already on the entire training dataset. It also makes sure it’s done as fast as possible thanks to parallel processing whenever it’s an enabled option.</p>
 <p>The drawback on the other hand is that it’s quite monolythic, untidy and at the end doesn’t offer a great deal of granularity to the end user.</p>
-<pre class="r"><code>(model_caret &lt;- train(
+<pre class="r"><code>model_caret &lt;- train(
   status ~ .,
   data = juice(recipe_preped),
   method = &quot;ranger&quot;,
@@ -504,7 +459,9 @@ train_cv_caret &lt;- rsample2caret(train_cv)
   tuneGrid = grid_caret,
   importance = &quot;impurity&quot;,
   num.trees = 500
-  ))</code></pre>
+  )
+
+model_caret</code></pre>
 <pre><code>## Random Forest 
 ## 
 ## 3565 samples
@@ -533,7 +490,16 @@ train_cv_caret &lt;- rsample2caret(train_cv)
 ##    7    extratrees  3              0.8063292  0.4512239  0.9082343
 ##    7    extratrees  5              0.8083740  0.4562139  0.9078445
 ##    7    gini        1              0.8274552  0.4801095  0.9125358
-##  [ reached getOption(&quot;max.print&quot;) -- omitted 14 rows ]
+##    7    gini        3              0.8271239  0.4850846  0.9078483
+##    7    gini        5              0.8297186  0.4801045  0.9109718
+##   10    extratrees  1              0.8057941  0.4701791  0.9078437
+##   10    extratrees  3              0.8074283  0.4661542  0.9058906
+##   10    extratrees  5              0.8098395  0.4651791  0.9090148
+##   10    gini        1              0.8272193  0.5020299  0.9035545
+##   10    gini        3              0.8271979  0.4910647  0.9058967
+##   10    gini        5              0.8289744  0.4970348  0.9039443
+##   13    extratrees  1              0.8065994  0.4681542  0.9031593
+##  [ reached getOption(&quot;max.print&quot;) -- omitted 5 rows ]
 ## 
 ## ROC was used to select the optimal model using the largest value.
 ## The final values used for the model were mtry = 4, splitrule = gini
@@ -598,7 +564,7 @@ percent(roc_auc(df_test_pred_caret, truth, estimate)$.estimate)</code></pre>
 </div>
 <div id="tidymodels" class="section level2">
 <h2>Tidymodels</h2>
-<p>In the beginning, when saw some of the very first articles about doing ML the tidy way by combining <code>recipes</code> and <code>rsample</code> my thoughts were that it was all way too complicated compared to what <code>caret</code> offers. I was very surprised now when I got to know how clean and simple it became over the last year, and apparently things will be further simplified over the next months (<a href="https://github.com/tidymodels/parsnip/issues/200">link</a>)!</p>
+<p>In the beginning, when I saw some of the very first articles about doing ML the tidy way by combining <code>recipes</code> and <code>rsample</code> my thoughts were that it was all way too complicated compared to what <code>caret</code> offered. I was very surprised now when I discovered how clean and simple it became over the last year, and apparently things will be further simplified over the next months (<a href="https://github.com/tidymodels/parsnip/issues/200">link</a>)!</p>
 <p>First let’s define two helper functions that will be used later during the modelling process. I imagine these might be wrapped into predefined helper functions in <code>tidymodels</code> packages instead of having to do that every time.</p>
 <pre class="r"><code># Defining helper functions that will be used later on
 fit_on_fold &lt;- function(spec, prepped) {
@@ -678,7 +644,7 @@ predict_helper &lt;- function(split, recipe, fit) {
 ##   min_n = 2
 ## 
 ## Computational engine: ranger</code></pre>
-<p>Subsequently, I’m putting it into a tidy, data frame structure where each model-parameters combination is bound together and assigned a model id that will be used later to make a distinction between consequtive fits.</p>
+<p>Subsequently, I’m putting it into a tidy data frame structure where each model-parameters combination is bound together and assigned a model id that will be used later to make a distinction between consequtive fits.</p>
 <pre class="r"><code># Merging all possibilities with our cross-validated data frame
 (spec_tidym &lt;- tibble(spec = merge(engine_tidym, gridy_tidym)) %&gt;% 
   mutate(model_id = row_number()))</code></pre>
@@ -719,13 +685,14 @@ fits_tidym &lt;- spec_tidym %&gt;%
     prepped = future_map(splits, prepper, recipe),
     fit = future_map2(spec, prepped, fit_on_fold)
   )</code></pre>
-<p>The last step of modelling involves usage of the other <code>predict_helper</code> function that bakes the already prepped split recipe and applies it on the testing set of the split, in order to make a prediction of the given model-parameters combination.</p>
+<p>The last step of modelling involves usage of the other <code>predict_helper</code> function that bakes the already prepped split’s recipe and applies it on the testing set of the split, in order to make a prediction of the given model-parameters combination.</p>
 <pre class="r"><code># Making predictions of each fitted model on the testing set
 fits_pred_tidym &lt;- fits_tidym %&gt;%
   mutate(
     preds = future_pmap(list(splits, prepped, fit), predict_helper)
   )</code></pre>
-<pre class="r"><code>fits_pred_tidym[1, ]</code></pre>
+<pre class="r"><code># Top row of the entire structure as example
+fits_pred_tidym[1, ]</code></pre>
 <pre><code>## # A tibble: 1 x 7
 ##   splits          id    spec     model_id prepped    fit     preds         
 ## * &lt;named list&gt;    &lt;chr&gt; &lt;list&gt;      &lt;int&gt; &lt;named li&gt; &lt;list&gt;  &lt;named list&gt;  
@@ -782,7 +749,7 @@ fits_pred_tidym &lt;- fits_tidym %&gt;%
 ## Variable importance mode:         none 
 ## Splitrule:                        gini 
 ## OOB prediction error (Brier s.):  0.1431664</code></pre>
-<p>Similarly like before with <code>caret</code>, I can now summarize our cross-validated and test performances. I was able to increase both the cross-validated and test AUC by 0.1% respectively.</p>
+<p>Similarly like before with <code>caret</code>, I can now summarize our cross-validated and test performances.</p>
 <pre class="r"><code># Cross-validated training performance&quot;
 percent(perf_summary_tidym$mean[which.max(perf_summary_tidym$mean)])</code></pre>
 <pre><code>## [1] &quot;83.1%&quot;</code></pre>
@@ -810,538 +777,15 @@ percent(roc_auc(df_train_pred_tidym, truth, estimate)$.estimate)</code></pre>
 </div>
 <div id="wrapping-up" class="section level1">
 <h1>Wrapping up</h1>
-<p>I’ve fit a credit scoring classification Random Forest model using both <code>caret</code> and <code>tidymodels</code> framework. I need to admit that before I started writing this post I expected a lot more additional code to be written in the <code>tidymodels</code> framework to achieve the same goal, but to my surprise those packages already offer a very concise (and tidy!) way of doing ML in R and things will be even more streamlined in the upcoming months. That’s definitely a really big step-up for the entire R community when it comes to doing ML in R. I think R users can expect most of the releases happening still this year and a bigger announcement on <code>tidymodels</code> taking place during the upcoming R Conference in SF in January 2020.</p>
+<p>I’ve fit a credit scoring classification Random Forest model using both <code>caret</code> and <code>tidymodels</code> frameworks. I need to admit that before I started writing this post I expected a lot more additional code to be written in the <code>tidymodels</code> framework to achieve the same goal, but to my surprise those packages already offer a very concise (and tidy!) way of doing ML in R, and things will be even more streamlined in the upcoming months. That’s definitely a really big step-up for the entire R community when it comes to doing ML in R. I think R users can expect most of the releases happening still this year and a bigger announcement on <code>tidymodels</code> taking place during the upcoming R Conference in SF in January 2020.</p>
 <p>As long it’s already quite nice &amp; easy to use <code>tidymodels</code> as your main ML tool in R, I probably wouldn’t recommend incorporating it in your day-to-day work as it’s still quite unstable, however, I’m definitely looking forward to do that in some time in the future!</p>
 </div>
 <div id="future-considerations" class="section level1">
 <h1>Future considerations</h1>
 <ol style="list-style-type: decimal">
-<li><p>I still haven’t fully explored the <code>tidyposterior</code> and <code>probably</code> packages - I will do that in one of me next posts</p></li>
-<li><p>There’s also a lot of buzz in the R community regarding a BETA release of the successor of the <code>mlr</code> package (second most popular ML framework in R) - <a href="https://mlr-org.com/docs/mlr3-0-1-0/">mlr3</a>. <code>Mlr3</code> could be very strong competition to the <code>tidymodels</code> framework, and since I’ve never really used <code>mlr</code> it’s an excellent opportunity to put it to a test. It is also modular in design, but is built on top of data.table and uses R6 object-oriented class system which could give it substantial speed advantage over <code>tidymodels</code> at the expenses of ‘tidyness’</p></li>
-</ol>
-<p>s blog I’ve been reading carefully all individual package websites and this excellent <a href="https://www.alexpghayes.com/blog/implementing-the-super-learner-with-tidymodels/">blogpost</a> from Alex Hayes helped me a lot to put things together.</p>
-</div>
-<div id="initial-setup-1" class="section level1">
-<h1>Initial setup</h1>
-<p>In the beginning, let’s load all the required packages and the <code>credit_data</code> dataset available from <code>recipes</code> that we will use for modelling. Note also that I’m setting the random seed to make sampling reproducible, as well as set the <code>[furrr](https://davisvaughan.github.io/furrr/)</code> plan to <code>multicore</code>. It’s important unless you want this script to run really long on your machine - we’ll be fitting many different models, so making sure you utilize all your local resources will speed things up a lot.</p>
-</div>
-<div id="data-preparation-2" class="section level1">
-<h1>Data preparation</h1>
-<p>In this example I’m building a classification model to distinguish between good and bad loans indicated by column ‘Status’. We have relatively many observations compared to the number of variables available for modelling. Before making any other steps let’s convert all columns to lowercase.</p>
-<pre class="r"><code>glimpse(credit_data)</code></pre>
-<pre><code>## Observations: 4,454
-## Variables: 14
-## $ Status    &lt;fct&gt; good, good, bad, good, good, good, good, good, good, b…
-## $ Seniority &lt;int&gt; 9, 17, 10, 0, 0, 1, 29, 9, 0, 0, 6, 7, 8, 19, 0, 0, 15…
-## $ Home      &lt;fct&gt; rent, rent, owner, rent, rent, owner, owner, parents, …
-## $ Time      &lt;int&gt; 60, 60, 36, 60, 36, 60, 60, 12, 60, 48, 48, 36, 60, 36…
-## $ Age       &lt;int&gt; 30, 58, 46, 24, 26, 36, 44, 27, 32, 41, 34, 29, 30, 37…
-## $ Marital   &lt;fct&gt; married, widow, married, single, single, married, marr…
-## $ Records   &lt;fct&gt; no, no, yes, no, no, no, no, no, no, no, no, no, no, n…
-## $ Job       &lt;fct&gt; freelance, fixed, freelance, fixed, fixed, fixed, fixe…
-## $ Expenses  &lt;int&gt; 73, 48, 90, 63, 46, 75, 75, 35, 90, 90, 60, 60, 75, 75…
-## $ Income    &lt;int&gt; 129, 131, 200, 182, 107, 214, 125, 80, 107, 80, 125, 1…
-## $ Assets    &lt;int&gt; 0, 0, 3000, 2500, 0, 3500, 10000, 0, 15000, 0, 4000, 3…
-## $ Debt      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2500, 260, 0, 0, 0…
-## $ Amount    &lt;int&gt; 800, 1000, 2000, 900, 310, 650, 1600, 200, 1200, 1200,…
-## $ Price     &lt;int&gt; 846, 1658, 2985, 1325, 910, 1645, 1800, 1093, 1957, 14…</code></pre>
-<pre class="r"><code>credit_data %&lt;&gt;%
-  set_names(., tolower(names(.)))</code></pre>
-<p>With the help of the excellent <code>[naniar](http://naniar.njtierney.com/)</code> package I’m checking the percentage of missing data per each variable. For this particular dataset there are very few missing values so they won’t pose a problem for us in modelling.</p>
-<pre class="r"><code>credit_data %&gt;% miss_var_summary()</code></pre>
-<pre><code>## # A tibble: 14 x 3
-##    variable  n_miss pct_miss
-##    &lt;chr&gt;      &lt;int&gt;    &lt;dbl&gt;
-##  1 income       381   8.55  
-##  2 assets        47   1.06  
-##  3 debt          18   0.404 
-##  4 home           6   0.135 
-##  5 job            2   0.0449
-##  6 marital        1   0.0225
-##  7 status         0   0     
-##  8 seniority      0   0     
-##  9 time           0   0     
-## 10 age            0   0     
-## 11 records        0   0     
-## 12 expenses       0   0     
-## 13 amount         0   0     
-## 14 price          0   0</code></pre>
-<p>Another important step would be to make some basic numerical summaries of the data in order to catch any unusual observations. I will do it using the <code>[skimr](https://ropensci.github.io/skimr/)</code> package. Apart from the fact that many numerical variables show high skewness and some categorical variables have levels with very low frequency, it doesn’t seem that we will have to deal with any special encoded numbers or other problems.</p>
-<pre class="r"><code>credit_data %&gt;% skim()</code></pre>
-<pre><code>## Skim summary statistics
-##  n obs: 4454 
-##  n variables: 14 
-## 
-## ── Variable type:factor ────────────────────────────────────────────────────────────────
-##  variable missing complete    n n_unique
-##      home       6     4448 4454        6
-##       job       2     4452 4454        4
-##   marital       1     4453 4454        5
-##   records       0     4454 4454        2
-##    status       0     4454 4454        2
-##                                top_counts ordered
-##   own: 2107, ren: 973, par: 783, oth: 319   FALSE
-##  fix: 2805, fre: 1024, par: 452, oth: 171   FALSE
-##    mar: 3241, sin: 977, sep: 130, wid: 67   FALSE
-##                 no: 3681, yes: 773, NA: 0   FALSE
-##               goo: 3200, bad: 1254, NA: 0   FALSE
-## 
-## ── Variable type:integer ───────────────────────────────────────────────────────────────
-##   variable missing complete    n    mean       sd  p0     p25  p50    p75
-##        age       0     4454 4454   37.08    10.98  18   28      36   45  
-##     amount       0     4454 4454 1038.92   474.55 100  700    1000 1300  
-##     assets      47     4407 4454 5403.98 11574.42   0    0    3000 6000  
-##       debt      18     4436 4454  343.03  1245.99   0    0       0    0  
-##   expenses       0     4454 4454   55.57    19.52  35   35      51   72  
-##     income     381     4073 4454  141.69    80.75   6   90     125  170  
-##      price       0     4454 4454 1462.78   628.13 105 1117.25 1400 1691.5
-##  seniority       0     4454 4454    7.99     8.17   0    2       5   12  
-##   p100     hist
-##     68 ▅▇▇▇▅▃▂▁
-##   5000 ▅▇▃▁▁▁▁▁
-##  3e+05 ▇▁▁▁▁▁▁▁
-##  30000 ▇▁▁▁▁▁▁▁
-##    180 ▇▃▃▁▁▁▁▁
-##    959 ▇▆▁▁▁▁▁▁
-##  11140 ▇▆▁▁▁▁▁▁
-##     48 ▇▃▂▁▁▁▁▁
-##  [ reached getOption(&quot;max.print&quot;) -- omitted 1 row ]</code></pre>
-<p>Another point we need to keep in mind when dealing with credit scoring problems is something called a target <a href="https://machinelearningmastery.com/tactics-to-combat-imbalanced-classes-in-your-machine-learning-dataset/">class imbalace</a>, but in this particular case it’s not that severe. For the sake of comparing programming frameworks and not implementing the best ML model I will ignore it.</p>
-<pre class="r"><code>table(credit_data$status)</code></pre>
-<pre><code>## 
-##  bad good 
-## 1254 3200</code></pre>
-<pre class="r"><code>round(prop.table(table(credit_data$status)), 2)</code></pre>
-<pre><code>## 
-##  bad good 
-## 0.28 0.72</code></pre>
-</div>
-<div id="data-preparation-3" class="section level1">
-<h1>Data preparation</h1>
-<p>Let’s finally move on and start modelling! In the beginning I’ll start with dividing our dataset into training and testing sets with the help of the <code>rsample</code> package. Let’s set an initial, stratified split where 80% of the data is dedicated to training and the rest to evaluating both models.</p>
-<p>Furthermore, I’m creating cross-validation splits from the testing data of 5 folds. For compatibility with <code>caret</code> I’m using the <code>rsample2caret</code> function to make use of the same splits in both frameworks - otherwise both solutions wouldn’t be 100% comparable.</p>
-<pre class="r"><code>split &lt;- initial_split(credit_data, prop = 0.80, strata = &quot;status&quot;)
-
-df_train &lt;- training(split)
-df_test  &lt;- testing(split)
-
-train_cv &lt;- vfold_cv(df_train, v = 5, strata = &quot;status&quot;)
-train_cv_caret &lt;- rsample2caret(train_cv)
-
-# write_rds(split, &quot;split.rds&quot;)
-# write_rds(train_cv, &quot;train_cv.rds&quot;)</code></pre>
-<p>I would like to fit a Random Forest model for which I will specify a simple <code>recipe</code>. In principle, tree-based models require very little preprocessing, and in this particular example I mainly focus on imputting missing data or assigning them a new categorical level, infrequent/ unobserved values and hot-encoding them. The same recipe will be used for both: <code>caret</code> and <code>tidymodels</code> model.</p>
-<p>Normally I would do much more feature engineering, try to assess potential interactions etc., but I will write a separate post dedicated for that to so see how much further we can improve the model!</p>
-<pre class="r"><code>recipe &lt;- df_train %&gt;%
-  recipe(status ~ .) %&gt;%
-
-  # Imputation: assigning NAs to a new level for categorical and median imputation for numeric
-  step_unknown(all_nominal(), -status) %&gt;% 
-  step_medianimpute(all_numeric()) %&gt;%
-
-  # Combining infrequent categorical levels and introducing a new level for prediction time
-  step_other(all_nominal(), -status, other = &quot;infrequent_combined&quot;) %&gt;%
-  step_novel(all_nominal(), -status, new_level = &quot;unrecorded_observation&quot;) %&gt;%
-
-  # Hot-encoding categorical variables
-  step_dummy(all_nominal(), -status, one_hot = TRUE) %&gt;%
-
-  # Taking care of output consistency
-  check_missing(all_predictors())</code></pre>
-<p>Let’s take a quick look at the output of the recipe:</p>
-<pre class="r"><code>(recipe_preped &lt;- prep(recipe, retain = TRUE))</code></pre>
-<pre><code>## Data Recipe
-## 
-## Inputs:
-## 
-##       role #variables
-##    outcome          1
-##  predictor         13
-## 
-## Training data contained 3565 data points and 335 incomplete rows. 
-## 
-## Operations:
-## 
-## Unknown factor level assignment for home, marital, records, job [trained]
-## Median Imputation for seniority, time, age, expenses, ... [trained]
-## Collapsing factor levels for home, marital, records, job [trained]
-## Novel factor level assignment for home, marital, records, job [trained]
-## Dummy variables from home, marital, records, job [trained]
-## Check missing values for seniority, time, age, expenses, ... [trained]</code></pre>
-<pre class="r"><code>tidy(recipe_preped)</code></pre>
-<pre><code>## # A tibble: 6 x 6
-##   number operation type         trained skip  id                
-##    &lt;int&gt; &lt;chr&gt;     &lt;chr&gt;        &lt;lgl&gt;   &lt;lgl&gt; &lt;chr&gt;             
-## 1      1 step      unknown      TRUE    FALSE unknown_XU845     
-## 2      2 step      medianimpute TRUE    FALSE medianimpute_tS05C
-## 3      3 step      other        TRUE    FALSE other_FHtHk       
-## 4      4 step      novel        TRUE    FALSE novel_ncrtZ       
-## 5      5 step      dummy        TRUE    FALSE dummy_VMDKC       
-## 6      6 check     missing      TRUE    FALSE missing_08V05</code></pre>
-</div>
-<div id="fitting-our-models-1" class="section level1">
-<h1>Fitting our models</h1>
-<div id="caret-1" class="section level2">
-<h2>Caret</h2>
-<p>In the code below I’m setting control parameters for the <code>caret</code> model fit, as well as the grid of hyperparameters that will be assessed in order to pick the best performing combination. Note that I’m using the very original observation indexes for cross-validation to ensure reproducability. The <code>trainControl</code> function will also ensure that final hold-out predictions from cross-validation will be persisted for further assessment thanks to <code>savePredictions = &quot;final&quot;</code>.</p>
-<p>We have 5 different CV folds and 30 grid combinations to assess, which results in 150 models that will be fit and each comprising of 500 individual trees! All models will be assessed based on the <code>prSummary</code> function which is know as the AUC.</p>
-<pre><code>##    mtry  splitrule min.node.size
-## 1     1 extratrees             1
-## 2     4 extratrees             1
-## 3     7 extratrees             1
-## 4    10 extratrees             1
-## 5    13 extratrees             1
-## 6     1       gini             1
-## 7     4       gini             1
-## 8     7       gini             1
-## 9    10       gini             1
-## 10   13       gini             1
-## 11    1 extratrees             3
-## 12    4 extratrees             3
-## 13    7 extratrees             3
-## 14   10 extratrees             3
-## 15   13 extratrees             3
-## 16    1       gini             3
-## 17    4       gini             3
-## 18    7       gini             3
-## 19   10       gini             3
-## 20   13       gini             3
-## 21    1 extratrees             5
-## 22    4 extratrees             5
-## 23    7 extratrees             5
-## 24   10 extratrees             5
-## 25   13 extratrees             5
-## 26    1       gini             5
-## 27    4       gini             5
-## 28    7       gini             5
-## 29   10       gini             5
-## 30   13       gini             5</code></pre>
-<p>The great advantage of <code>caret</code> is that it wraps a lot of small code pieces in just one, high-level API call that does all the job for you - fit’s all individual models across CV folds and resamples, selects the best one and fits it already on the entire training dataset. It also makes sure it’s done as fast as possible thanks to parallel processing whenever it’s an enabled option.</p>
-<p>The drawback on the other hand is that it’s quite monolythic, untidy and at the end doesn’t offer a great deal of granularity to the end user.</p>
-<pre class="r"><code>(model_caret &lt;- train(
-  status ~ .,
-  data = juice(recipe_preped),
-  method = &quot;ranger&quot;,
-  metric = &quot;ROC&quot;,
-  trControl = control_caret,
-  tuneGrid = grid_caret,
-  importance = &quot;impurity&quot;,
-  num.trees = 500
-  ))</code></pre>
-<pre><code>## Random Forest 
-## 
-## 3565 samples
-##   29 predictor
-##    2 classes: &#39;bad&#39;, &#39;good&#39; 
-## 
-## No pre-processing
-## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 2851, 2852, 2852, 2852, 2853 
-## Resampling results across tuning parameters:
-## 
-##   mtry  splitrule   min.node.size  ROC        Sens          Spec     
-##    1    extratrees  1              0.7900058  0.0000000000  1.0000000
-##    1    extratrees  3              0.7916549  0.0000000000  1.0000000
-##    1    extratrees  5              0.7907109  0.0000000000  1.0000000
-##    1    gini        1              0.8208097  0.0000000000  1.0000000
-##    1    gini        3              0.8207185  0.0009950249  1.0000000
-##    1    gini        5              0.8206873  0.0009950249  1.0000000
-##    4    extratrees  1              0.8076188  0.4412786070  0.9195625
-##    4    extratrees  3              0.8078364  0.4412885572  0.9219077
-##    4    extratrees  5              0.8067439  0.4502686567  0.9222953
-##    4    gini        1              0.8339831  0.4641791045  0.9265914
-##    4    gini        3              0.8329328  0.4701542289  0.9265892
-##    4    gini        5              0.8339372  0.4572139303  0.9258079
-##    7    extratrees  1              0.8077660  0.4661791045  0.9058952
-##    7    extratrees  3              0.8095004  0.4751442786  0.9098007
-##    7    extratrees  5              0.8112962  0.4771442786  0.9121444
-##    7    gini        1              0.8324925  0.4920845771  0.9121436
-##  [ reached getOption(&quot;max.print&quot;) -- omitted 14 rows ]
-## 
-## ROC was used to select the optimal model using the largest value.
-## The final values used for the model were mtry = 7, splitrule = gini
-##  and min.node.size = 5.</code></pre>
-<p><code>Caret</code> also comes with built-in handy functions for assessing model’s individual predictors strength. By setting the <code>importance = &quot;impurity&quot;</code> in the <code>ranger</code> engine we ensure that variable importance will be returned by the final train object. As of now there is no such possibility in the <code>tidymodels</code> packages and I’m curious to see how it will be solved!</p>
-<pre class="r"><code># Accessing most predictive attributes from caret 
-varImp(model_caret, scale = TRUE)$importance %&gt;% 
-  rownames_to_column() %&gt;% 
-  arrange(-Overall)</code></pre>
-<pre><code>##                           rowname     Overall
-## 1                          income 100.0000000
-## 2                       seniority  90.4454363
-## 3                          amount  85.7708762
-## 4                           price  83.5745971
-## 5                             age  68.2473560
-## 6                          assets  60.0718437
-## 7                        expenses  48.6697980
-## 8                     records_yes  39.8308116
-## 9                      records_no  38.6847637
-## 10                           time  32.7420619
-## 11                    job_partime  24.6810932
-## 12                           debt  21.3577417
-## 13                      job_fixed  20.5109000
-## 14                     home_owner  13.8884821
-## 15                      home_rent  10.3134414
-## 16                  job_freelance   8.5788874
-## 17                   home_parents   8.3448693
-## 18                     home_other   7.9938155
-## 19                marital_married   7.7790565
-## 20                 marital_single   6.7669350
-## 21    marital_infrequent_combined   5.3911533
-## 22                      home_priv   3.7927857
-## 23        job_infrequent_combined   2.4532933
-## 24       home_infrequent_combined   0.9448927
-## 25    home_unrecorded_observation   0.0000000
-## 26 marital_unrecorded_observation   0.0000000
-## 27    records_infrequent_combined   0.0000000
-## 28 records_unrecorded_observation   0.0000000
-## 29     job_unrecorded_observation   0.0000000</code></pre>
-<p>Final cross-validated and test results are easily available with just a couple lines of code. Note that cross-validation performance is aggregated per each index (observation) and averaged out before the final performance metric is calculated.</p>
-<p>Getting the test performance is a matter of <code>baking</code> the test set with the already prepped recipe and then making the prediction using the train object. 83.1% AUC for cross-validated training performance and 82.1% for testing - not a bad result for so little preprocessing! Close results also suggest that our model is likely to generalize well to new samples.</p>
-<pre class="r"><code>df_train_pred_caret &lt;- model_caret$pred %&gt;% 
-  group_by(rowIndex) %&gt;% 
-  summarise(bad = mean(bad)) %&gt;% 
-  transmute(estimate = bad) %&gt;% 
-  add_column(truth = df_train$status)
-
-# Cross-validated training performance
-percent(roc_auc(df_train_pred_caret, truth, estimate)$.estimate)</code></pre>
-<pre><code>## [1] &quot;83.4%&quot;</code></pre>
-<pre class="r"><code>df_test_pred_caret &lt;- predict(
-    model_caret,
-    newdata = bake(recipe_preped, df_test),
-    type = &quot;prob&quot;) %&gt;%
-  as_tibble() %&gt;%
-  transmute(estimate = bad) %&gt;%
-  add_column(truth = df_test$status)
-
-# Test performance
-percent(roc_auc(df_test_pred_caret, truth, estimate)$.estimate)</code></pre>
-<pre><code>## [1] &quot;80.9%&quot;</code></pre>
-</div>
-<div id="tidymodels-1" class="section level2">
-<h2>Tidymodels</h2>
-<p>In the beginning, when saw some of the very first articles about doing ML the tidy way by combining <code>recipes</code> and <code>rsample</code> my thoughts were that it was all way too complicated compared to what <code>caret</code> offers. I was very surprised now when I got to know how clean and simple it became over the last year, and apparently things will be further simplified over the next months (<a href="https://github.com/tidymodels/parsnip/issues/200">link</a>)!</p>
-<p>First let’s define two helper functions that will be used later during the modelling process. I imagine these might be wrapped into predefined helper functions in <code>tidymodels</code> packages instead of having to do that every time.</p>
-<pre class="r"><code># Defining helper functions that will be used later on
-fit_on_fold &lt;- function(spec, prepped) {
-  
-  x &lt;- juice(prepped, all_predictors())
-  y &lt;- juice(prepped, all_outcomes())
-  
-  fit_xy(spec, x, y)
-}
-
-predict_helper &lt;- function(split, recipe, fit) {
-  
-  new_x &lt;- bake(recipe, new_data = assessment(split), all_predictors())
-  
-  predict(fit, new_x, type = &quot;prob&quot;) %&gt;% 
-    bind_cols(assessment(split) %&gt;% select(status)) 
-}</code></pre>
-<p>First, let’s use <code>parsnip</code> to define our ‘modelling engine’ - just like before we’re setting it as a classification problem, using Random Forest running on the <code>ranger</code> engine. On top of that I’m using <code>dials</code> to define a grid of parameters to optimize. <code>Dials</code> provides a set of handy functions, such as: <code>grid_random</code> or <code>grid_regular</code>, that let you choose the range of parameters in a very flexible way.</p>
-<p>From what I can see the parameters that could be optimized slightly differ between both frameworks: <code>caret</code> allows for tunning the ‘min.node.size’ while keeping the ‘trees’ constant, while <code>parsnip</code> allows for tuning ‘trees’ while keeping ‘min.node.size’ constant (I assume it’s using the default <code>ranger</code> values). Nevertheless, the total amount of combinations is same in both cases and equal to 30.</p>
-<pre class="r"><code># Specifying the modelling engine
-(engine_tidym &lt;- rand_forest(mode = &quot;classification&quot;) %&gt;% 
-  set_engine(&quot;ranger&quot;))</code></pre>
-<pre><code>## Random Forest Model Specification (classification)
-## 
-## Computational engine: ranger</code></pre>
-<pre class="r"><code># Specifying the grid of hyperparameters that should be tested
-(gridy_tidym &lt;- grid_random(
-  mtry %&gt;% range_set(c( 1,  20)),
-  trees %&gt;% range_set(c( 500, 1000)), 
-  min_n %&gt;% range_set(c(2,  10)),
-  size = 30
-  ))</code></pre>
-<pre><code>## # A tibble: 30 x 3
-##     mtry trees min_n
-##    &lt;int&gt; &lt;int&gt; &lt;int&gt;
-##  1     8   615     6
-##  2    10   609    10
-##  3     9   558     3
-##  4    20   506     8
-##  5     7   855     5
-##  6    19   505     6
-##  7    10   983     3
-##  8     8   503    10
-##  9    11   915     2
-## 10     1   591     2
-## # … with 20 more rows</code></pre>
-<p>Now comes the really interesting part of <code>tidymodels</code>: we’re using a <code>merge</code> helper function from <code>dials</code> to bind our predefined ‘modelling engine’ with all grid combinations of the hyperparameters to tune.</p>
-<pre class="r"><code>merge(engine_tidym, gridy_tidym)[1:3] # just to see the top 3</code></pre>
-<pre><code>## [[1]]
-## Random Forest Model Specification (classification)
-## 
-## Main Arguments:
-##   mtry = 8
-##   trees = 615
-##   min_n = 6
-## 
-## Computational engine: ranger 
-## 
-## 
-## [[2]]
-## Random Forest Model Specification (classification)
-## 
-## Main Arguments:
-##   mtry = 10
-##   trees = 609
-##   min_n = 10
-## 
-## Computational engine: ranger 
-## 
-## 
-## [[3]]
-## Random Forest Model Specification (classification)
-## 
-## Main Arguments:
-##   mtry = 9
-##   trees = 558
-##   min_n = 3
-## 
-## Computational engine: ranger</code></pre>
-<p>Subsequently, I’m putting it into a tidy, data frame structure where each model-parameters combination is bound together and assigned a model id that will be used later to make a distinction between consequtive fits.</p>
-<pre class="r"><code># Merging all possibilities with our cross-validated data frame
-(spec_tidym &lt;- tibble(spec = merge(engine_tidym, gridy_tidym)) %&gt;% 
-  mutate(model_id = row_number()))</code></pre>
-<pre><code>## # A tibble: 30 x 2
-##    spec      model_id
-##    &lt;list&gt;       &lt;int&gt;
-##  1 &lt;spec[+]&gt;        1
-##  2 &lt;spec[+]&gt;        2
-##  3 &lt;spec[+]&gt;        3
-##  4 &lt;spec[+]&gt;        4
-##  5 &lt;spec[+]&gt;        5
-##  6 &lt;spec[+]&gt;        6
-##  7 &lt;spec[+]&gt;        7
-##  8 &lt;spec[+]&gt;        8
-##  9 &lt;spec[+]&gt;        9
-## 10 &lt;spec[+]&gt;       10
-## # … with 20 more rows</code></pre>
-<p>Lastly, I’m adding the last component into this tidy structure: all cross-validation splits that were specified before with the use of the <code>crossing</code> function. This part is very likely to evolve and be simplified in the upcoming months. Now we’re all set to start the actual tidy-modelling!</p>
-<pre class="r"><code>(spec_tidym &lt;- crossing(train_cv, spec_tidym))</code></pre>
-<pre><code>## # A tibble: 150 x 4
-##    splits             id    spec      model_id
-##    &lt;named list&gt;       &lt;chr&gt; &lt;list&gt;       &lt;int&gt;
-##  1 &lt;split [2.9K/714]&gt; Fold1 &lt;spec[+]&gt;        1
-##  2 &lt;split [2.9K/714]&gt; Fold1 &lt;spec[+]&gt;        2
-##  3 &lt;split [2.9K/714]&gt; Fold1 &lt;spec[+]&gt;        3
-##  4 &lt;split [2.9K/714]&gt; Fold1 &lt;spec[+]&gt;        4
-##  5 &lt;split [2.9K/714]&gt; Fold1 &lt;spec[+]&gt;        5
-##  6 &lt;split [2.9K/714]&gt; Fold1 &lt;spec[+]&gt;        6
-##  7 &lt;split [2.9K/714]&gt; Fold1 &lt;spec[+]&gt;        7
-##  8 &lt;split [2.9K/714]&gt; Fold1 &lt;spec[+]&gt;        8
-##  9 &lt;split [2.9K/714]&gt; Fold1 &lt;spec[+]&gt;        9
-## 10 &lt;split [2.9K/714]&gt; Fold1 &lt;spec[+]&gt;       10
-## # … with 140 more rows</code></pre>
-<p>To speed thigs up let’s use the <code>furrr</code> package and fit many models simultaneously. In the following code our original recipe is first prepped on each split’s training set and than it’s used by the <code>fit_on_fold</code> helper function to fit a given model-parameter combination.</p>
-<pre class="r"><code># Fitting each model-fold pair
-fits_tidym &lt;- spec_tidym %&gt;%
-  mutate(
-    prepped = future_map(splits, prepper, recipe),
-    fit = future_map2(spec, prepped, fit_on_fold)
-  )</code></pre>
-<p>The last step of modelling involves usage of the other <code>predict_helper</code> function that bakes the already prepped split recipe and applies it on the testing set of the split, in order to make a prediction of the given model-parameters combination.</p>
-<pre class="r"><code># Making predictions of each fitted model on the testing set
-fits_pred_tidym &lt;- fits_tidym %&gt;%
-  mutate(
-    preds = future_pmap(list(splits, prepped, fit), predict_helper)
-  )</code></pre>
-<pre class="r"><code>fits_pred_tidym[1, ]</code></pre>
-<pre><code>## # A tibble: 1 x 7
-##   splits          id    spec     model_id prepped    fit     preds         
-## * &lt;named list&gt;    &lt;chr&gt; &lt;list&gt;      &lt;int&gt; &lt;named li&gt; &lt;list&gt;  &lt;named list&gt;  
-## 1 &lt;split [2.9K/7… Fold1 &lt;spec[+…        1 &lt;recipe&gt;   &lt;fit[+… &lt;tibble [714 …</code></pre>
-<p>After training is done I would like to assess which model performs the best based on cross-validated hold-out performance. In order to do that, let’s calculate the AUC of all test sets across all model-parameter combinations. By averaging the results up, I can see the entire performance profile of all possibilities.</p>
-<p><code>Tidymodels</code> includes also two very handy packages: <code>[probably](https://tidymodels.github.io/probably/index.html)</code> and <code>[tidyposterior](https://tidymodels.github.io/tidyposterior/)</code>, which are very usefull for analysing model estimated probabilities and it’s resampled performance profile. I will make an introduction to those packages in one of my next posts.</p>
-<pre class="r"><code># Assessing individual model-fold performance and averaging performance across all folds for each model
-(perf_summary_tidym &lt;- fits_pred_tidym %&gt;% 
-  unnest(preds) %&gt;% 
-  group_by(id, model_id) %&gt;% 
-  roc_auc(truth = status, .pred_bad) %&gt;% 
-  group_by(model_id, .metric, .estimator) %&gt;% 
-  summarize(mean = mean(.estimate, na.rm = TRUE))) %&gt;% 
-  arrange(-mean)</code></pre>
-<pre><code>## # A tibble: 30 x 4
-## # Groups:   model_id, .metric [30]
-##    model_id .metric .estimator  mean
-##       &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt;
-##  1       23 roc_auc binary     0.836
-##  2       14 roc_auc binary     0.835
-##  3       26 roc_auc binary     0.834
-##  4       18 roc_auc binary     0.834
-##  5       28 roc_auc binary     0.834
-##  6       12 roc_auc binary     0.834
-##  7       29 roc_auc binary     0.834
-##  8        8 roc_auc binary     0.834
-##  9        1 roc_auc binary     0.833
-## 10       20 roc_auc binary     0.833
-## # … with 20 more rows</code></pre>
-<p>Just by sorting the previous results we can easly see what is the best performing model. Let’s now take a step back and filter only that model specification, and fit it on the entire training set. As of now I’m not 100% sure what the recommended and most efficient way of doing that would be, but I decided to go for something like that:</p>
-<pre class="r"><code># Selecting the best model with:
-# perf_summary_tidym$model_id[which.max(perf_summary_tidym$mean)]
-
-# Fitting the best model on the full training set
-(model_tidym &lt;- tibble(spec = merge(engine_tidym, gridy_tidym)) %&gt;% 
-  mutate(model_id = row_number()) %&gt;% 
-  filter(model_id == perf_summary_tidym$model_id[which.max(perf_summary_tidym$mean)]) %&gt;% 
-  pull(spec) %&gt;% 
-  .[[1]] %&gt;% 
-  fit(status ~ ., juice(recipe_preped)))</code></pre>
-<pre><code>## parsnip model object
-## 
-## Ranger result
-## 
-## Call:
-##  ranger::ranger(formula = formula, data = data, mtry = ~5L, num.trees = ~606L,      min.node.size = ~10L, num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1), probability = TRUE) 
-## 
-## Type:                             Probability estimation 
-## Number of trees:                  606 
-## Sample size:                      3565 
-## Number of independent variables:  29 
-## Mtry:                             5 
-## Target node size:                 10 
-## Variable importance mode:         none 
-## Splitrule:                        gini 
-## OOB prediction error (Brier s.):  0.1420102</code></pre>
-<p>Similarly like before with <code>caret</code>, I can now summarize our cross-validated and test performances. I was able to increase both the cross-validated and test AUC by 0.1% respectively.</p>
-<pre class="r"><code># Cross-validated training performance&quot;
-percent(perf_summary_tidym$mean[which.max(perf_summary_tidym$mean)])</code></pre>
-<pre><code>## [1] &quot;83.6%&quot;</code></pre>
-<pre class="r"><code># Test performance
-df_train_pred_tidym &lt;- predict(
-  model_tidym, 
-  new_data = bake(recipe_preped, df_test), 
-  type = &quot;prob&quot;
-  ) %&gt;% 
-  transmute(estimate = .pred_bad) %&gt;%
-  add_column(truth = df_test$status)
-
-percent(roc_auc(df_train_pred_tidym, truth, estimate)$.estimate)</code></pre>
-<pre><code>## [1] &quot;81.4%&quot;</code></pre>
-<p>The entire <code>tidymodels</code> code that was scattered across above sections could be easily squeezed in one longer pipeline. Note that I limited the grid to just one row <code>gridy_tidym[1, ]</code> in order to demonstrate the solution and save on processing time.</p>
-<pre class="r"><code>df_tidym &lt;- tibble(spec = merge(engine_tidym, gridy_tidym[1:2, ])) %&gt;% 
-  mutate(model_id = row_number()) %&gt;% 
-  crossing(train_cv, .) %&gt;%
-  mutate(
-    prepped = future_map(splits, prepper, recipe),
-    fit = future_map2(spec, prepped, fit_on_fold),
-    preds = future_pmap(list(splits, prepped, fit), predict_helper)
-  )</code></pre>
-</div>
-</div>
-<div id="wrapping-up-1" class="section level1">
-<h1>Wrapping up</h1>
-<p>I’ve fit a credit scoring classification Random Forest model using both <code>caret</code> and <code>tidymodels</code> framework. I need to admit that before I started writing this post I expected a lot more additional code to be written in the <code>tidymodels</code> framework to achieve the same goal, but to my surprise those packages already offer a very concise (and tidy!) way of doing ML in R and things will be even more streamlined in the upcoming months. That’s definitely a really big step-up for the entire R community when it comes to doing ML in R. I think R users can expect most of the releases happening still this year and a bigger announcement on <code>tidymodels</code> taking place during the upcoming R Conference in SF in January 2020.</p>
-<p>As long it’s already quite nice &amp; easy to use <code>tidymodels</code> as your main ML tool in R, I probably wouldn’t recommend incorporating it in your day-to-day work as it’s still quite unstable, however, I’m definitely looking forward to do that in some time in the future!</p>
-</div>
-<div id="future-considerations-1" class="section level1">
-<h1>Future considerations</h1>
-<ol style="list-style-type: decimal">
 <li><p>I still haven’t fully explored the <code>tidyposterior</code> and <code>probably</code> packages - I will do that in one of me next posts.</p></li>
-<li><p>On the `<code>rsample</code> page there’s an interesting article listed on so called: <a href="https://tidymodels.github.io/rsample/articles/Applications/Nested_Resampling.html">nested resampling</a>. I’ve never used it practice but I’m curious to check if out and compare our model’s current cross-validated performance estimate with the one obtained through nested resampling.</p></li>
-<li><p>There’s also a lot of buzz in the R community regarding a BETA release of the successor of the <code>mlr</code> package (second most popular ML framework in R) - <code>[mlr3](https://mlr-org.com/docs/mlr3-0-1-0/)</code>. <code>Mlr3</code> could be very strong competition to the <code>tidymodels</code> framework, and since I’ve never really used <code>mlr</code> it’s an excellent opportunity to put it to a test. It is also modular in design, but is built on top of data.table and uses R6 object-oriented class system which could give it substantial speed advantage over <code>tidymodels</code> at the expense of ‘tidyness’.</p></li>
+<li><p>On the `<code>rsample</code> page there’s an interesting article listed on so called: <a href="https://tidymodels.github.io/rsample/articles/Applications/Nested_Resampling.html">nested resampling</a>. I’ve never used it in practice but I’m curious to check it out and compare my model’s current cross-validated performance estimate with the one obtained through nested resampling.</p></li>
+<li><p>There’s also a lot of buzz in the R community regarding a BETA release of the successor of the <code>mlr</code> package (second most popular ML framework in R) - <a href="https://mlr-org.com/docs/mlr3-0-1-0/">mlr3</a>. <code>mlr3</code> could be very strong competition to the <code>tidymodels</code> framework, and since I’ve never really used <code>mlr</code> it’s an excellent opportunity to put it to a test. It is also modular in design like <code>tidymodels</code>, but is built on top of data.table and uses R6 object-oriented class system which could give it substantial speed advantage over <code>tidymodels</code> at the expenses of ‘tidyness’.</p></li>
 </ol>
 </div>
 
@@ -1590,7 +1034,7 @@ percent(roc_auc(df_train_pred_tidym, truth, estimate)$.estimate)</code></pre>
                   Aug 8, 2019
                 </span>
               </span>
-              <div class="media-content hide-xs font-merryweather">In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: caret and its successor packages being written by the same author (Max Kuhn) that are wrapped together in a so called tidymodels framework. Tidymodels is a collection of different packages such as: rsample, recipes, parsnip, dials and more that allow for a running an ML project in a tidy format end-to-end.</div>
+              <div class="media-content hide-xs font-merryweather">In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: caret and its successor packages being written by the same author (Max Kuhn) that are wrapped together in a so called tidymodels framework. Tidymodels is a collection of different packages such as: rsample, recipes, parsnip, dials and more, that allow running an entire ML project in a tidy format end-to-end.</div>
             </div>
             <div style="clear:both;"></div>
             <hr>

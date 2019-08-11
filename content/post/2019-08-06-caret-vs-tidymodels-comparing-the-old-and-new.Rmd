@@ -17,7 +17,25 @@ In order to write this blog I've been reading carefully all individual package w
 
 In the beginning, let's load all the required packages and the ```credit_data``` dataset available from ```recipes``` that we will use for modelling. Note also that I'm setting the random seed to make sampling reproducible, as well as set the [furrr](https://davisvaughan.github.io/furrr/) plan to ```multicore```. It's important unless you want this script to run really long on your machine - we'll be fitting many different models, so making sure you utilize all your local resources will speed things up a lot.
 
-```{r echo=TRUE, results="hide"}
+```{r eval=FALSE}
+
+set.seed(42)
+options(max.print = 150)
+
+library(tidymodels)
+library(tidyverse)
+library(caret)
+library(magrittr)
+library(naniar)
+library(furrr)
+library(skimr)
+
+plan(multicore)  
+data("credit_data")
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results="hide"}
 
 set.seed(42)
 options(max.print = 150)
@@ -58,7 +76,7 @@ credit_data %>% miss_var_summary()
 
 Another important step would be to make some basic numerical summaries of the data in order to catch any unusual observations. I will do it using the [skimr](https://ropensci.github.io/skimr/) package. Apart from the fact that many numerical variables show high skewness and some categorical variables have levels with very low frequency, it doesn't seem that we will have to deal with any special encoded numbers or other problems.
 
-```{r}
+```{r size="size"}
 
 credit_data %>% skim()
 
