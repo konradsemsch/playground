@@ -3,10 +3,8 @@ title: "Fast and pretty ggploting with the aider package (part 1)"
 author: "Konrad Semsch"
 date: "2019-03-30"
 slug: fast-and-pretty-ggploting-with-the-aider-package-part-1
-tags:
-- ggplot2
-- aider
-categories: visualization
+tags: ["ggplot2", "aider"]
+categories: ["visualization"]
 ---
 
 The ggplot package was like a fresh breeze of wind to the art of data visualization done with R. It enabled doing things that weren't possible before with ease, and quickly gained adoption in the R community. The ggplot package is great and I surely pay my tribute to it, however, with such a great variety of options and flexibility comes a certain price to pay - speed of creating new plots. And I specifically mean creating many different plots: a) quickly and b) that would look great. Plots produced by the ggplot package already look very neat but in the end if the user is looking to give a "wow" effect, one needs to spend a bit of time.

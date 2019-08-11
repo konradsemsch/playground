@@ -3,30 +3,48 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://konradsemsch.netlify.com/1/01/</loc>
+    <loc>/2019/08/caret-vs-tidymodels-comparing-the-old-and-new/</loc>
+    <lastmod>2019-08-06T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://konradsemsch.netlify.com/1/01/</loc>
-  </url>
-  
-  <url>
-    <loc>https://konradsemsch.netlify.com/archives/</loc>
+    <loc>/</loc>
+    <lastmod>2019-08-06T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://konradsemsch.netlify.com/</loc>
+    <loc>/post/</loc>
+    <lastmod>2019-08-06T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://konradsemsch.netlify.com/post/</loc>
+    <loc>/tags/</loc>
+    <lastmod>2019-08-06T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://konradsemsch.netlify.com/tags/</loc>
+    <loc>/tags/caret/</loc>
+    <lastmod>2019-08-06T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/predictive-modelling/</loc>
+    <lastmod>2019-08-06T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/tidymodels/</loc>
+    <lastmod>2019-08-06T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/archives/</loc>
     <priority>0</priority>
   </url>
   

@@ -2,30 +2,25 @@
 title: "Caret vs. tidymodels - comparing the old and new"
 author: "Konrad Semsch"
 date: "2019-08-06"
-keywords: tech
 slug: caret-vs-tidymodels-comparing-the-old-and-new
-tags:
-- caret
-- tidymodels
-- predictive modelling
-categories: predictive modelling
+tags: ["caret", "tidymodels", "predictive modelling"]
+categories: ["predictive modelling"]
 ---
 
-# Summary
+In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: [caret](https://github.com/topepo/caret) and its successor packages being written by the same author ([Max Kuhn](https://github.com/topepo)) that are wrapped together in a so called [tidymodels](https://github.com/tidymodels/tidymodels) framework. ```Tidymodels``` is a collection of different packages such as: [rsample](https://tidymodels.github.io/rsample/), [recipes](https://tidymodels.github.io/recipes/), [parsnip](https://tidymodels.github.io/parsnip/), [dials](https://tidymodels.github.io/dials/) and more, that allow running an entire ML project in a tidy format end-to-end.
 
-In this post I will make a short comparison between the most popular (by number of monthly downloads) ML framework available for R: ```caret``` and it's successors being written by the same author (Max Kuhn) that are wrapped together in so called ```tidymodels```. Tidymodels is a collections of different packages such as: ```rsample```, ```recipes```, ```parsnip```, ```dials``` etc. 
+Many of them are still in a development phase, which will still take a couple good months before they settle down, so I'll try to keep this post up-to-date over time. Nevertheless, I've wanted to take a closer look at what ```tidymodels``` have to offer for a while already, and thought a blogpost would be a great way to demonstrate that.
 
-Many of them are still in a development phase which will still take a couple good months before they settle down so I'll try to keep this post up-to-date. Nevertheless, I've wanted to take a closer look at what ```tidymodels``` have to offer for a while already and thought a blogpost would be a great way to demonstrate that.
+In order to write this blog I've been reading carefully all individual package websites and this excellent [blogpost](https://www.alexpghayes.com/blog/implementing-the-super-learner-with-tidymodels/) from Alex Hayes helped me a lot to put things together.
 
-In order to write this blog I've been reading carefully all individual packaages websites and this excellent [blogpost](https://www.alexpghayes.com/blog/implementing-the-super-learner-with-tidymodels/) from Alex Hayes helped me a lot to put things together.
+# Initial setup
 
-# Simple exploration
+In the beginning, let's load all the required packages and the ```credit_data``` dataset available from ```recipes``` that we will use for modelling. Note also that I'm setting the random seed to make sampling reproducible, as well as set the [furrr](https://davisvaughan.github.io/furrr/) plan to ```multicore```. It's important unless you want this script to run really long on your machine - we'll be fitting many different models, so making sure you utilize all your local resources will speed things up a lot.
 
-Let's load all the required packages and ```credit_data``` dataset available from ```recipes``` that we will use for modelling.
-
-```{r}
+```{r echo=TRUE, results="hide"}
 
 set.seed(42)
+options(max.print = 150)
 
 library(tidymodels)
 library(tidyverse)
@@ -33,13 +28,16 @@ library(caret)
 library(magrittr)
 library(naniar)
 library(furrr)
+library(skimr)
 
 plan(multicore)  
 data("credit_data")
 
 ```
 
-In this example I'm building a classification model to distinguish between good and bad loans indicated with column 'Status'. We have relatively many observations compared to the number of variables available for modelling. I'm converting all columns to lowercase. 
+# Data preparation
+
+In this example, I'm building a classification model to distinguish between good and bad loans indicated by column 'Status'. We have relatively many observations compared to the number of variables available for modelling. Before making any other steps let's convert all columns to lowercase. 
 
 ```{r}
 
@@ -50,7 +48,7 @@ credit_data %<>%
 
 ```
 
-With the help of ```naniar``` I'm checking the percentage of missing data per each variable. For this particular dataset there are very few missing values so they won't pose a problem for us in modelling.
+With the help of the excellent [naniar](http://naniar.njtierney.com/) package I'm checking the percentage of missing data per each variable. For this particular dataset there are very few missing values so they won't pose a problem for us during modelling.
 
 ```{r}
 
@@ -58,7 +56,15 @@ credit_data %>% miss_var_summary()
 
 ```
 
-In credit scoring problems we typically deal with something called a target [class imbalace](https://machinelearningmastery.com/tactics-to-combat-imbalanced-classes-in-your-machine-learning-dataset/), but in this particular case it's not that severe. For the sake of comparing programming frameworks and not implementing the best ML model I will ignore it.
+Another important step would be to make some basic numerical summaries of the data in order to catch any unusual observations. I will do it using the [skimr](https://ropensci.github.io/skimr/) package. Apart from the fact that many numerical variables show high skewness and some categorical variables have levels with very low frequency, it doesn't seem that we will have to deal with any special encoded numbers or other problems.
+
+```{r}
+
+credit_data %>% skim()
+
+```
+
+Another point we need to keep in mind when dealing with credit scoring problems is something called a target [class imbalance](https://machinelearningmastery.com/tactics-to-combat-imbalanced-classes-in-your-machine-learning-dataset/), but in this particular case it's not that severe. For the sake of comparing programming frameworks and not implementing the best ML model I will ignore it.
 
 ```{r}
 
@@ -70,9 +76,9 @@ round(prop.table(table(credit_data$status)), 2)
 
 # Data preparation
 
-Let's finally move on and start modelling! In the beginning we'll start with dividing our dataset into training and testing with the help of the ```rsample``` package. It set's an initial, stratified split where 80% of the data is dedicated to training and the rest to evaluating both models. 
+Let's finally move on and start modelling! In the beginning I'll start with dividing our dataset into training and testing sets with the help of the ```rsample``` package. Let's set an initial, stratified split where 80% of the data is dedicated to training and the rest to evaluating both models. 
 
-Furthermore, I'm creating cross-validation splits from the testing data of 5 folds. For compatibility with ```caret``` I'm using the ```rsample2caret``` function to make use of the same splits - otherwise both solutions wouldn't be 100% comparable
+Furthermore, I'm creating cross-validation splits from the testing data of 5 folds. For compatibility with ```caret``` I'm using the ```rsample2caret``` function to make use of the same splits in both frameworks - otherwise both solutions wouldn't be 100% comparable.
 
 ```{r}
 
@@ -84,30 +90,32 @@ df_test  <- testing(split)
 train_cv <- vfold_cv(df_train, v = 5, strata = "status")
 train_cv_caret <- rsample2caret(train_cv)
 
+# write_rds(split, "split.rds")
+# write_rds(train_cv, "train_cv.rds")
+
 ```
 
-I would like to fit a Random Forest model for which I specify a simple recipe. Tree-based models required very little preprocessing and in this particular example I mainly focus on imputting missing data or assigning them a new categorical level, infrequent/ unobserved values and dummyfying them. The same recipe will be used for both: ```caret``` and ```tidymodels``` model.
+I would like to fit a Random Forest model for which I will specify a simple ```recipe```. In principle, tree-based models require very little preprocessing, and in this particular example I mainly focus on imputting missing data or assigning them a new categorical level, infrequent/ unobserved values and hot-encoding them. The same recipe will be used for both: ```caret``` and ```tidymodels``` model.
 
-Normally I would also do some feature engineering, try to assess potential interactions and so on but I will write a separate post dedicated to that.
+Normally I would do much more feature engineering, try to assess potential interactions etc., but I will write a separate post dedicated for that to so see how much further we can improve the model!
 
 ```{r}
 
 recipe <- df_train %>%
   recipe(status ~ .) %>%
 
-  # Imputation
+  # Imputation: assigning NAs to a new level for categorical and median imputation for numeric
   step_unknown(all_nominal(), -status) %>% 
   step_medianimpute(all_numeric()) %>%
 
-  # Nominal variables sanity check
+  # Combining infrequent categorical levels and introducing a new level for prediction time
   step_other(all_nominal(), -status, other = "infrequent_combined") %>%
   step_novel(all_nominal(), -status, new_level = "unrecorded_observation") %>%
 
-  # Hot-encoding
+  # Hot-encoding categorical variables
   step_dummy(all_nominal(), -status, one_hot = TRUE) %>%
 
   # Taking care of output consistency
-  step_nzv(all_predictors()) %>%
   check_missing(all_predictors())
 
 ```
@@ -117,8 +125,6 @@ Let's take a quick look at the output of the recipe:
 ```{r}
 
 (recipe_preped <- prep(recipe, retain = TRUE))
-
-juice(recipe_preped) %>% glimpse()
 tidy(recipe_preped)
 
 ```
@@ -127,9 +133,9 @@ tidy(recipe_preped)
 
 ## Caret
 
-In the code below I'm setting control parameters for the ```caret``` model fit as well as the grid of hyperparameters that will be assessed in order to pick the best combination. Note that I'm using the very original observation indexes for cross-validation to ensure reproducability. The control function will also ensure that final hold-out predictions from cross-validation will be persisted for further assessment thanks to ```savePredictions = "final"```.
+In the code below I'm setting control parameters for the ```caret``` model fit, as well as the grid of hyperparameters that will be assessed in order to pick the best performing combination. Note that I'm using the very original observation indexes for cross-validation to ensure reproducability. The ```trainControl``` function will also ensure that final hold-out predictions from cross-validation will be persisted for further assessment thanks to ```savePredictions = "final"```.
 
-We have 5 different CV folds and 30 grid combinations to assess which results in 150 models that will be fit and each comprising of 500 individual trees! All models will be assessed based on the ```prSummary``` function which is know as the AUC.
+We have 5 different CV folds and 30 grid combinations to assess, which results in 150 models that will be fit and each comprising of 500 individual trees! All models will be assessed based on the ```prSummary``` function which is know as the AUC.
 
 ```{r echo=FALSE}
 
@@ -137,7 +143,7 @@ control_caret <- trainControl(
   method = "cv",
   verboseIter = FALSE,
   classProbs = TRUE,
-  summaryFunction = prSummary,
+  summaryFunction = twoClassSummary,
   returnResamp = "final",
   savePredictions = "final",
   index = train_cv_caret$index,
@@ -152,13 +158,13 @@ control_caret <- trainControl(
 
 ```
 
-The great advantage of ```caret``` is that it wraps a lot of small code pieces in just one, high-level API call that does all the job for you - fit's all individual models across CV folds and resamples, selects the best one and fits it already on the entire training dataset. It also makes sure it's done as fast as possible thanks to parallel processing whenever it's an option.
+The great advantage of ```caret``` is that it wraps a lot of small code pieces in just one, high-level API call that does all the job for you - fits all individual models across CV folds and resamples, selects the best one and fits it already on the entire training dataset. It also makes sure it's done as fast as possible thanks to parallel processing whenever it's an enabled option.
 
 The drawback on the other hand is that it's quite monolythic, untidy and at the end doesn't offer a great deal of granularity to the end user.
 
 ```{r}
 
-(model_caret <- train(
+model_caret <- train(
   status ~ .,
   data = juice(recipe_preped),
   method = "ranger",
@@ -167,11 +173,13 @@ The drawback on the other hand is that it's quite monolythic, untidy and at the 
   tuneGrid = grid_caret,
   importance = "impurity",
   num.trees = 500
-  ))
+  )
+
+model_caret
 
 ```
 
-```Caret``` also comes with built-in handy functions for assessing model's individual predictors strength. By setting the ```importance = "impurity"``` in the ```ranger``` engine we ensure that variable importance will be returned by the final train object.
+```Caret``` also comes with built-in handy functions for assessing model's individual predictors strength. By setting the ```importance = "impurity"``` in the ```ranger``` engine we ensure that variable importance will be returned by the final train object. As of now there is no such possibility in the ```tidymodels``` packages and I'm curious to see how it will be solved!
 
 ```{r}
 
@@ -184,7 +192,7 @@ varImp(model_caret, scale = TRUE)$importance %>%
 
 Final cross-validated and test results are easily available with just a couple lines of code. Note that cross-validation performance is aggregated per each index (observation) and averaged out before the final performance metric is calculated.
 
-Getting the test performance is a matter of baking the already prepped recipe on the training set and then making the prediction using the train object.
+Getting the test performance is a matter of ```baking``` the test set with the already prepped recipe and then making the prediction using the train object. 83.1% AUC for cross-validated training performance and 82.1% for testing - not a bad result for so little preprocessing! Close results also suggest that our model is likely to generalize well to new samples.
 
 ```{r}
 
@@ -194,6 +202,13 @@ df_train_pred_caret <- model_caret$pred %>%
   transmute(estimate = bad) %>% 
   add_column(truth = df_train$status)
 
+# Cross-validated training performance
+percent(roc_auc(df_train_pred_caret, truth, estimate)$.estimate)
+
+```
+
+```{r}
+
 df_test_pred_caret <- predict(
     model_caret,
     newdata = bake(recipe_preped, df_test),
@@ -202,19 +217,16 @@ df_test_pred_caret <- predict(
   transmute(estimate = bad) %>%
   add_column(truth = df_test$status)
 
-print("Cross-validated training performance")
-percent(roc_auc(df_train_pred_caret, truth, estimate)$.estimate)
-
-print("Test performance")
+# Test performance
 percent(roc_auc(df_test_pred_caret, truth, estimate)$.estimate)
 
 ```
 
 ## Tidymodels
 
-When I first saw some of the very first articles about doing ML the tidy way by combining ```recipes``` and ```rsample``` my thoughts were that it was all way too complicated compared to what ```caret``` offers. I was very surprised now when I got to know how clean and simple it became, and apparently things will be further simplified over the next months ([link](https://github.com/tidymodels/parsnip/issues/200))!
+In the beginning, when I saw some of the very first articles about doing ML the tidy way by combining ```recipes``` and ```rsample``` my thoughts were that it was all way too complicated compared to what ```caret``` offered. I was very surprised now when I discovered how clean and simple it became over the last year, and apparently things will be further simplified over the next months ([link](https://github.com/tidymodels/parsnip/issues/200))!
 
-First let's define two helper functions that will be used later during the modelling process:
+First let's define two helper functions that will be used later during the modelling process. I imagine these might be wrapped into predefined helper functions in ```tidymodels``` packages instead of having to do that every time.
 
 ```{r}
 
@@ -237,15 +249,19 @@ predict_helper <- function(split, recipe, fit) {
 
 ```
 
-First, let's use ```parsnip``` to define our 'modelling engine' - just like before we're setting it as a classification problem, using Random Forest running on the ```ranger``` engine. On top of that I'm using ```dials``` to define a grid of parameters to optimize. ```Dials``` provide a set of handy functions, such as: ```grid_random``` or ```grid_regular```, that let you choose the range of parameters in a very flexible way.
+First, let's use ```parsnip``` to define our 'modelling engine' - just like before we're setting it as a classification problem, using Random Forest running on the ```ranger``` engine. On top of that I'm using ```dials``` to define a grid of parameters to optimize. ```Dials``` provides a set of handy functions, such as: ```grid_random``` or ```grid_regular```, that let you choose the range of parameters in a very flexible way.
 
-From what I can see the parameters that could be optimized differ slighlty between both frameworks: ```caret``` allows for tunning the 'min.node.size' while keeping the 'trees' constant, while ```parsnip``` allows for tuning 'trees' while keeping 'min.node.size' constant (I assume it's choosing the default ```ranger``` values). Nevertheless, the total amount of combinations is same in both cases and equal to 30.
+From what I can see the parameters that could be optimized slightly differ between both frameworks: ```caret``` allows for tunning the 'min.node.size' while keeping the 'trees' constant, while ```parsnip``` allows for tuning 'trees' while keeping 'min.node.size' constant (I assume it's using the default ```ranger``` values). Nevertheless, the total amount of combinations is same in both cases and equal to 30.
 
 ```{r}
 
 # Specifying the modelling engine
 (engine_tidym <- rand_forest(mode = "classification") %>% 
   set_engine("ranger"))
+
+```
+
+```{r}
 
 # Specifying the grid of hyperparameters that should be tested
 (gridy_tidym <- grid_random(
@@ -261,11 +277,11 @@ Now comes the really interesting part of ```tidymodels```: we're using a ```merg
 
 ```{r}
 
-merge(engine_tidym, gridy_tidym)[1:3]
+merge(engine_tidym, gridy_tidym)[1:3] # just to see the top 3
 
 ```
 
-Subsequently, I'm putting it into a tidy, data frame structure where each model-parameters combination is bound together and assigned a model id that will be used later to make a distinction between consequtive fits.
+Subsequently, I'm putting it into a tidy data frame structure where each model-parameters combination is bound together and assigned a model id that will be used later to make a distinction between consequtive fits.
 
 ```{r}
 
@@ -275,7 +291,7 @@ Subsequently, I'm putting it into a tidy, data frame structure where each model-
 
 ```
 
-Lastly, I'm adding the last component into this tidy structure: all cross-validation splits that were specified before with the use of the ```crossing``` function. This part is very likely to evolve and be simplified in the upcoming months. Now we're all set to start the actual modelling!
+Lastly, I'm adding the last component into this tidy structure: all cross-validation splits that were specified before with the use of the ```crossing``` function. This part is very likely to evolve and be simplified in the upcoming months. Now we're all set to start the actual tidy-modelling!
 
 ```{r}
 
@@ -283,7 +299,7 @@ Lastly, I'm adding the last component into this tidy structure: all cross-valida
 
 ```
 
-To speed thigs up let's use the ```multicore``` setting in the ```furrr``` package and fit many models simultaneously. In the following code our original recipe is first prepped on each split's training set and than it's used by the ```fit_on_fold``` helper function to fit a given model-parameter combination.
+To speed thigs up let's use the ```furrr``` package and fit many models simultaneously. In the following code our original recipe is first prepped on each split's training set and than it's used by the ```fit_on_fold``` helper function to fit a given model-parameter combination.
 
 ```{r}
 
@@ -296,7 +312,7 @@ fits_tidym <- spec_tidym %>%
 
 ```
 
-The last step of modelling involves usage of the other ```predict_helper``` function that bakes the already prepped split recipe and applies it on the testing set of the split in order to make a prediction of the given model-parameters combination.
+The last step of modelling involves usage of the other ```predict_helper``` function that bakes the already prepped split's recipe and applies it on the testing set of the split, in order to make a prediction of the given model-parameters combination.
 
 ```{r}
 
@@ -308,7 +324,16 @@ fits_pred_tidym <- fits_tidym %>%
 
 ```
 
-After training is done I would like to assess which model performs the best based on cross-validated hold-out sets performance. In order to do that let's calculate the AUC of all test sets across all model-parameters combinations. By averaging the results up, I can see the entire performance profile of all possibilities.
+```{r}
+
+# Top row of the entire structure as example
+fits_pred_tidym[1, ]
+
+```
+
+After training is done I would like to assess which model performs the best based on cross-validated hold-out performance. In order to do that, let's calculate the AUC of all test sets across all model-parameter combinations. By averaging the results up, I can see the entire performance profile of all possibilities.
+
+```Tidymodels``` includes also two very handy packages: [probably](https://tidymodels.github.io/probably/index.html) and [tidyposterior](https://tidymodels.github.io/tidyposterior/), which are very usefull for analysing model estimated probabilities and it's resampled performance profile. I will make an introduction to those packages in one of my next posts.
 
 ```{r}
 
@@ -323,7 +348,7 @@ After training is done I would like to assess which model performs the best base
 
 ```
 
-It's easy to see that the best performing model is the one of id 3. Let's now take a step back and filter only that model specification, and fit it on the entire training set. As of now I'm not 100% sure what the recommended and most efficient way of doing that would be, but I decided to go for something like that:
+Just by sorting the previous results we can easly see what is the best performing model. Let's now take a step back and filter only that model specification, and fit it on the entire training set. As of now I'm not 100% sure what the recommended and most efficient way of doing that would be, but I decided to go for something like that:
 
 ```{r}
 
@@ -340,14 +365,18 @@ It's easy to see that the best performing model is the one of id 3. Let's now ta
 
 ```
 
-Similarly like before with ```caret``` I can now summarize our cross-validated and test performances:
+Similarly like before with ```caret```, I can now summarize our cross-validated and test performances.
 
 ```{r}
 
-print("Cross-validated training performance")
+# Cross-validated training performance"
 percent(perf_summary_tidym$mean[which.max(perf_summary_tidym$mean)])
 
-print("Test performance")
+```
+
+```{r}
+
+# Test performance
 df_train_pred_tidym <- predict(
   model_tidym, 
   new_data = bake(recipe_preped, df_test), 
@@ -360,7 +389,7 @@ percent(roc_auc(df_train_pred_tidym, truth, estimate)$.estimate)
 
 ```
 
-This entire ```tidymodels``` code that was scattered across all above sections could be easily squeezed in one longer pipeline. Note that I limited the grid to just one row ```gridy_tidym[1, ]``` in order to demonstrate the solution and save on processing time.
+The entire ```tidymodels``` code that was scattered across above sections could be easily squeezed in one longer pipeline. Note that I limited the grid to just one row ```gridy_tidym[1, ]``` in order to demonstrate the solution and save on processing time.
 
 ```{r}
 
@@ -375,6 +404,16 @@ df_tidym <- tibble(spec = merge(engine_tidym, gridy_tidym[1:2, ])) %>%
 
 ```
 
-# Conslusions
+# Wrapping up
+
+I've fit a credit scoring classification Random Forest model using both ```caret``` and ```tidymodels``` frameworks. I need to admit that before I started writing this post I expected a lot more additional code to be written in the ```tidymodels``` framework to achieve the same goal, but to my surprise those packages already offer a very concise (and tidy!) way of doing ML in R, and things will be even more streamlined in the upcoming months. That's definitely a really big step-up for the entire R community when it comes to doing ML in R. I think R users can expect most of the releases happening still this year and a bigger announcement on ```tidymodels``` taking place during the upcoming R Conference in SF in January 2020.
+
+As long it's already quite nice & easy to use ```tidymodels``` as your main ML tool in R, I probably wouldn't recommend incorporating it in your day-to-day work as it's still quite unstable, however, I'm definitely looking forward to do that in some time in the future!
 
 # Future considerations
+
+1) I still haven't fully explored the ```tidyposterior``` and ```probably``` packages - I will do that in one of me next posts.
+
+2) On the ```rsample`` page there's an interesting article listed on so called: [nested resampling](https://tidymodels.github.io/rsample/articles/Applications/Nested_Resampling.html). I've never used it in practice but I'm curious to check it out and compare my model's current cross-validated performance estimate with the one obtained through nested resampling.
+
+3) There's also a lot of buzz in the R community regarding a BETA release of the successor of the ```mlr``` package (second most popular ML framework in R) - [mlr3](https://mlr-org.com/docs/mlr3-0-1-0/). ```mlr3``` could be very strong competition to the ```tidymodels``` framework, and since I've never really used ```mlr``` it's an excellent opportunity to put it to a test. It is also modular in design like ```tidymodels```, but is built on top of data.table and uses R6 object-oriented class system which could give it substantial speed advantage over ```tidymodels``` at the expenses of 'tidyness'.

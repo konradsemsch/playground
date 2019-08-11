@@ -2,13 +2,41 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Konrad&#39;s playground</title>
-    <link>https://konradsemsch.netlify.com/tags/</link>
+    <link>/tags/</link>
     <description>Recent content in Tags on Konrad&#39;s playground</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
+    <lastBuildDate>Tue, 06 Aug 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://konradsemsch.netlify.com/tags/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>caret</title>
+      <link>/tags/caret/</link>
+      <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/caret/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>predictive modelling</title>
+      <link>/tags/predictive-modelling/</link>
+      <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/predictive-modelling/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tidymodels</title>
+      <link>/tags/tidymodels/</link>
+      <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/tidymodels/</guid>
+      <description></description>
+    </item>
     
   </channel>
 </rss>
