@@ -74,6 +74,8 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
 </style>
 
 
+<p>In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: caret and its successor packages being written by the same author (Max Kuhn) that are wrapped together in a so called tidymodels framework.</p>
+<!--more-->
 <p>In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: <a href="https://github.com/topepo/caret">caret</a> and its successor packages being written by the same author (<a href="https://github.com/topepo">Max Kuhn</a>) that are wrapped together in a so called <a href="https://github.com/tidymodels/tidymodels">tidymodels</a> framework. <code>Tidymodels</code> is a collection of different packages such as: <a href="https://tidymodels.github.io/rsample/">rsample</a>, <a href="https://tidymodels.github.io/recipes/">recipes</a>, <a href="https://tidymodels.github.io/parsnip/">parsnip</a>, <a href="https://tidymodels.github.io/dials/">dials</a> and more, that allow running an entire ML project in a tidy format end-to-end.</p>
 <p>Many of them are still in a development phase, which will still take a couple good months before they settle down, so I’ll try to keep this post up-to-date over time. Nevertheless, I’ve wanted to take a closer look at what <code>tidymodels</code> have to offer for a while already, and thought a blogpost would be a great way to demonstrate that.</p>
 <p>In order to write this blog I’ve been reading carefully all individual package websites and this excellent <a href="https://www.alexpghayes.com/blog/implementing-the-super-learner-with-tidymodels/">blogpost</a> from Alex Hayes helped me a lot to put things together.</p>
@@ -141,7 +143,7 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
 ##  n obs: 4454 
 ##  n variables: 14 
 ## 
-## ── Variable type:factor ───────────────────────────────────────────────────────────────────────────────────────────
+## ── Variable type:factor ────────────────────────────────────────────────────────
 ##  variable missing complete    n n_unique
 ##      home       6     4448 4454        6
 ##       job       2     4452 4454        4
@@ -155,7 +157,7 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
 ##                 no: 3681, yes: 773, NA: 0   FALSE
 ##               goo: 3200, bad: 1254, NA: 0   FALSE
 ## 
-## ── Variable type:integer ──────────────────────────────────────────────────────────────────────────────────────────
+## ── Variable type:integer ───────────────────────────────────────────────────────
 ##   variable missing complete    n    mean       sd  p0     p25  p50    p75
 ##        age       0     4454 4454   37.08    10.98  18   28      36   45  
 ##     amount       0     4454 4454 1038.92   474.55 100  700    1000 1300  

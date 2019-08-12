@@ -10,6 +10,10 @@ output:
     highlight: tango
 ---
 
+In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: caret and its successor packages being written by the same author (Max Kuhn) that are wrapped together in a so called tidymodels framework.
+
+<!--more-->
+
 In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: [caret](https://github.com/topepo/caret) and its successor packages being written by the same author ([Max Kuhn](https://github.com/topepo)) that are wrapped together in a so called [tidymodels](https://github.com/tidymodels/tidymodels) framework. ```Tidymodels``` is a collection of different packages such as: [rsample](https://tidymodels.github.io/rsample/), [recipes](https://tidymodels.github.io/recipes/), [parsnip](https://tidymodels.github.io/parsnip/), [dials](https://tidymodels.github.io/dials/) and more, that allow running an entire ML project in a tidy format end-to-end.
 
 Many of them are still in a development phase, which will still take a couple good months before they settle down, so I'll try to keep this post up-to-date over time. Nevertheless, I've wanted to take a closer look at what ```tidymodels``` have to offer for a while already, and thought a blogpost would be a great way to demonstrate that.
