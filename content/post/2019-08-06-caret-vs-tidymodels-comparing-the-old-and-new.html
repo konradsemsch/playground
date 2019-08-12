@@ -5,8 +5,73 @@ date: "2019-08-06"
 slug: caret-vs-tidymodels-comparing-the-old-and-new
 tags: ["caret", "tidymodels", "predictive modelling"]
 categories: ["predictive modelling"]
+output:
+  blogdown::html_page:
+    highlight: tango
 ---
 
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  { background-color: #f8f8f8; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
 
 
 <p>In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: <a href="https://github.com/topepo/caret">caret</a> and its successor packages being written by the same author (<a href="https://github.com/topepo">Max Kuhn</a>) that are wrapped together in a so called <a href="https://github.com/tidymodels/tidymodels">tidymodels</a> framework. <code>Tidymodels</code> is a collection of different packages such as: <a href="https://tidymodels.github.io/rsample/">rsample</a>, <a href="https://tidymodels.github.io/recipes/">recipes</a>, <a href="https://tidymodels.github.io/parsnip/">parsnip</a>, <a href="https://tidymodels.github.io/dials/">dials</a> and more, that allow running an entire ML project in a tidy format end-to-end.</p>
@@ -15,24 +80,24 @@ categories: ["predictive modelling"]
 <div id="initial-setup" class="section level1">
 <h1>Initial setup</h1>
 <p>In the beginning, let’s load all the required packages and the <code>credit_data</code> dataset available from <code>recipes</code> that we will use for modelling. Note also that I’m setting the random seed to make sampling reproducible, as well as set the <a href="https://davisvaughan.github.io/furrr/">furrr</a> plan to <code>multicore</code>. It’s important unless you want this script to run really long on your machine - we’ll be fitting many different models, so making sure you utilize all your local resources will speed things up a lot.</p>
-<pre class="r"><code>set.seed(42)
-options(max.print = 150)
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">42</span>)
+<span class="kw">options</span>(<span class="dt">max.print =</span> <span class="dv">150</span>)
 
-library(tidymodels)
-library(tidyverse)
-library(caret)
-library(magrittr)
-library(naniar)
-library(furrr)
-library(skimr)
+<span class="kw">library</span>(tidymodels)
+<span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(caret)
+<span class="kw">library</span>(magrittr)
+<span class="kw">library</span>(naniar)
+<span class="kw">library</span>(furrr)
+<span class="kw">library</span>(skimr)
 
-plan(multicore)  
-data(&quot;credit_data&quot;)</code></pre>
+<span class="kw">plan</span>(multicore)  
+<span class="kw">data</span>(<span class="st">&quot;credit_data&quot;</span>)</code></pre>
 </div>
 <div id="data-preparation" class="section level1">
 <h1>Data preparation</h1>
 <p>In this example, I’m building a classification model to distinguish between good and bad loans indicated by column ‘Status’. We have relatively many observations compared to the number of variables available for modelling. Before making any other steps let’s convert all columns to lowercase.</p>
-<pre class="r"><code>glimpse(credit_data)</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glimpse</span>(credit_data)</code></pre>
 <pre><code>## Observations: 4,454
 ## Variables: 14
 ## $ Status    &lt;fct&gt; good, good, bad, good, good, good, good, good, good, b…
@@ -49,10 +114,10 @@ data(&quot;credit_data&quot;)</code></pre>
 ## $ Debt      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2500, 260, 0, 0, 0…
 ## $ Amount    &lt;int&gt; 800, 1000, 2000, 900, 310, 650, 1600, 200, 1200, 1200,…
 ## $ Price     &lt;int&gt; 846, 1658, 2985, 1325, 910, 1645, 1800, 1093, 1957, 14…</code></pre>
-<pre class="r"><code>credit_data %&lt;&gt;%
-  set_names(., tolower(names(.)))</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">credit_data <span class="op">%&lt;&gt;%</span>
+<span class="st">  </span><span class="kw">set_names</span>(., <span class="kw">tolower</span>(<span class="kw">names</span>(.)))</code></pre>
 <p>With the help of the excellent <a href="http://naniar.njtierney.com/">naniar</a> package I’m checking the percentage of missing data per each variable. For this particular dataset there are very few missing values so they won’t pose a problem for us during modelling.</p>
-<pre class="r"><code>credit_data %&gt;% miss_var_summary()</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">credit_data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">miss_var_summary</span>()</code></pre>
 <pre><code>## # A tibble: 14 x 3
 ##    variable  n_miss pct_miss
 ##    &lt;chr&gt;      &lt;int&gt;    &lt;dbl&gt;
@@ -71,12 +136,12 @@ data(&quot;credit_data&quot;)</code></pre>
 ## 13 amount         0   0     
 ## 14 price          0   0</code></pre>
 <p>Another important step would be to make some basic numerical summaries of the data in order to catch any unusual observations. I will do it using the <a href="https://ropensci.github.io/skimr/">skimr</a> package. Apart from the fact that many numerical variables show high skewness and some categorical variables have levels with very low frequency, it doesn’t seem that we will have to deal with any special encoded numbers or other problems.</p>
-<pre class="r"><code>credit_data %&gt;% skim()</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">credit_data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">skim</span>()</code></pre>
 <pre><code>## Skim summary statistics
 ##  n obs: 4454 
 ##  n variables: 14 
 ## 
-## ── Variable type:factor ───────────────────────────────────────────
+## ── Variable type:factor ───────────────────────────────────────────────────────────────────────────────────────────
 ##  variable missing complete    n n_unique
 ##      home       6     4448 4454        6
 ##       job       2     4452 4454        4
@@ -90,7 +155,7 @@ data(&quot;credit_data&quot;)</code></pre>
 ##                 no: 3681, yes: 773, NA: 0   FALSE
 ##               goo: 3200, bad: 1254, NA: 0   FALSE
 ## 
-## ── Variable type:integer ──────────────────────────────────────────
+## ── Variable type:integer ──────────────────────────────────────────────────────────────────────────────────────────
 ##   variable missing complete    n    mean       sd  p0     p25  p50    p75
 ##        age       0     4454 4454   37.08    10.98  18   28      36   45  
 ##     amount       0     4454 4454 1038.92   474.55 100  700    1000 1300  
@@ -112,11 +177,11 @@ data(&quot;credit_data&quot;)</code></pre>
 ##     48 ▇▃▂▁▁▁▁▁
 ##     72 ▁▁▂▃▁▃▇▁</code></pre>
 <p>Another point we need to keep in mind when dealing with credit scoring problems is something called a target <a href="https://machinelearningmastery.com/tactics-to-combat-imbalanced-classes-in-your-machine-learning-dataset/">class imbalance</a>, but in this particular case it’s not that severe. For the sake of comparing programming frameworks and not implementing the best ML model I will ignore it.</p>
-<pre class="r"><code>table(credit_data$status)</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table</span>(credit_data<span class="op">$</span>status)</code></pre>
 <pre><code>## 
 ##  bad good 
 ## 1254 3200</code></pre>
-<pre class="r"><code>round(prop.table(table(credit_data$status)), 2)</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">prop.table</span>(<span class="kw">table</span>(credit_data<span class="op">$</span>status)), <span class="dv">2</span>)</code></pre>
 <pre><code>## 
 ##  bad good 
 ## 0.28 0.72</code></pre>
@@ -125,36 +190,36 @@ data(&quot;credit_data&quot;)</code></pre>
 <h1>Data preparation</h1>
 <p>Let’s finally move on and start modelling! In the beginning I’ll start with dividing our dataset into training and testing sets with the help of the <code>rsample</code> package. Let’s set an initial, stratified split where 80% of the data is dedicated to training and the rest to evaluating both models.</p>
 <p>Furthermore, I’m creating cross-validation splits from the testing data of 5 folds. For compatibility with <code>caret</code> I’m using the <code>rsample2caret</code> function to make use of the same splits in both frameworks - otherwise both solutions wouldn’t be 100% comparable.</p>
-<pre class="r"><code>split &lt;- initial_split(credit_data, prop = 0.80, strata = &quot;status&quot;)
+<pre class="sourceCode r"><code class="sourceCode r">split &lt;-<span class="st"> </span><span class="kw">initial_split</span>(credit_data, <span class="dt">prop =</span> <span class="fl">0.80</span>, <span class="dt">strata =</span> <span class="st">&quot;status&quot;</span>)
 
-df_train &lt;- training(split)
-df_test  &lt;- testing(split)
+df_train &lt;-<span class="st"> </span><span class="kw">training</span>(split)
+df_test  &lt;-<span class="st"> </span><span class="kw">testing</span>(split)
 
-train_cv &lt;- vfold_cv(df_train, v = 5, strata = &quot;status&quot;)
-train_cv_caret &lt;- rsample2caret(train_cv)
+train_cv &lt;-<span class="st"> </span><span class="kw">vfold_cv</span>(df_train, <span class="dt">v =</span> <span class="dv">5</span>, <span class="dt">strata =</span> <span class="st">&quot;status&quot;</span>)
+train_cv_caret &lt;-<span class="st"> </span><span class="kw">rsample2caret</span>(train_cv)
 
-# write_rds(split, &quot;split.rds&quot;)
-# write_rds(train_cv, &quot;train_cv.rds&quot;)</code></pre>
+<span class="co"># write_rds(split, &quot;split.rds&quot;)</span>
+<span class="co"># write_rds(train_cv, &quot;train_cv.rds&quot;)</span></code></pre>
 <p>I would like to fit a Random Forest model for which I will specify a simple <code>recipe</code>. In principle, tree-based models require very little preprocessing, and in this particular example I mainly focus on imputting missing data or assigning them a new categorical level, infrequent/ unobserved values and hot-encoding them. The same recipe will be used for both: <code>caret</code> and <code>tidymodels</code> model.</p>
 <p>Normally I would do much more feature engineering, try to assess potential interactions etc., but I will write a separate post dedicated for that to so see how much further we can improve the model!</p>
-<pre class="r"><code>recipe &lt;- df_train %&gt;%
-  recipe(status ~ .) %&gt;%
+<pre class="sourceCode r"><code class="sourceCode r">recipe &lt;-<span class="st"> </span>df_train <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">recipe</span>(status <span class="op">~</span><span class="st"> </span>.) <span class="op">%&gt;%</span>
 
-  # Imputation: assigning NAs to a new level for categorical and median imputation for numeric
-  step_unknown(all_nominal(), -status) %&gt;% 
-  step_medianimpute(all_numeric()) %&gt;%
+<span class="st">  </span><span class="co"># Imputation: assigning NAs to a new level for categorical and median imputation for numeric</span>
+<span class="st">  </span><span class="kw">step_unknown</span>(<span class="kw">all_nominal</span>(), <span class="op">-</span>status) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">step_medianimpute</span>(<span class="kw">all_numeric</span>()) <span class="op">%&gt;%</span>
 
-  # Combining infrequent categorical levels and introducing a new level for prediction time
-  step_other(all_nominal(), -status, other = &quot;infrequent_combined&quot;) %&gt;%
-  step_novel(all_nominal(), -status, new_level = &quot;unrecorded_observation&quot;) %&gt;%
+<span class="st">  </span><span class="co"># Combining infrequent categorical levels and introducing a new level for prediction time</span>
+<span class="st">  </span><span class="kw">step_other</span>(<span class="kw">all_nominal</span>(), <span class="op">-</span>status, <span class="dt">other =</span> <span class="st">&quot;infrequent_combined&quot;</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">step_novel</span>(<span class="kw">all_nominal</span>(), <span class="op">-</span>status, <span class="dt">new_level =</span> <span class="st">&quot;unrecorded_observation&quot;</span>) <span class="op">%&gt;%</span>
 
-  # Hot-encoding categorical variables
-  step_dummy(all_nominal(), -status, one_hot = TRUE) %&gt;%
+<span class="st">  </span><span class="co"># Hot-encoding categorical variables</span>
+<span class="st">  </span><span class="kw">step_dummy</span>(<span class="kw">all_nominal</span>(), <span class="op">-</span>status, <span class="dt">one_hot =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span>
 
-  # Taking care of output consistency
-  check_missing(all_predictors())</code></pre>
+<span class="st">  </span><span class="co"># Taking care of output consistency</span>
+<span class="st">  </span><span class="kw">check_missing</span>(<span class="kw">all_predictors</span>())</code></pre>
 <p>Let’s take a quick look at the output of the recipe:</p>
-<pre class="r"><code>(recipe_preped &lt;- prep(recipe, retain = TRUE))</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">(recipe_preped &lt;-<span class="st"> </span><span class="kw">prep</span>(recipe, <span class="dt">retain =</span> <span class="ot">TRUE</span>))</code></pre>
 <pre><code>## Data Recipe
 ## 
 ## Inputs:
@@ -173,7 +238,7 @@ train_cv_caret &lt;- rsample2caret(train_cv)
 ## Novel factor level assignment for home, marital, records, job [trained]
 ## Dummy variables from home, marital, records, job [trained]
 ## Check missing values for seniority, time, age, expenses, ... [trained]</code></pre>
-<pre class="r"><code>tidy(recipe_preped)</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tidy</span>(recipe_preped)</code></pre>
 <pre><code>## # A tibble: 6 x 6
 ##   number operation type         trained skip  id                
 ##    &lt;int&gt; &lt;chr&gt;     &lt;chr&gt;        &lt;lgl&gt;   &lt;lgl&gt; &lt;chr&gt;             
@@ -223,15 +288,15 @@ train_cv_caret &lt;- rsample2caret(train_cv)
 ## 30   13       gini             5</code></pre>
 <p>The great advantage of <code>caret</code> is that it wraps a lot of small code pieces in just one, high-level API call that does all the job for you - fits all individual models across CV folds and resamples, selects the best one and fits it already on the entire training dataset. It also makes sure it’s done as fast as possible thanks to parallel processing whenever it’s an enabled option.</p>
 <p>The drawback on the other hand is that it’s quite monolythic, untidy and at the end doesn’t offer a great deal of granularity to the end user.</p>
-<pre class="r"><code>model_caret &lt;- train(
-  status ~ .,
-  data = juice(recipe_preped),
-  method = &quot;ranger&quot;,
-  metric = &quot;ROC&quot;,
-  trControl = control_caret,
-  tuneGrid = grid_caret,
-  importance = &quot;impurity&quot;,
-  num.trees = 500
+<pre class="sourceCode r"><code class="sourceCode r">model_caret &lt;-<span class="st"> </span><span class="kw">train</span>(
+  status <span class="op">~</span><span class="st"> </span>.,
+  <span class="dt">data =</span> <span class="kw">juice</span>(recipe_preped),
+  <span class="dt">method =</span> <span class="st">&quot;ranger&quot;</span>,
+  <span class="dt">metric =</span> <span class="st">&quot;ROC&quot;</span>,
+  <span class="dt">trControl =</span> control_caret,
+  <span class="dt">tuneGrid =</span> grid_caret,
+  <span class="dt">importance =</span> <span class="st">&quot;impurity&quot;</span>,
+  <span class="dt">num.trees =</span> <span class="dv">500</span>
   )
 
 model_caret</code></pre>
@@ -278,10 +343,10 @@ model_caret</code></pre>
 ## The final values used for the model were mtry = 4, splitrule = gini
 ##  and min.node.size = 5.</code></pre>
 <p><code>Caret</code> also comes with built-in handy functions for assessing model’s individual predictors strength. By setting the <code>importance = &quot;impurity&quot;</code> in the <code>ranger</code> engine we ensure that variable importance will be returned by the final train object. As of now there is no such possibility in the <code>tidymodels</code> packages and I’m curious to see how it will be solved!</p>
-<pre class="r"><code># Accessing most predictive attributes from caret 
-varImp(model_caret, scale = TRUE)$importance %&gt;% 
-  rownames_to_column() %&gt;% 
-  arrange(-Overall)</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Accessing most predictive attributes from caret </span>
+<span class="kw">varImp</span>(model_caret, <span class="dt">scale =</span> <span class="ot">TRUE</span>)<span class="op">$</span>importance <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">rownames_to_column</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">arrange</span>(<span class="op">-</span>Overall)</code></pre>
 <pre><code>##                           rowname    Overall
 ## 1                          income 100.000000
 ## 2                       seniority  96.553085
@@ -314,61 +379,61 @@ varImp(model_caret, scale = TRUE)$importance %&gt;%
 ## 29     job_unrecorded_observation   0.000000</code></pre>
 <p>Final cross-validated and test results are easily available with just a couple lines of code. Note that cross-validation performance is aggregated per each index (observation) and averaged out before the final performance metric is calculated.</p>
 <p>Getting the test performance is a matter of <code>baking</code> the test set with the already prepped recipe and then making the prediction using the train object. 83.1% AUC for cross-validated training performance and 82.1% for testing - not a bad result for so little preprocessing! Close results also suggest that our model is likely to generalize well to new samples.</p>
-<pre class="r"><code>df_train_pred_caret &lt;- model_caret$pred %&gt;% 
-  group_by(rowIndex) %&gt;% 
-  summarise(bad = mean(bad)) %&gt;% 
-  transmute(estimate = bad) %&gt;% 
-  add_column(truth = df_train$status)
+<pre class="sourceCode r"><code class="sourceCode r">df_train_pred_caret &lt;-<span class="st"> </span>model_caret<span class="op">$</span>pred <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(rowIndex) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="dt">bad =</span> <span class="kw">mean</span>(bad)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">transmute</span>(<span class="dt">estimate =</span> bad) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">add_column</span>(<span class="dt">truth =</span> df_train<span class="op">$</span>status)
 
-# Cross-validated training performance
-percent(roc_auc(df_train_pred_caret, truth, estimate)$.estimate)</code></pre>
+<span class="co"># Cross-validated training performance</span>
+<span class="kw">percent</span>(<span class="kw">roc_auc</span>(df_train_pred_caret, truth, estimate)<span class="op">$</span>.estimate)</code></pre>
 <pre><code>## [1] &quot;83.1%&quot;</code></pre>
-<pre class="r"><code>df_test_pred_caret &lt;- predict(
+<pre class="sourceCode r"><code class="sourceCode r">df_test_pred_caret &lt;-<span class="st"> </span><span class="kw">predict</span>(
     model_caret,
-    newdata = bake(recipe_preped, df_test),
-    type = &quot;prob&quot;) %&gt;%
-  as_tibble() %&gt;%
-  transmute(estimate = bad) %&gt;%
-  add_column(truth = df_test$status)
+    <span class="dt">newdata =</span> <span class="kw">bake</span>(recipe_preped, df_test),
+    <span class="dt">type =</span> <span class="st">&quot;prob&quot;</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">as_tibble</span>() <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">transmute</span>(<span class="dt">estimate =</span> bad) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">add_column</span>(<span class="dt">truth =</span> df_test<span class="op">$</span>status)
 
-# Test performance
-percent(roc_auc(df_test_pred_caret, truth, estimate)$.estimate)</code></pre>
+<span class="co"># Test performance</span>
+<span class="kw">percent</span>(<span class="kw">roc_auc</span>(df_test_pred_caret, truth, estimate)<span class="op">$</span>.estimate)</code></pre>
 <pre><code>## [1] &quot;82.1%&quot;</code></pre>
 </div>
 <div id="tidymodels" class="section level2">
 <h2>Tidymodels</h2>
 <p>In the beginning, when I saw some of the very first articles about doing ML the tidy way by combining <code>recipes</code> and <code>rsample</code> my thoughts were that it was all way too complicated compared to what <code>caret</code> offered. I was very surprised now when I discovered how clean and simple it became over the last year, and apparently things will be further simplified over the next months (<a href="https://github.com/tidymodels/parsnip/issues/200">link</a>)!</p>
 <p>First let’s define two helper functions that will be used later during the modelling process. I imagine these might be wrapped into predefined helper functions in <code>tidymodels</code> packages instead of having to do that every time.</p>
-<pre class="r"><code># Defining helper functions that will be used later on
-fit_on_fold &lt;- function(spec, prepped) {
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Defining helper functions that will be used later on</span>
+fit_on_fold &lt;-<span class="st"> </span><span class="cf">function</span>(spec, prepped) {
   
-  x &lt;- juice(prepped, all_predictors())
-  y &lt;- juice(prepped, all_outcomes())
+  x &lt;-<span class="st"> </span><span class="kw">juice</span>(prepped, <span class="kw">all_predictors</span>())
+  y &lt;-<span class="st"> </span><span class="kw">juice</span>(prepped, <span class="kw">all_outcomes</span>())
   
-  fit_xy(spec, x, y)
+  <span class="kw">fit_xy</span>(spec, x, y)
 }
 
-predict_helper &lt;- function(split, recipe, fit) {
+predict_helper &lt;-<span class="st"> </span><span class="cf">function</span>(split, recipe, fit) {
   
-  new_x &lt;- bake(recipe, new_data = assessment(split), all_predictors())
+  new_x &lt;-<span class="st"> </span><span class="kw">bake</span>(recipe, <span class="dt">new_data =</span> <span class="kw">assessment</span>(split), <span class="kw">all_predictors</span>())
   
-  predict(fit, new_x, type = &quot;prob&quot;) %&gt;% 
-    bind_cols(assessment(split) %&gt;% select(status)) 
+  <span class="kw">predict</span>(fit, new_x, <span class="dt">type =</span> <span class="st">&quot;prob&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">bind_cols</span>(<span class="kw">assessment</span>(split) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(status)) 
 }</code></pre>
 <p>First, let’s use <code>parsnip</code> to define our ‘modelling engine’ - just like before we’re setting it as a classification problem, using Random Forest running on the <code>ranger</code> engine. On top of that I’m using <code>dials</code> to define a grid of parameters to optimize. <code>Dials</code> provides a set of handy functions, such as: <code>grid_random</code> or <code>grid_regular</code>, that let you choose the range of parameters in a very flexible way.</p>
 <p>From what I can see the parameters that could be optimized slightly differ between both frameworks: <code>caret</code> allows for tunning the ‘min.node.size’ while keeping the ‘trees’ constant, while <code>parsnip</code> allows for tuning ‘trees’ while keeping ‘min.node.size’ constant (I assume it’s using the default <code>ranger</code> values). Nevertheless, the total amount of combinations is same in both cases and equal to 30.</p>
-<pre class="r"><code># Specifying the modelling engine
-(engine_tidym &lt;- rand_forest(mode = &quot;classification&quot;) %&gt;% 
-  set_engine(&quot;ranger&quot;))</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Specifying the modelling engine</span>
+(engine_tidym &lt;-<span class="st"> </span><span class="kw">rand_forest</span>(<span class="dt">mode =</span> <span class="st">&quot;classification&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">set_engine</span>(<span class="st">&quot;ranger&quot;</span>))</code></pre>
 <pre><code>## Random Forest Model Specification (classification)
 ## 
 ## Computational engine: ranger</code></pre>
-<pre class="r"><code># Specifying the grid of hyperparameters that should be tested
-(gridy_tidym &lt;- grid_random(
-  mtry %&gt;% range_set(c( 1,  20)),
-  trees %&gt;% range_set(c( 500, 1000)), 
-  min_n %&gt;% range_set(c(2,  10)),
-  size = 30
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Specifying the grid of hyperparameters that should be tested</span>
+(gridy_tidym &lt;-<span class="st"> </span><span class="kw">grid_random</span>(
+  mtry <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">range_set</span>(<span class="kw">c</span>( <span class="dv">1</span>,  <span class="dv">20</span>)),
+  trees <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">range_set</span>(<span class="kw">c</span>( <span class="dv">500</span>, <span class="dv">1000</span>)), 
+  min_n <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">range_set</span>(<span class="kw">c</span>(<span class="dv">2</span>,  <span class="dv">10</span>)),
+  <span class="dt">size =</span> <span class="dv">30</span>
   ))</code></pre>
 <pre><code>## # A tibble: 30 x 3
 ##     mtry trees min_n
@@ -385,7 +450,7 @@ predict_helper &lt;- function(split, recipe, fit) {
 ## 10    16   616     3
 ## # … with 20 more rows</code></pre>
 <p>Now comes the really interesting part of <code>tidymodels</code>: we’re using a <code>merge</code> helper function from <code>dials</code> to bind our predefined ‘modelling engine’ with all grid combinations of the hyperparameters to tune.</p>
-<pre class="r"><code>merge(engine_tidym, gridy_tidym)[1:3] # just to see the top 3</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">merge</span>(engine_tidym, gridy_tidym)[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>] <span class="co"># just to see the top 3</span></code></pre>
 <pre><code>## [[1]]
 ## Random Forest Model Specification (classification)
 ## 
@@ -418,9 +483,9 @@ predict_helper &lt;- function(split, recipe, fit) {
 ## 
 ## Computational engine: ranger</code></pre>
 <p>Subsequently, I’m putting it into a tidy data frame structure where each model-parameters combination is bound together and assigned a model id that will be used later to make a distinction between consequtive fits.</p>
-<pre class="r"><code># Merging all possibilities with our cross-validated data frame
-(spec_tidym &lt;- tibble(spec = merge(engine_tidym, gridy_tidym)) %&gt;% 
-  mutate(model_id = row_number()))</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Merging all possibilities with our cross-validated data frame</span>
+(spec_tidym &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">spec =</span> <span class="kw">merge</span>(engine_tidym, gridy_tidym)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">model_id =</span> <span class="kw">row_number</span>()))</code></pre>
 <pre><code>## # A tibble: 30 x 2
 ##    spec      model_id
 ##    &lt;list&gt;       &lt;int&gt;
@@ -436,7 +501,7 @@ predict_helper &lt;- function(split, recipe, fit) {
 ## 10 &lt;spec[+]&gt;       10
 ## # … with 20 more rows</code></pre>
 <p>Lastly, I’m adding the last component into this tidy structure: all cross-validation splits that were specified before with the use of the <code>crossing</code> function. This part is very likely to evolve and be simplified in the upcoming months. Now we’re all set to start the actual tidy-modelling!</p>
-<pre class="r"><code>(spec_tidym &lt;- crossing(train_cv, spec_tidym))</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">(spec_tidym &lt;-<span class="st"> </span><span class="kw">crossing</span>(train_cv, spec_tidym))</code></pre>
 <pre><code>## # A tibble: 150 x 4
 ##    splits             id    spec      model_id
 ##    &lt;named list&gt;       &lt;chr&gt; &lt;list&gt;       &lt;int&gt;
@@ -452,34 +517,34 @@ predict_helper &lt;- function(split, recipe, fit) {
 ## 10 &lt;split [2.9K/714]&gt; Fold1 &lt;spec[+]&gt;       10
 ## # … with 140 more rows</code></pre>
 <p>To speed thigs up let’s use the <code>furrr</code> package and fit many models simultaneously. In the following code our original recipe is first prepped on each split’s training set and than it’s used by the <code>fit_on_fold</code> helper function to fit a given model-parameter combination.</p>
-<pre class="r"><code># Fitting each model-fold pair
-fits_tidym &lt;- spec_tidym %&gt;%
-  mutate(
-    prepped = future_map(splits, prepper, recipe),
-    fit = future_map2(spec, prepped, fit_on_fold)
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Fitting each model-fold pair</span>
+fits_tidym &lt;-<span class="st"> </span>spec_tidym <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(
+    <span class="dt">prepped =</span> <span class="kw">future_map</span>(splits, prepper, recipe),
+    <span class="dt">fit =</span> <span class="kw">future_map2</span>(spec, prepped, fit_on_fold)
   )</code></pre>
 <p>The last step of modelling involves usage of the other <code>predict_helper</code> function that bakes the already prepped split’s recipe and applies it on the testing set of the split, in order to make a prediction of the given model-parameters combination.</p>
-<pre class="r"><code># Making predictions of each fitted model on the testing set
-fits_pred_tidym &lt;- fits_tidym %&gt;%
-  mutate(
-    preds = future_pmap(list(splits, prepped, fit), predict_helper)
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Making predictions of each fitted model on the testing set</span>
+fits_pred_tidym &lt;-<span class="st"> </span>fits_tidym <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(
+    <span class="dt">preds =</span> <span class="kw">future_pmap</span>(<span class="kw">list</span>(splits, prepped, fit), predict_helper)
   )</code></pre>
-<pre class="r"><code># Top row of the entire structure as example
-fits_pred_tidym[1, ]</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Top row of the entire structure as example</span>
+fits_pred_tidym[<span class="dv">1</span>, ]</code></pre>
 <pre><code>## # A tibble: 1 x 7
 ##   splits          id    spec     model_id prepped    fit     preds         
 ## * &lt;named list&gt;    &lt;chr&gt; &lt;list&gt;      &lt;int&gt; &lt;named li&gt; &lt;list&gt;  &lt;named list&gt;  
 ## 1 &lt;split [2.9K/7… Fold1 &lt;spec[+…        1 &lt;recipe&gt;   &lt;fit[+… &lt;tibble [714 …</code></pre>
 <p>After training is done I would like to assess which model performs the best based on cross-validated hold-out performance. In order to do that, let’s calculate the AUC of all test sets across all model-parameter combinations. By averaging the results up, I can see the entire performance profile of all possibilities.</p>
 <p><code>Tidymodels</code> includes also two very handy packages: <a href="https://tidymodels.github.io/probably/index.html">probably</a> and <a href="https://tidymodels.github.io/tidyposterior/">tidyposterior</a>, which are very usefull for analysing model estimated probabilities and it’s resampled performance profile. I will make an introduction to those packages in one of my next posts.</p>
-<pre class="r"><code># Assessing individual model-fold performance and averaging performance across all folds for each model
-(perf_summary_tidym &lt;- fits_pred_tidym %&gt;% 
-  unnest(preds) %&gt;% 
-  group_by(id, model_id) %&gt;% 
-  roc_auc(truth = status, .pred_bad) %&gt;% 
-  group_by(model_id, .metric, .estimator) %&gt;% 
-  summarize(mean = mean(.estimate, na.rm = TRUE))) %&gt;% 
-  arrange(-mean)</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Assessing individual model-fold performance and averaging performance across all folds for each model</span>
+(perf_summary_tidym &lt;-<span class="st"> </span>fits_pred_tidym <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">unnest</span>(preds) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(id, model_id) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">roc_auc</span>(<span class="dt">truth =</span> status, .pred_bad) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(model_id, .metric, .estimator) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">mean =</span> <span class="kw">mean</span>(.estimate, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">arrange</span>(<span class="op">-</span>mean)</code></pre>
 <pre><code>## # A tibble: 30 x 4
 ## # Groups:   model_id, .metric [30]
 ##    model_id .metric .estimator  mean
@@ -496,16 +561,16 @@ fits_pred_tidym[1, ]</code></pre>
 ## 10        8 roc_auc binary     0.829
 ## # … with 20 more rows</code></pre>
 <p>Just by sorting the previous results we can easly see what is the best performing model. Let’s now take a step back and filter only that model specification, and fit it on the entire training set. As of now I’m not 100% sure what the recommended and most efficient way of doing that would be, but I decided to go for something like that:</p>
-<pre class="r"><code># Selecting the best model with:
-# perf_summary_tidym$model_id[which.max(perf_summary_tidym$mean)]
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Selecting the best model with:</span>
+<span class="co"># perf_summary_tidym$model_id[which.max(perf_summary_tidym$mean)]</span>
 
-# Fitting the best model on the full training set
-(model_tidym &lt;- tibble(spec = merge(engine_tidym, gridy_tidym)) %&gt;% 
-  mutate(model_id = row_number()) %&gt;% 
-  filter(model_id == perf_summary_tidym$model_id[which.max(perf_summary_tidym$mean)]) %&gt;% 
-  pull(spec) %&gt;% 
-  .[[1]] %&gt;% 
-  fit(status ~ ., juice(recipe_preped)))</code></pre>
+<span class="co"># Fitting the best model on the full training set</span>
+(model_tidym &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">spec =</span> <span class="kw">merge</span>(engine_tidym, gridy_tidym)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">model_id =</span> <span class="kw">row_number</span>()) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(model_id <span class="op">==</span><span class="st"> </span>perf_summary_tidym<span class="op">$</span>model_id[<span class="kw">which.max</span>(perf_summary_tidym<span class="op">$</span>mean)]) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">pull</span>(spec) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span>.[[<span class="dv">1</span>]] <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">fit</span>(status <span class="op">~</span><span class="st"> </span>., <span class="kw">juice</span>(recipe_preped)))</code></pre>
 <pre><code>## parsnip model object
 ## 
 ## Ranger result
@@ -523,28 +588,28 @@ fits_pred_tidym[1, ]</code></pre>
 ## Splitrule:                        gini 
 ## OOB prediction error (Brier s.):  0.1431664</code></pre>
 <p>Similarly like before with <code>caret</code>, I can now summarize our cross-validated and test performances.</p>
-<pre class="r"><code># Cross-validated training performance&quot;
-percent(perf_summary_tidym$mean[which.max(perf_summary_tidym$mean)])</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Cross-validated training performance&quot;</span>
+<span class="kw">percent</span>(perf_summary_tidym<span class="op">$</span>mean[<span class="kw">which.max</span>(perf_summary_tidym<span class="op">$</span>mean)])</code></pre>
 <pre><code>## [1] &quot;83.1%&quot;</code></pre>
-<pre class="r"><code># Test performance
-df_train_pred_tidym &lt;- predict(
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Test performance</span>
+df_train_pred_tidym &lt;-<span class="st"> </span><span class="kw">predict</span>(
   model_tidym, 
-  new_data = bake(recipe_preped, df_test), 
-  type = &quot;prob&quot;
-  ) %&gt;% 
-  transmute(estimate = .pred_bad) %&gt;%
-  add_column(truth = df_test$status)
+  <span class="dt">new_data =</span> <span class="kw">bake</span>(recipe_preped, df_test), 
+  <span class="dt">type =</span> <span class="st">&quot;prob&quot;</span>
+  ) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">transmute</span>(<span class="dt">estimate =</span> .pred_bad) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">add_column</span>(<span class="dt">truth =</span> df_test<span class="op">$</span>status)
 
-percent(roc_auc(df_train_pred_tidym, truth, estimate)$.estimate)</code></pre>
+<span class="kw">percent</span>(<span class="kw">roc_auc</span>(df_train_pred_tidym, truth, estimate)<span class="op">$</span>.estimate)</code></pre>
 <pre><code>## [1] &quot;82.2%&quot;</code></pre>
 <p>The entire <code>tidymodels</code> code that was scattered across above sections could be easily squeezed in one longer pipeline. Note that I limited the grid to just one row <code>gridy_tidym[1, ]</code> in order to demonstrate the solution and save on processing time.</p>
-<pre class="r"><code>df_tidym &lt;- tibble(spec = merge(engine_tidym, gridy_tidym[1:2, ])) %&gt;% 
-  mutate(model_id = row_number()) %&gt;% 
-  crossing(train_cv, .) %&gt;%
-  mutate(
-    prepped = future_map(splits, prepper, recipe),
-    fit = future_map2(spec, prepped, fit_on_fold),
-    preds = future_pmap(list(splits, prepped, fit), predict_helper)
+<pre class="sourceCode r"><code class="sourceCode r">df_tidym &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">spec =</span> <span class="kw">merge</span>(engine_tidym, gridy_tidym[<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, ])) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">model_id =</span> <span class="kw">row_number</span>()) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">crossing</span>(train_cv, .) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(
+    <span class="dt">prepped =</span> <span class="kw">future_map</span>(splits, prepper, recipe),
+    <span class="dt">fit =</span> <span class="kw">future_map2</span>(spec, prepped, fit_on_fold),
+    <span class="dt">preds =</span> <span class="kw">future_pmap</span>(<span class="kw">list</span>(splits, prepped, fit), predict_helper)
   )</code></pre>
 </div>
 </div>
