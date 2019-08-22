@@ -167,7 +167,7 @@ In the code below I'm setting control parameters for the ```caret``` model fit, 
 
 We have 5 different CV folds and 30 grid combinations to assess, which results in 150 models that will be fit and each comprising of 500 individual trees! All models will be assessed based on the ```prSummary``` function which is know as the AUC.
 
-```{r echo=FALSE}
+```{r}
 
 control_caret <- trainControl(
   method = "cv",
@@ -194,18 +194,18 @@ The drawback on the other hand is that it's quite monolythic, untidy and at the 
 
 ```{r}
 
-model_caret <- train(
-  status ~ .,
-  data = juice(recipe_preped),
-  method = "ranger",
-  metric = "ROC",
-  trControl = control_caret,
-  tuneGrid = grid_caret,
-  importance = "impurity",
-  num.trees = 500
+(
+  model_caret <- train(
+    status ~ .,
+    data = juice(recipe_preped),
+    method = "ranger",
+    metric = "ROC",
+    trControl = control_caret,
+    tuneGrid = grid_caret,
+    importance = "impurity",
+    num.trees = 500
   )
-
-model_caret
+)
 
 ```
 

@@ -147,7 +147,7 @@ text-align: justify}
 ##  n obs: 4454 
 ##  n variables: 14 
 ## 
-## ── Variable type:factor ────────────────────────────────────────────────────────
+## ── Variable type:factor ───────────────────────────────────────────────────────────────────────────────────
 ##  variable missing complete    n n_unique
 ##      home       6     4448 4454        6
 ##       job       2     4452 4454        4
@@ -161,7 +161,7 @@ text-align: justify}
 ##                 no: 3681, yes: 773, NA: 0   FALSE
 ##               goo: 3200, bad: 1254, NA: 0   FALSE
 ## 
-## ── Variable type:integer ───────────────────────────────────────────────────────
+## ── Variable type:integer ──────────────────────────────────────────────────────────────────────────────────
 ##   variable missing complete    n    mean       sd  p0     p25  p50    p75
 ##        age       0     4454 4454   37.08    10.98  18   28      36   45  
 ##     amount       0     4454 4454 1038.92   474.55 100  700    1000 1300  
@@ -261,6 +261,22 @@ train_cv_caret &lt;-<span class="st"> </span><span class="kw">rsample2caret</spa
 <h2>Caret</h2>
 <p>In the code below I’m setting control parameters for the <code>caret</code> model fit, as well as the grid of hyperparameters that will be assessed in order to pick the best performing combination. Note that I’m using the very original observation indexes for cross-validation to ensure reproducability. The <code>trainControl</code> function will also ensure that final hold-out predictions from cross-validation will be persisted for further assessment thanks to <code>savePredictions = &quot;final&quot;</code>.</p>
 <p>We have 5 different CV folds and 30 grid combinations to assess, which results in 150 models that will be fit and each comprising of 500 individual trees! All models will be assessed based on the <code>prSummary</code> function which is know as the AUC.</p>
+<pre class="sourceCode r"><code class="sourceCode r">control_caret &lt;-<span class="st"> </span><span class="kw">trainControl</span>(
+  <span class="dt">method =</span> <span class="st">&quot;cv&quot;</span>,
+  <span class="dt">verboseIter =</span> <span class="ot">FALSE</span>,
+  <span class="dt">classProbs =</span> <span class="ot">TRUE</span>,
+  <span class="dt">summaryFunction =</span> twoClassSummary,
+  <span class="dt">returnResamp =</span> <span class="st">&quot;final&quot;</span>,
+  <span class="dt">savePredictions =</span> <span class="st">&quot;final&quot;</span>,
+  <span class="dt">index =</span> train_cv_caret<span class="op">$</span>index,
+  <span class="dt">indexOut =</span> train_cv_caret<span class="op">$</span>indexOut,
+)
+
+(grid_caret &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(
+  <span class="dt">mtry =</span> <span class="kw">seq</span>(<span class="dv">1</span>, <span class="kw">ncol</span>(df_train) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">3</span>),
+  <span class="dt">splitrule =</span> <span class="kw">c</span>(<span class="st">&quot;extratrees&quot;</span>, <span class="st">&quot;gini&quot;</span>),
+  <span class="dt">min.node.size =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>)
+))</code></pre>
 <pre><code>##    mtry  splitrule min.node.size
 ## 1     1 extratrees             1
 ## 2     4 extratrees             1
@@ -294,18 +310,18 @@ train_cv_caret &lt;-<span class="st"> </span><span class="kw">rsample2caret</spa
 ## 30   13       gini             5</code></pre>
 <p>The great advantage of <code>caret</code> is that it wraps a lot of small code pieces in just one, high-level API call that does all the job for you - fits all individual models across CV folds and resamples, selects the best one and fits it already on the entire training dataset. It also makes sure it’s done as fast as possible thanks to parallel processing whenever it’s an enabled option.</p>
 <p>The drawback on the other hand is that it’s quite monolythic, untidy and at the end doesn’t offer a great deal of granularity to the end user.</p>
-<pre class="sourceCode r"><code class="sourceCode r">model_caret &lt;-<span class="st"> </span><span class="kw">train</span>(
-  status <span class="op">~</span><span class="st"> </span>.,
-  <span class="dt">data =</span> <span class="kw">juice</span>(recipe_preped),
-  <span class="dt">method =</span> <span class="st">&quot;ranger&quot;</span>,
-  <span class="dt">metric =</span> <span class="st">&quot;ROC&quot;</span>,
-  <span class="dt">trControl =</span> control_caret,
-  <span class="dt">tuneGrid =</span> grid_caret,
-  <span class="dt">importance =</span> <span class="st">&quot;impurity&quot;</span>,
-  <span class="dt">num.trees =</span> <span class="dv">500</span>
+<pre class="sourceCode r"><code class="sourceCode r">(
+  model_caret &lt;-<span class="st"> </span><span class="kw">train</span>(
+    status <span class="op">~</span><span class="st"> </span>.,
+    <span class="dt">data =</span> <span class="kw">juice</span>(recipe_preped),
+    <span class="dt">method =</span> <span class="st">&quot;ranger&quot;</span>,
+    <span class="dt">metric =</span> <span class="st">&quot;ROC&quot;</span>,
+    <span class="dt">trControl =</span> control_caret,
+    <span class="dt">tuneGrid =</span> grid_caret,
+    <span class="dt">importance =</span> <span class="st">&quot;impurity&quot;</span>,
+    <span class="dt">num.trees =</span> <span class="dv">500</span>
   )
-
-model_caret</code></pre>
+)</code></pre>
 <pre><code>## Random Forest 
 ## 
 ## 3565 samples
