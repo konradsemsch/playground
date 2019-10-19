@@ -1,0 +1,479 @@
+---
+title: "Testing the tune package from tidymodels - analysing the relationship between the upsampling ratio and model performance"
+author: "Konrad Semsch"
+date: "2019-10-11"
+slug: testing-the-tune-package-from-tidymodels-analysing-the-relationship-between-the-upsampling-ratio-and-model-performance
+tags: ["tidymodels", "predictive modelling", "upsamling"]
+categories: ["predictive modelling"]
+output:
+  blogdown::html_page:
+    highlight: tango
+---
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  { background-color: #f8f8f8; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<style>
+body {
+text-align: justify}
+</style>
+<p>Have you ever also found yourself in a situation in which you were dealing with an imbalanced classification problem, but you weren’t really quite sure how much upsampling to apply? Or what’s exactly the impact of correcting the imbalance on model performance? In this post I will explore the relationship between the upsampling ratio and model performance, while using the brand new tidymodels tune package.</p>
+<!--more-->
+<p>Have you ever also found yourself in a situation in which you were dealing with an imbalanced classification problem, but you weren’t really quite sure how much upsampling to apply? Or what’s exactly the impact of correcting the imbalance on model performance? In this post I will explore the relationship between the upsampling ratio and model performance, while using the brand new <a href="https://tidymodels.github.io/tune/">tidymodels tune</a> package.</p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Before doing any coding let’s start with a short introduction into the topic. Why should we account for class imbalance in the first place? The main reason for this is that otherwise it would be very difficult for any model to learn usefull patterns of the minority class from a dataset in which its exposure has a much lower frequency.</p>
+<p>There’s also a number of techniques that could be used in order to combat class imbalance, but in this post I will not focus on covering all of them. Of course, the selection of the most appropriate method depends on a specific modelling task, so I would strongly suggest you get familiar with them. I am listing a couple good references below.</p>
+<p>Coming back to the main question: what is the best value of the ratio to balance both target classes? Intuitively, it would be one that makes both classes equally frequent, but on the other hand, have you ever checked the impact of using different ratios on your model performance/ form? Wouldn’t it be great if we could easily simulate that and get all the results at hand? Thankfully we can easily do that with the use of the latest addition to the <a href="https://github.com/tidymodels">tidymodels</a> stack called <a href="https://tidymodels.github.io/tune/">tune</a>.</p>
+</div>
+<div id="a-bit-of-theory" class="section level1">
+<h1>A bit of theory</h1>
+<p>I’ve wanted to write this post already a long time ago, because I’ve never found a direct and comprehensive answer to this question before. I hope I will be able to cover it well in this blogpost! Some of the more interesting resources that I came across online are listed below:</p>
+<ol style="list-style-type: decimal">
+<li><p><a href="https://community.rstudio.com/t/adjusting-posterior-model-estimated-probabilities-after-re-balancing-or-applying-case-weight/8994/2">R Studio Community forum discussion</a> - that was my first post on the topic, which eventually inspired me to write this blog, where I was discussing it with Max Kuhn. I will be addressing all those points below.</p></li>
+<li><p><a href="https://www.svds.com/learning-imbalanced-classes/">svds</a> - very nice and comprehensive article that discusses ways of dealing with class imbalance. It’s a good place to get you started on the topic as it contains many references as well.</p></li>
+<li><p><a href="https://xgboost.readthedocs.io/en/latest/tutorials/param_tuning.html">xgboost docs</a> -
+xgboost creators argue that when the dataset it rebalanced in any way, we cannot further trust the estimated probabilities directly. That is very much in line with my experience so far, and I will present one method to alleviate that.</p></li>
+<li><p><a href="https://scikit-learn.org/stable/auto_examples/svm/plot_separating_hyperplane_unbalanced.html">scikit-learn</a> - discusses another solution to combat class imbalance that uses <code>case_weights</code>, but I really liked the way they presented the impact of using such a technique on where the hyperplane is derived. This is exactly what I meant when I wrote about a model having a ‘better form’. Even though upsampling is a separate technique it will have a comparable impact on your model’s ability to appropriately capture minority patterns.</p></li>
+<li><p><a href="https://developers.google.com/machine-learning/data-prep/construct/sampling-splitting/imbalanced-data">google-developers</a> - Google gives some guidance on class imbalance severity classification and presents a very interesting framework combining: first downsampling, followed by using case weights, so that the model is calibrated and produces true probabilities. That could be a very useful approach when dealing with really big data - then you can ‘afford’ to get rid of some majority class examples, while still keeping the model calibrated without doing any additional work.</p></li>
+</ol>
+<p>Once equiped with some preliminary theory let’s dive into our simulation and see the effects ourselves!</p>
+</div>
+<div id="initial-setup" class="section level1">
+<h1>Initial setup</h1>
+<p>Please note that most of <code>tidymodels</code> packages are still unstable and subject to change. It’s likely that in a couple weeks/ months parts of this blog could be outdated and would not execute. I will try to keep it up to date, but nevertheless, the outcomes of the simulation will still hold true.</p>
+<p>First let’s install all required packages. I had to install development versions of <code>dials</code>, <code>parsnip</code> and <code>tune</code> from Github in order to get it to work.</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+<span class="co">### Install the development versions of these packages</span>
+<span class="co"># devtools::install_github(&quot;tidymodels/dials&quot;)</span>
+<span class="co"># devtools::install_github(&quot;tidymodels/parsnip&quot;)</span>
+<span class="co"># devtools::install_github(&quot;tidymodels/tune&quot;)</span></code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">
+<span class="kw">set.seed</span>(<span class="dv">42</span>)
+<span class="kw">options</span>(<span class="dt">max.print =</span> <span class="dv">150</span>)
+
+<span class="kw">library</span>(doFuture)
+<span class="kw">library</span>(magrittr)
+<span class="kw">library</span>(tidymodels)
+<span class="kw">library</span>(parsnip)
+<span class="kw">library</span>(dials)
+<span class="kw">library</span>(tune)</code></pre>
+<p>One of the vignettes of <code>tune</code> suggests to parallelize computations while searching for optimal hyperparameter values. We can achieve that by using the <code>doFuture</code> package below.</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+all_cores &lt;-<span class="st"> </span>parallel<span class="op">::</span><span class="kw">detectCores</span>(<span class="dt">logical =</span> <span class="ot">FALSE</span>)
+
+<span class="kw">registerDoFuture</span>()
+cl &lt;-<span class="st"> </span><span class="kw">makeCluster</span>(all_cores)
+<span class="kw">plan</span>(cluster, <span class="dt">workers =</span> cl)</code></pre>
+<p>In the simulation I decided to use the <code>credit_data</code> dataset available in the <a href="https://tidymodels.github.io/recipes/">recipes</a> package, which depicts a well-known classification problem of defaulted vs. non-defaulted loans.</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+<span class="kw">data</span>(<span class="st">&quot;credit_data&quot;</span>)
+
+credit_data <span class="op">%&lt;&gt;%</span>
+<span class="st">  </span><span class="kw">set_names</span>(., <span class="kw">tolower</span>(<span class="kw">names</span>(.)))
+
+<span class="kw">glimpse</span>(credit_data)
+<span class="co">## Observations: 4,454</span>
+<span class="co">## Variables: 14</span>
+<span class="co">## $ status    &lt;fct&gt; good, good, bad, good, good, good, good, good, good, b…</span>
+<span class="co">## $ seniority &lt;int&gt; 9, 17, 10, 0, 0, 1, 29, 9, 0, 0, 6, 7, 8, 19, 0, 0, 15…</span>
+<span class="co">## $ home      &lt;fct&gt; rent, rent, owner, rent, rent, owner, owner, parents, …</span>
+<span class="co">## $ time      &lt;int&gt; 60, 60, 36, 60, 36, 60, 60, 12, 60, 48, 48, 36, 60, 36…</span>
+<span class="co">## $ age       &lt;int&gt; 30, 58, 46, 24, 26, 36, 44, 27, 32, 41, 34, 29, 30, 37…</span>
+<span class="co">## $ marital   &lt;fct&gt; married, widow, married, single, single, married, marr…</span>
+<span class="co">## $ records   &lt;fct&gt; no, no, yes, no, no, no, no, no, no, no, no, no, no, n…</span>
+<span class="co">## $ job       &lt;fct&gt; freelance, fixed, freelance, fixed, fixed, fixed, fixe…</span>
+<span class="co">## $ expenses  &lt;int&gt; 73, 48, 90, 63, 46, 75, 75, 35, 90, 90, 60, 60, 75, 75…</span>
+<span class="co">## $ income    &lt;int&gt; 129, 131, 200, 182, 107, 214, 125, 80, 107, 80, 125, 1…</span>
+<span class="co">## $ assets    &lt;int&gt; 0, 0, 3000, 2500, 0, 3500, 10000, 0, 15000, 0, 4000, 3…</span>
+<span class="co">## $ debt      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2500, 260, 0, 0, 0…</span>
+<span class="co">## $ amount    &lt;int&gt; 800, 1000, 2000, 900, 310, 650, 1600, 200, 1200, 1200,…</span>
+<span class="co">## $ price     &lt;int&gt; 846, 1658, 2985, 1325, 910, 1645, 1800, 1093, 1957, 14…</span></code></pre>
+<p>In this specific example the severerity of class imbalance is actually pretty low (28% minority class frequency), and it probably would be also acceptable if it almost was disregarded, however, applying upsampling will surely improve the model form. Let’s find out!</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+<span class="kw">round</span>(<span class="kw">prop.table</span>(<span class="kw">table</span>(credit_data<span class="op">$</span>status)), <span class="dv">2</span>)
+<span class="co">## </span>
+<span class="co">##  bad good </span>
+<span class="co">## 0.28 0.72</span></code></pre>
+<p>Note that apart from regular train/ test splits I also decided to repeat the CV process three times. The dataset isn’t particularly big so we can get more stable and reliable results by performing the CV process more than once.</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+split &lt;-<span class="st"> </span><span class="kw">initial_split</span>(credit_data, <span class="dt">prop =</span> <span class="fl">0.80</span>, <span class="dt">strata =</span> <span class="st">&quot;status&quot;</span>)
+
+df_train &lt;-<span class="st"> </span><span class="kw">training</span>(split)
+df_test  &lt;-<span class="st"> </span><span class="kw">testing</span>(split)
+
+(train_cv &lt;-<span class="st"> </span><span class="kw">vfold_cv</span>(df_train, <span class="dt">v =</span> <span class="dv">5</span>, <span class="dt">repeats =</span> <span class="dv">3</span>, <span class="dt">strata =</span> <span class="st">&quot;status&quot;</span>))
+<span class="co">## #  5-fold cross-validation repeated 3 times using stratification </span>
+<span class="co">## # A tibble: 15 x 3</span>
+<span class="co">##    splits             id      id2  </span>
+<span class="co">##    &lt;named list&gt;       &lt;chr&gt;   &lt;chr&gt;</span>
+<span class="co">##  1 &lt;split [2.9K/714]&gt; Repeat1 Fold1</span>
+<span class="co">##  2 &lt;split [2.9K/713]&gt; Repeat1 Fold2</span>
+<span class="co">##  3 &lt;split [2.9K/713]&gt; Repeat1 Fold3</span>
+<span class="co">##  4 &lt;split [2.9K/713]&gt; Repeat1 Fold4</span>
+<span class="co">##  5 &lt;split [2.9K/712]&gt; Repeat1 Fold5</span>
+<span class="co">##  6 &lt;split [2.9K/714]&gt; Repeat2 Fold1</span>
+<span class="co">##  7 &lt;split [2.9K/713]&gt; Repeat2 Fold2</span>
+<span class="co">##  8 &lt;split [2.9K/713]&gt; Repeat2 Fold3</span>
+<span class="co">##  9 &lt;split [2.9K/713]&gt; Repeat2 Fold4</span>
+<span class="co">## 10 &lt;split [2.9K/712]&gt; Repeat2 Fold5</span>
+<span class="co">## 11 &lt;split [2.9K/714]&gt; Repeat3 Fold1</span>
+<span class="co">## 12 &lt;split [2.9K/713]&gt; Repeat3 Fold2</span>
+<span class="co">## 13 &lt;split [2.9K/713]&gt; Repeat3 Fold3</span>
+<span class="co">## 14 &lt;split [2.9K/713]&gt; Repeat3 Fold4</span>
+<span class="co">## 15 &lt;split [2.9K/712]&gt; Repeat3 Fold5</span></code></pre>
+</div>
+<div id="model-specification" class="section level1">
+<h1>Model specification</h1>
+<p>I will use <a href="https://tidymodels.github.io/parsnip/">parsnip</a> as the main modelling engine and decided to train a regular Random Forest model. I wanted to select a model that has already embedded regularization, but doesn’t require a lot hyperparameter tuning to provide a good solution. The reason for that is we need to keep our model parameters constant and tune the value of oversampling - otherwise our results would not be comparable.</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+(engine &lt;-<span class="st"> </span><span class="kw">rand_forest</span>(
+  <span class="dt">mtry =</span> <span class="dv">2</span>,
+  <span class="dt">trees =</span> <span class="dv">500</span>, 
+  <span class="dt">min_n =</span> <span class="dv">10</span>
+  ) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">set_mode</span>(<span class="st">&quot;classification&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">set_engine</span>(<span class="st">&quot;ranger&quot;</span>))
+<span class="co">## Random Forest Model Specification (classification)</span>
+<span class="co">## </span>
+<span class="co">## Main Arguments:</span>
+<span class="co">##   mtry = 2</span>
+<span class="co">##   trees = 500</span>
+<span class="co">##   min_n = 10</span>
+<span class="co">## </span>
+<span class="co">## Computational engine: ranger</span></code></pre>
+<p>The next step is to specify our modelling recipe. It’s a pretty standard one that definitely
+could be further modified to improve model performance, but one thing is definitely worth
+pointing out - the usage of <code>tune()</code> in the last line. It’s used as a placeholder for a set of candidate values that will be evaluated. That’s how we can add information
+to our recipe/ model tuning process about a parameter that will need to be optimized during fitting.</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+recipe &lt;-<span class="st"> </span>df_train <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">recipe</span>(status <span class="op">~</span><span class="st"> </span>.) <span class="op">%&gt;%</span>
+
+<span class="st">  </span><span class="co"># Imputation: assigning NAs to a new level for categorical </span>
+<span class="st">  </span><span class="co"># (that&#39;s good practice, but not needed here) and median imputation for numeric</span>
+<span class="st">  </span><span class="kw">step_unknown</span>(<span class="kw">all_nominal</span>(), <span class="op">-</span>status) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">step_medianimpute</span>(<span class="kw">all_numeric</span>()) <span class="op">%&gt;%</span>
+
+<span class="st">  </span><span class="co"># Combining infrequent categorical levels and introducing a new level </span>
+<span class="st">  </span><span class="co"># for prediction time (that&#39;s good practice, but not needed here)</span>
+<span class="st">  </span><span class="kw">step_other</span>(<span class="kw">all_nominal</span>(), <span class="op">-</span>status, <span class="dt">other =</span> <span class="st">&quot;infrequent_combined&quot;</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">step_novel</span>(<span class="kw">all_nominal</span>(), <span class="op">-</span>status, <span class="dt">new_level =</span> <span class="st">&quot;unrecorded_observation&quot;</span>) <span class="op">%&gt;%</span>
+
+<span class="st">  </span><span class="co"># Hot-encoding categorical variables</span>
+<span class="st">  </span><span class="kw">step_dummy</span>(<span class="kw">all_nominal</span>(), <span class="op">-</span>status, <span class="dt">one_hot =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span>
+<span class="st">  </span><span class="co"># Creating additional ratio variables - they typically make sense </span>
+<span class="st">  </span><span class="co"># in credit scoring problems</span>
+<span class="st">  </span><span class="kw">step_mutate</span>(
+    <span class="dt">ratio_expenses_income =</span> expenses <span class="op">/</span><span class="st"> </span>(income <span class="op">+</span><span class="st"> </span><span class="fl">0.001</span>),
+    <span class="dt">ratio_assets_income =</span> assets <span class="op">/</span><span class="st"> </span>(income <span class="op">+</span><span class="st"> </span><span class="fl">0.001</span>),
+    <span class="dt">ratio_debt_income =</span> debt <span class="op">/</span><span class="st"> </span>(income <span class="op">+</span><span class="st"> </span><span class="fl">0.001</span>),
+    <span class="dt">ratio_debt_assets =</span> debt <span class="op">/</span><span class="st"> </span>(assets <span class="op">+</span><span class="st"> </span><span class="fl">0.001</span>),
+    <span class="dt">ratio_amout_price =</span> amount <span class="op">/</span><span class="st"> </span>(price <span class="op">+</span><span class="st"> </span><span class="fl">0.001</span>)
+  ) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span>
+<span class="st">  </span><span class="co"># Adding upsampling </span>
+<span class="st">  </span><span class="kw">step_upsample</span>(status, <span class="dt">over_ratio =</span> <span class="kw">tune</span>())</code></pre>
+<p>Now I’m using the <a href="https://tidymodels.github.io/dials/">dials</a> package to create a grid of candidate values for the upsampling ratio, which will be evaluated during model fitting. Based on <code>recipes::step_upsample()</code> documentation we can see that an upsampling ratio value equal to 1 means, that all target levels are sampled to have the same frequency. A value of 0.5 would mean that the minority class will be half as frequent as the majority class (approximately).</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+(grid &lt;-<span class="st"> </span><span class="kw">grid_regular</span>(
+  <span class="kw">over_ratio</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">range_set</span>(<span class="kw">c</span>(<span class="fl">0.5</span>, <span class="fl">1.5</span>)),
+  <span class="dt">levels =</span> <span class="dv">11</span>
+  ))
+<span class="co">## # A tibble: 11 x 1</span>
+<span class="co">##    over_ratio</span>
+<span class="co">##         &lt;dbl&gt;</span>
+<span class="co">##  1        0.5</span>
+<span class="co">##  2        0.6</span>
+<span class="co">##  3        0.7</span>
+<span class="co">##  4        0.8</span>
+<span class="co">##  5        0.9</span>
+<span class="co">##  6        1  </span>
+<span class="co">##  7        1.1</span>
+<span class="co">##  8        1.2</span>
+<span class="co">##  9        1.3</span>
+<span class="co">## 10        1.4</span>
+<span class="co">## 11        1.5</span></code></pre>
+<p>Let’s move to the final step of connecting all previously specified inputs: our recipe, model engine, resampled train/ test sets and grid of candidate values to evaluate. On top of that we pass which metrics we would like to track for each iteration using the <a href="https://tidymodels.github.io/yardstick/">yardstick</a> package, as well as disable verbosity of the procedure. Note that in the <code>grid_control</code> function call parallel processing is enabled by default if a parallel backend is registered.</p>
+<p>Please keep in mind that even though we’re running this in parallel, this code chunk will most probably execute for a couple of minutes before all models will be fitted. The outcome of the <code>tune_grid</code> function is a tidy, nested tibble object separated by CV repetition and each hold-out fold performance metrics requested in the call.</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+(fits &lt;-<span class="st"> </span><span class="kw">tune_grid</span>(
+  recipe,
+  <span class="dt">model =</span> engine,
+  <span class="dt">rs =</span> train_cv,
+  <span class="dt">grid =</span> grid,
+  <span class="dt">perf =</span> <span class="kw">metric_set</span>(roc_auc, j_index, sens, spec),
+  <span class="dt">control =</span> <span class="kw">grid_control</span>(<span class="dt">verbose =</span> <span class="ot">FALSE</span>)
+  ))
+<span class="co">## #  5-fold cross-validation repeated 3 times using stratification </span>
+<span class="co">## # A tibble: 15 x 5</span>
+<span class="co">##    splits             id      id2   .metrics          .notes          </span>
+<span class="co">##  * &lt;list&gt;             &lt;chr&gt;   &lt;chr&gt; &lt;list&gt;            &lt;list&gt;          </span>
+<span class="co">##  1 &lt;split [2.9K/714]&gt; Repeat1 Fold1 &lt;tibble [44 × 4]&gt; &lt;tibble [0 × 1]&gt;</span>
+<span class="co">##  2 &lt;split [2.9K/713]&gt; Repeat1 Fold2 &lt;tibble [44 × 4]&gt; &lt;tibble [0 × 1]&gt;</span>
+<span class="co">##  3 &lt;split [2.9K/713]&gt; Repeat1 Fold3 &lt;tibble [44 × 4]&gt; &lt;tibble [0 × 1]&gt;</span>
+<span class="co">##  4 &lt;split [2.9K/713]&gt; Repeat1 Fold4 &lt;tibble [44 × 4]&gt; &lt;tibble [0 × 1]&gt;</span>
+<span class="co">##  5 &lt;split [2.9K/712]&gt; Repeat1 Fold5 &lt;tibble [44 × 4]&gt; &lt;tibble [0 × 1]&gt;</span>
+<span class="co">##  6 &lt;split [2.9K/714]&gt; Repeat2 Fold1 &lt;tibble [44 × 4]&gt; &lt;tibble [0 × 1]&gt;</span>
+<span class="co">##  7 &lt;split [2.9K/713]&gt; Repeat2 Fold2 &lt;tibble [44 × 4]&gt; &lt;tibble [0 × 1]&gt;</span>
+<span class="co">##  8 &lt;split [2.9K/713]&gt; Repeat2 Fold3 &lt;tibble [44 × 4]&gt; &lt;tibble [0 × 1]&gt;</span>
+<span class="co">##  9 &lt;split [2.9K/713]&gt; Repeat2 Fold4 &lt;tibble [44 × 4]&gt; &lt;tibble [0 × 1]&gt;</span>
+<span class="co">## 10 &lt;split [2.9K/712]&gt; Repeat2 Fold5 &lt;tibble [44 × 4]&gt; &lt;tibble [0 × 1]&gt;</span>
+<span class="co">## 11 &lt;split [2.9K/714]&gt; Repeat3 Fold1 &lt;tibble [44 × 4]&gt; &lt;tibble [0 × 1]&gt;</span>
+<span class="co">## 12 &lt;split [2.9K/713]&gt; Repeat3 Fold2 &lt;tibble [44 × 4]&gt; &lt;tibble [0 × 1]&gt;</span>
+<span class="co">## 13 &lt;split [2.9K/713]&gt; Repeat3 Fold3 &lt;tibble [44 × 4]&gt; &lt;tibble [0 × 1]&gt;</span>
+<span class="co">## 14 &lt;split [2.9K/713]&gt; Repeat3 Fold4 &lt;tibble [44 × 4]&gt; &lt;tibble [0 × 1]&gt;</span>
+<span class="co">## 15 &lt;split [2.9K/712]&gt; Repeat3 Fold5 &lt;tibble [44 × 4]&gt; &lt;tibble [0 × 1]&gt;</span></code></pre>
+<p>The outcome can be further easily summarized with the <code>estimate</code> function, which will extract and flatten the <code>.metrics</code> column. That makes it very convenient to visualize the performance profile of the model.</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+<span class="kw">estimate</span>(fits) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(over_ratio))
+<span class="co">## # A tibble: 44 x 6</span>
+<span class="co">##    over_ratio .metric .estimator  mean     n std_err</span>
+<span class="co">##         &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;</span>
+<span class="co">##  1        1.5 j_index binary     0.510    15 0.0103 </span>
+<span class="co">##  2        1.5 roc_auc binary     0.837    15 0.00421</span>
+<span class="co">##  3        1.5 sens    binary     0.699    15 0.00919</span>
+<span class="co">##  4        1.5 spec    binary     0.812    15 0.00471</span>
+<span class="co">##  5        1.4 j_index binary     0.512    15 0.0104 </span>
+<span class="co">##  6        1.4 roc_auc binary     0.837    15 0.00437</span>
+<span class="co">##  7        1.4 sens    binary     0.701    15 0.00881</span>
+<span class="co">##  8        1.4 spec    binary     0.811    15 0.00479</span>
+<span class="co">##  9        1.3 j_index binary     0.514    15 0.0107 </span>
+<span class="co">## 10        1.3 roc_auc binary     0.838    15 0.00410</span>
+<span class="co">## # … with 34 more rows</span></code></pre>
+</div>
+<div id="analyzing-performance-profile" class="section level1">
+<h1>Analyzing performance profile</h1>
+<p>For visualization of the results I will use my own <a href="https://github.com/konradsemsch/ggrapid">ggrapid</a> package that you can install from Github. After having a quick look at the plot we can arrive at the following conclusions:</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+<span class="kw">library</span>(ggrapid)
+
+<span class="kw">estimate</span>(fits) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(
+    <span class="dt">over_ratio =</span> <span class="kw">as.character</span>(over_ratio)
+    ) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">rename</span>(
+    <span class="dt">Metric =</span> .metric  
+  ) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">plot_line</span>(
+    over_ratio, 
+    mean, 
+    <span class="dt">fill =</span> Metric,
+    <span class="dt">title =</span> <span class="st">&quot;Performance metrics across different upsampling ratio values&quot;</span>,
+    <span class="dt">caption =</span> <span class="st">&quot;Upsampling ratio = 1 - equal classes frequency&quot;</span>,
+    <span class="dt">lab_x =</span> <span class="st">&quot;Upsampling ratio between both classes&quot;</span>,
+    <span class="dt">lab_y =</span> <span class="st">&quot;Performance metric value&quot;</span>,
+    <span class="dt">angle =</span> <span class="dv">0</span>,
+    <span class="dt">limit_max =</span> <span class="dv">1</span>
+    )</code></pre>
+<p><img src="/post/2019-10-11-testing-the-new-tidymodels-tune-package-empirical-analysis-between-the-value-of-oversampling-ratio-and-model-performance_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<ol style="list-style-type: decimal">
+<li><p><strong>ROC AUC</strong> - regardless of the value of the upsampling ratio the overall rank ordering ability of the model remains constant. It makes sense as the ROC AUC is calculated across the entire space of probability cut-offs.</p></li>
+<li><p><strong>Sensitivity / specificity</strong> - with a higher value of the upsampling ratio sensitivity increases, while specificity decreases. This shows that even though the overall ability of the model remains constant (point above), itss inner workings and ability to better capture the patterns of the minority class significantly improve. This is precisely what we want to achieve in problems such as credit scoring. The main reason for this is that both types of errors have vastly different associated costs.</p></li>
+<li><p><strong>J-index</strong> - confirms the previous point as it’s calculated as: sensitivity + specificity - 1. The J-index suggests that the best trade-off between sensitivity and specificity is achieved when the upsampling ratio is equal to 1.1. In practice it means that the frequency of the minority class is by 10% higher than the majority class.</p></li>
+</ol>
+<p>The above analysis proves that even though there is no impact of upsampling on the ROC AUC, combatting class imbalance has an enourmous impact on how the minority patterns are exposed and eventually learnt by the algorithm.</p>
+<p>Most software packages and tools by default suggest an upsampling ratio that makes both frequencies equal - it makes a lot of sense and is a reasonable default. What’s surprising though is that (at least for this example) we can see that the best model form is obtained with an upsampling ratio equal to 1.1.</p>
+</div>
+<div id="can-we-trust-upsampled-probabilities" class="section level1">
+<h1>Can we trust upsampled probabilities?</h1>
+<p>If you thought that’s the end if this post you were wrong. The reason for this is that estimated probabilities from upsampled models can’t be trusted and used directly by decision makers (as also pointed in XgBoost documentation). Check out the next chunks to find out why!</p>
+<p>First of all, let’s extract the value of the upsampling ratio that resulted in the best model form. Our goal now is to fit the model to the entire training set using that best parameter value.</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+(over_ratio_best &lt;-<span class="st"> </span><span class="kw">estimate</span>(fits) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(.metric <span class="op">==</span><span class="st"> &quot;j_index&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(mean)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">slice</span>(<span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">pull</span>(over_ratio))
+<span class="co">## [1] 1.2</span></code></pre>
+<p>Now we need to update our originally specified recipe using the <code>update</code> function. Perhaps there will be a better way of doing that in the upcoming <code>tidymodels</code> stack, but that was the best method I was able to find at the moment of writing this post.</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+recipe_best &lt;-<span class="st"> </span>recipe
+recipe_best<span class="op">$</span>steps[[<span class="dv">7</span>]] &lt;-<span class="st"> </span><span class="kw">update</span>(recipe<span class="op">$</span>steps[[<span class="dv">7</span>]], <span class="dt">over_ratio =</span> over_ratio_best)</code></pre>
+<p>Once we have the recipe updated, we <code>prep</code> it and use <code>fit</code> on our previously specified Random Forest engine.</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+recipe_best_prep &lt;-<span class="st"> </span><span class="kw">prep</span>(recipe_best, <span class="dt">retain =</span> <span class="ot">TRUE</span>)
+
+(fit_best &lt;-<span class="st"> </span>engine <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">fit</span>(status <span class="op">~</span><span class="st"> </span>., <span class="kw">juice</span>(recipe_best_prep)))
+<span class="co">## parsnip model object</span>
+<span class="co">## </span>
+<span class="co">## Ranger result</span>
+<span class="co">## </span>
+<span class="co">## Call:</span>
+<span class="co">##  ranger::ranger(formula = formula, data = data, mtry = ~2, num.trees = ~500,      min.node.size = ~10, num.threads = 1, verbose = FALSE, seed = sample.int(10^5,          1), probability = TRUE) </span>
+<span class="co">## </span>
+<span class="co">## Type:                             Probability estimation </span>
+<span class="co">## Number of trees:                  500 </span>
+<span class="co">## Sample size:                      6146 </span>
+<span class="co">## Number of independent variables:  34 </span>
+<span class="co">## Mtry:                             2 </span>
+<span class="co">## Target node size:                 10 </span>
+<span class="co">## Variable importance mode:         none </span>
+<span class="co">## Splitrule:                        gini </span>
+<span class="co">## OOB prediction error (Brier s.):  0.1298593</span></code></pre>
+<p>And now’s the main point - if no upsampling was performed, we could use that model as is and obtain reliable predictions. But having used a rebalancing technique, the estimated model probabilities follow now a different distribution.</p>
+<p>If you recall, the frequency of the minority class was roughly 28%, therefore the average estimated probability of the model should be almost identical. However, the average estimated probability of our model is now <code>0.4279812</code>!</p>
+<p>It means that these probabilities can’t be used by any decision makers directly, because they have a completely different distribution than our original training data. Can we do anything about that?</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+df_train_pred &lt;-<span class="st"> </span>
+<span class="st">  </span>df_train <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(status) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(
+    <span class="dt">prob =</span> <span class="kw">predict</span>(fit_best, <span class="kw">bake</span>(recipe_best_prep, df_train), <span class="st">&quot;prob&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">pull</span>(.pred_bad)
+  )
+
+<span class="kw">mean</span>(df_train_pred<span class="op">$</span>prob)
+<span class="co">## [1] 0.4279812</span></code></pre>
+</div>
+<div id="probabilities-calibration" class="section level1">
+<h1>Probabilities calibration</h1>
+<p>A very usefull technique that can help us in this situation is called <a href="http://fastml.com/classifier-calibration-with-platts-scaling-and-isotonic-regression/">Platt’s scaling</a>. I do not want to get too deep into explaining probabilities calibration in this post, but go ahead and check out that link to get to know more.</p>
+<p>However, just to give a high level overview: the point of probabilities calibration is to scale estimated model probabilities back to their original distribution (with same or different mean). You can perform probabilities scaling with <code>Platts</code> using the function below that I once implemented in one of my packages.</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+calibrate_probabilities &lt;-<span class="st"> </span><span class="cf">function</span>(df_pred,
+                                    target,
+                                    prediction,
+                                    <span class="dt">top_level =</span> <span class="st">&quot;1&quot;</span>,
+                                    <span class="dt">target_prob =</span> <span class="fl">0.0</span>
+                                    ) {
+
+  var_target &lt;-<span class="st"> </span>rlang<span class="op">::</span><span class="kw">enquo</span>(target)
+  var_prediction &lt;-<span class="st"> </span>rlang<span class="op">::</span><span class="kw">enquo</span>(prediction)
+
+  df_pred &lt;-<span class="st"> </span>df_pred <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">mutate</span>(
+      <span class="dt">target =</span> <span class="kw">case_when</span>(
+        <span class="op">!!</span>var_target <span class="op">==</span><span class="st"> </span>top_level <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,
+        <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>),
+      <span class="dt">score =</span> <span class="kw">round</span>(<span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">log</span>((<span class="dv">1</span> <span class="op">-</span><span class="st"> </span><span class="op">!!</span>var_prediction) <span class="op">/</span><span class="st"> </span><span class="op">!!</span>var_prediction), <span class="dv">0</span>)
+      )
+
+  glm &lt;-<span class="st"> </span>stats<span class="op">::</span><span class="kw">glm</span>(target <span class="op">~</span><span class="st"> </span>score, <span class="dt">data =</span> df_pred, <span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>)
+  glm_coef &lt;-<span class="st"> </span>glm<span class="op">$</span>coef
+
+  dr &lt;-<span class="st"> </span><span class="kw">nrow</span>(<span class="kw">filter</span>(df_pred, <span class="op">!!</span>var_target <span class="op">==</span><span class="st"> </span>top_level)) <span class="op">/</span><span class="st"> </span><span class="kw">nrow</span>(df_pred)
+  target_prob &lt;-<span class="st"> </span><span class="kw">ifelse</span>(target_prob <span class="op">==</span><span class="st"> </span><span class="dv">0</span>, dr, target_prob)
+  k &lt;-<span class="st"> </span>(dr <span class="op">/</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>dr)) <span class="op">/</span><span class="st"> </span>(target_prob <span class="op">/</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>target_prob)) <span class="co"># final scaling factor</span>
+
+  df_pred <span class="op">%&lt;&gt;%</span>
+<span class="st">    </span><span class="kw">mutate</span>(
+      <span class="dt">prediction_scaled =</span> <span class="dv">1</span> <span class="op">/</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>k <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(<span class="op">-</span>(glm_coef[[<span class="dv">1</span>]] <span class="op">+</span><span class="st"> </span>glm_coef[[<span class="dv">2</span>]] <span class="op">*</span><span class="st"> </span>score))) 
+    )
+
+  <span class="kw">list</span>(
+    <span class="dt">glm_fit =</span> glm,
+    <span class="dt">glm_coef =</span> glm_coef,
+    <span class="dt">parameters =</span> <span class="kw">list</span>(
+      <span class="dt">dr =</span> dr,
+      <span class="dt">target_prob =</span> target_prob,
+      <span class="dt">k =</span> k
+    ),
+    <span class="dt">df_calibrated =</span> df_pred
+    )
+
+}</code></pre>
+<p>Let’s put the function into practice and check the results:</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+calibration &lt;-<span class="st"> </span><span class="kw">calibrate_probabilities</span>(
+  df_train_pred,
+  status,
+  prob,
+  <span class="st">&quot;bad&quot;</span>
+)
+
+<span class="kw">mean</span>(calibration<span class="op">$</span>df_calibrated<span class="op">$</span>prediction_scaled)
+<span class="co">## [1] 0.2816269</span></code></pre>
+<p>Great! We scaled our estimated probabilities back to the original distribution and we’re getting back the original minority class frequency as the average estimated probability value. In case you’re still not convinced, take a look at the comparison of distributions between both estimated probabilities presented below.</p>
+<p>The upsampled distribution of probabilities is definitely less pathological and normal-looking than the original one, but unfortunately it no longer represents business reality. Therefore, if you are planning to expose raw probabilities directly in any of your applications to people that are supposed to make decisions based on them, you need to calibrate them back to their original distribution (grey colour).</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+df_train_pred <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">version =</span> <span class="st">&quot;uncalibrated&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">bind_rows</span>(
+    calibration<span class="op">$</span>df_calibrated <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">select</span>(
+        status,
+        prediction_scaled
+      ) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">rename</span>(<span class="dt">prob =</span> prediction_scaled) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">mutate</span>(<span class="dt">version =</span> <span class="st">&quot;calibrated&quot;</span>)
+  ) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">plot_density</span>(
+    prob, 
+    <span class="dt">fill =</span> version, 
+    <span class="dt">title =</span> <span class="st">&quot;Density comparison between calibrated and uncalibrated estimated probabilities&quot;</span>,
+    <span class="dt">lab_x =</span> <span class="st">&quot;Estimated probability by the model&quot;</span>,
+    <span class="dt">quantile_low =</span> <span class="dv">0</span>,
+    <span class="dt">quantile_high =</span> <span class="dv">1</span>
+    )</code></pre>
+<p><img src="/post/2019-10-11-testing-the-new-tidymodels-tune-package-empirical-analysis-between-the-value-of-oversampling-ratio-and-model-performance_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+</div>
+<div id="wrapping-up" class="section level1">
+<h1>Wrapping up</h1>
+<p>Ok, that was a pretty long post but I hope that some of you will find it useful, and that perhaps it will save some of you the time of searching through the internet for answers that I was once looking for! As the main takeaway - remember that pretty much after any rebalancing you need to calibrate your probabilities back to their original distribution, if they are intended to be interpreted directly by any decision makers.</p>
+<p>Also I need to admit that I’m really very impressed with the progress the <code>R Studio Team</code> is making on the <code>tidymodels</code> stack. I’m pretty sure that eventually the R community will finally have a very comprehensive, complete and consistent stack of tools to build and validate all sorts of Data Science &amp; Machine Learning solutions. Thank you!</p>
+</div>
