@@ -1,0 +1,250 @@
+---
+title: ""
+author: "Konrad Semsch"
+date: "2019-11-XX"
+slug: 
+tags: ["tidymodels", "predictive modelling", "feature interactions"]
+categories: ["predictive modelling"]
+output:
+  blogdown::html_page:
+    highlight: tango
+---
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+<style>
+body {
+text-align: justify}
+</style>
+
+Excerpt
+
+<!--more-->
+
+Excerpt
+
+# Introduction
+
+# A bit of theory
+
+# Initial setup
+
+```{r message=FALSE, warning=FALSE, results="hide"}
+
+### Install the development versions of these packages
+# devtools::install_github("tidymodels/dials")
+# devtools::install_github("tidymodels/parsnip")
+# devtools::install_github("tidymodels/tune")
+
+```
+
+```{r message=FALSE, warning=FALSE, results="hide"}
+
+set.seed(42)
+options(max.print = 150)
+
+library(lubridate)
+library(tidyverse)
+library(doFuture)
+library(magrittr)
+library(tidymodels)
+library(parsnip)
+library(dials)
+library(tune)
+
+# let's parallelize the compuations  
+all_cores <- parallel::detectCores(logical = FALSE)
+
+registerDoFuture()
+cl <- makeCluster(all_cores)
+plan(cluster, workers = cl)
+
+```
+
+```{r}
+
+download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip", destfile = "data_bike.zip", method = "auto")
+unzip("data_bike.zip")
+
+data_bike_raw <- read_csv("day.csv")
+file.remove(c("day.csv", "hour.csv", "Readme.txt", "data_bike.zip")) # you can remove the file from your local directory if you like
+
+data_bike_raw %<>%
+  set_names(., tolower(names(.)))
+
+glimpse(data_bike_raw)
+
+```
+
+# Data cleansing
+
+```{r}
+
+# Mainly based on: https://github.com/christophM/interpretable-ml-book/blob/master/R/get-bike-sharing-dataset.R
+
+data_bike <- data_bike_raw %>% 
+  mutate(
+    season = factor(season, levels = 1:4, labels = c("spring", "summer", "fall", "winter")),
+    yr = factor(yr, level = 0:1, labels = c("2011", "2012")),
+    mnth = factor(mnth, levels = 1:12, labels = c("jan", "feb", "mar", "apr", "may", "jin", "jul", "aug", "sep", "oct", "nov", "dec")),
+    holiday = factor(holiday, levels = c(0, 1), labels = c("no_holiday", "holiday")),
+    weekday = factor(weekday, levels = 0:6, labels = c("sun", "mon", "tue", "wed", "thu", "fri", "sat")),
+    workingday = factor(workingday, levels = c(0, 1), labels = c("no_working_day", "working_day")),
+    weathersit = factor(weathersit, levels = 1:3, labels = c("good", "misty", "rain_snow_storm")),
+    days_since_2011 = dteday - min(dteday)
+  ) %>% 
+  rename(
+    year = yr,
+    month = mnth,
+    target = cnt
+  ) %>% 
+  select(-instant, -dteday, -registered, -casual, -atemp)
+
+glimpse(data_bike)
+
+```
+
+```{r}
+
+split <- initial_split(credit_data, prop = 0.80, strata = "status")
+
+df_train <- training(split)
+df_test  <- testing(split)
+
+(train_cv <- vfold_cv(df_train, v = 5, repeats = 3, strata = "status"))
+
+```
+
+```{r}
+
+(engine <- rand_forest(
+  mtry = 2,
+  trees = 500, 
+  min_n = 10
+  ) %>% 
+  set_mode("classification") %>% 
+  set_engine("ranger"))
+
+```
+
+```{r}
+
+recipe <- df_train %>%
+  recipe(status ~ .) %>%
+
+  # Imputation: assigning NAs to a new level for categorical 
+  # (that's good practice, but not needed here) and median imputation for numeric
+  step_unknown(all_nominal(), -status) %>% 
+  step_medianimpute(all_numeric()) %>%
+
+  # Combining infrequent categorical levels and introducing a new level 
+  # for prediction time (that's good practice, but not needed here)
+  step_other(all_nominal(), -status, other = "infrequent_combined") %>%
+  step_novel(all_nominal(), -status, new_level = "unrecorded_observation") %>%
+
+  # Hot-encoding categorical variables
+  step_dummy(all_nominal(), -status, one_hot = TRUE) %>%
+  
+  # Creating additional ratio variables - they typically make sense 
+  # in credit scoring problems
+  step_mutate(
+    ratio_expenses_income = expenses / (income + 0.001),
+    ratio_assets_income = assets / (income + 0.001),
+    ratio_debt_income = debt / (income + 0.001),
+    ratio_debt_assets = debt / (assets + 0.001),
+    ratio_amout_price = amount / (price + 0.001)
+  ) %>% 
+  
+  # Adding upsampling 
+  step_upsample(status, over_ratio = tune())
+
+```
+
+```{r}
+
+(grid <- grid_regular(
+  over_ratio() %>% range_set(c(0.5, 1.5)),
+  levels = 11
+  ))
+
+```
+
+```{r max.print = 10}
+
+(fits <- tune_grid(
+  recipe,
+  model = engine,
+  rs = train_cv,
+  grid = grid,
+  perf = metric_set(roc_auc, j_index, sens, spec),
+  control = grid_control(verbose = FALSE)
+  ))
+
+```
+
+```{r}
+
+estimate(fits) %>% 
+  arrange(desc(over_ratio))
+
+```
+
+# Analyzing performance profile
+
+```{r message=FALSE, warning=FALSE}
+
+library(ggrapid)
+
+estimate(fits) %>% 
+  mutate(
+    over_ratio = as.character(over_ratio)
+    ) %>% 
+  rename(
+    Metric = .metric  
+  ) %>% 
+  plot_line(
+    over_ratio, 
+    mean, 
+    fill = Metric,
+    title = "Performance metrics across different upsampling ratio values",
+    caption = "Upsampling ratio = 1 - equal classes frequency",
+    lab_x = "Upsampling ratio between both classes",
+    lab_y = "Performance metric value",
+    angle = 0,
+    limit_max = 1
+    )
+
+```
+
+```{r}
+
+(over_ratio_best <- estimate(fits) %>% 
+  filter(.metric == "j_index") %>% 
+  arrange(desc(mean)) %>% 
+  slice(1) %>% 
+  pull(over_ratio))
+
+```
+
+```{r}
+
+recipe_best <- recipe
+recipe_best$steps[[7]] <- update(recipe$steps[[7]], over_ratio = over_ratio_best)
+
+```
+
+```{r}
+
+recipe_best_prep <- prep(recipe_best, retain = TRUE)
+
+(fit_best <- engine %>% 
+  fit(status ~ ., juice(recipe_best_prep)))
+
+```
+

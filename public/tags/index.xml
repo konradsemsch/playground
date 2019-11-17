@@ -6,15 +6,24 @@
     <description>Recent content in Tags on Practitioners view on predictive modelling</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 11 Oct 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 17 Nov 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>missing values</title>
+      <link>/tags/missing-values/</link>
+      <pubDate>Sun, 17 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/missing-values/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>predictive modelling</title>
       <link>/tags/predictive-modelling/</link>
-      <pubDate>Fri, 11 Oct 2019 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 17 Nov 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/predictive-modelling/</guid>
       <description></description>
@@ -23,7 +32,7 @@
     <item>
       <title>tidymodels</title>
       <link>/tags/tidymodels/</link>
-      <pubDate>Fri, 11 Oct 2019 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 17 Nov 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/tidymodels/</guid>
       <description></description>

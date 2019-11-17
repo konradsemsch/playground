@@ -20,7 +20,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.56.3">
-    <title>{ggrapid}: Create neat &amp; complete ggplot visualizations with as little code as possible</title>
+    <title>step_shadow_missing - implementing a custom {recipes} step to account for missing data patterns</title>
     <meta name="author" content="Konrad Semsch">
     <meta name="keywords" content=", data science, statistics, machine learning, predictive modelling, fintech, banking, r">
 
@@ -33,18 +33,18 @@
 
 
 
-In this post I will make a an introduction to a new data visulazation package that I recently published on Github - ggrapid! ggrapid enables creation of the most common ggplot-based visualizations fast and with just a few lines of code.
+Have you also always wanted to seemlessly account for missing data patterns when doing data modelling in R? In the following blogpost I will provide you with a ready-to-use, custom recipes step that will allow you to incorporate such technique easily and quickly in all your machine learning projects.
 ">
     <meta property="og:description" content="
 
 
 
 
-In this post I will make a an introduction to a new data visulazation package that I recently published on Github - ggrapid! ggrapid enables creation of the most common ggplot-based visualizations fast and with just a few lines of code.
+Have you also always wanted to seemlessly account for missing data patterns when doing data modelling in R? In the following blogpost I will provide you with a ready-to-use, custom recipes step that will allow you to incorporate such technique easily and quickly in all your machine learning projects.
 ">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="{ggrapid}: Create neat &amp; complete ggplot visualizations with as little code as possible">
-    <meta property="og:url" content="/2019/08/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible/">
+    <meta property="og:title" content="step_shadow_missing - implementing a custom {recipes} step to account for missing data patterns">
+    <meta property="og:url" content="/2019/11/step-shadow-missing-implementing-a-custom-recipes-step-to-account-for-missing-data-patterns/">
     <meta property="og:site_name" content="Practitioners view on predictive modelling">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="Practitioners view on predictive modelling">
@@ -53,7 +53,7 @@ In this post I will make a an introduction to a new data visulazation package th
 
 
 
-In this post I will make a an introduction to a new data visulazation package that I recently published on Github - ggrapid! ggrapid enables creation of the most common ggplot-based visualizations fast and with just a few lines of code.
+Have you also always wanted to seemlessly account for missing data patterns when doing data modelling in R? In the following blogpost I will provide you with a ready-to-use, custom recipes step that will allow you to incorporate such technique easily and quickly in all your machine learning projects.
 ">
     
     
@@ -232,19 +232,19 @@ if (!doNotTrack) {
             <div class="post-header main-content-wrap text-left">
   
     <h1 class="post-title" itemprop="headline">
-      {ggrapid}: Create neat &amp; complete ggplot visualizations with as little code as possible
+      step_shadow_missing - implementing a custom {recipes} step to account for missing data patterns
     </h1>
   
   
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2019-08-29T00:00:00Z">
+      <time itemprop="datePublished" datetime="2019-11-17T00:00:00Z">
         
   
   
   
   
-    29 August 2019
+    17 November 2019
   
 
       </time>
@@ -254,7 +254,7 @@ if (!doNotTrack) {
   
     <span>in</span>
     
-      <a class="category-link" href="/categories/eda">eda</a>
+      <a class="category-link" href="/categories/predictive-modelling">predictive modelling</a>
     
   
 
@@ -264,294 +264,304 @@ if (!doNotTrack) {
           
           <div class="post-content markdown" itemprop="articleBody">
             <div class="main-content-wrap">
-              <p>In this post I will make a an introduction to a new data visulazation package that I recently published on Github - <a href="https://github.com/konradsemsch/ggrapid">ggrapid</a>! ggrapid enables creation of the most common ggplot-based visualizations fast and with just a few lines of code.</p>
-<p>Doing EDA (Exploratory Data Analysis) is a crucial step in every Data Sciene &amp; Machine Learning project and typically that’s were all Data Scientists spend most of their time when working on a project. There’s already many great visualization packages in the R community that specifically aim at streamlining that process: <a href="https://boxuancui.github.io/DataExplorer/">DataExplorer</a> or <a href="https://ggobi.github.io/ggally/">GGally</a> for instance, but none of them was 100% fulfilling my needs. My main requirements were: speed of usage, interface consistency and elegance. As long as <code>DataExplorer</code> pretty much offers the first two points (although the execution is different), I think it’s missing out on the last factor - especially when you would like to share that report with managers or externals.</p>
-<p>That’s probably where <code>ggrapid</code> fits much better - EDA and reporting that’s intented to be shared in an elegant way with managers and externals, while still built simply and with speed with the help of a specific <code>Rmd</code> syntax. Let’s check it out!</p>
-<p>Note: similarity of names with <code>DataExplorer</code> is coincidental. I’ve been working on the <code>ggrapid</code> package for a long time already not having known that DataExplorer even exists. It was only very recently when I eventually decided to publish ggrapid to Github. Nevertheless, perhaps there’s room for the two packages to merge and offer a single, cohesive solution on all fronts :)</p>
+              <p>Have you also always wanted to seemlessly account for missing data patterns when doing data modelling in R? In the following blogpost I will provide you with a ready-to-use, custom <a href="https://tidymodels.github.io/recipes/">recipes</a> step that will allow you to incorporate such technique easily and quickly in all your machine learning projects.</p>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p><code>ggrapid</code> offers a couple wrappers around the most commonly used <code>ggplot</code> functions in the course of doing an EDA or building a report:</p>
+<p>It has often been proven in many machine learning tasks, that accounting for missing data patterns before imputing data could be vital to your model’s predictive performance. The basic problem is that whenever you impute your values with e.g.: mean or median, but do not preserve the original information that a given value was
+missing in the first place (as a binary feature), your model has no possibility of learning about that - the imputed value is just as any other in a given column (unless you impute it with a ‘special’ value as e.g. 99999 or so). When working in R and the <code>recipes</code> package in particular, I have always wished there was such feature as in <a href="https://scikit-learn.org/stable/modules/generated/sklearn.impute.MissingIndicator.html#sklearn.impute.MissingIndicator">scikit-learn</a>, where adding ‘shadow’ missing variables is implemented as optional in its imputation function.</p>
+<p>In the following blogpost I will not walk you through the steps on how to implement such a step in recipes. Instead, I will directly provide you with a ready-to-use piece of code you can immediately incorporate in your projects!</p>
+<p>These resources helped me to implement the step presented in this post:</p>
 <ul>
-<li><code>plot_density</code></li>
-<li><code>plot_boxplot</code></li>
-<li><code>plot_deciles</code> (with <code>calculate_decile_table</code>)</li>
-<li><code>plot_correlation</code></li>
-<li><code>plot_bars</code></li>
-<li><code>plot_line</code></li>
+<li><a href="https://edwinth.github.io/blog/recipes_blog/" class="uri">https://edwinth.github.io/blog/recipes_blog/</a></li>
+<li><a href="https://tidymodels.github.io/recipes/articles/Custom_Steps.html" class="uri">https://tidymodels.github.io/recipes/articles/Custom_Steps.html</a></li>
 </ul>
-<div id="density-plot" class="section level3">
-<h3>Density plot</h3>
-<pre class="sourceCode r"><code class="sourceCode r">
-<span class="kw">library</span>(tidyverse)
-<span class="kw">library</span>(ggrapid)</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">
-diamonds <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">plot_density</span>(<span class="dt">x =</span> carat)</code></pre>
-<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>There is already a PR on the <code>recipes</code> <a href="https://github.com/tidymodels/recipes/pull/272">githhub page</a> to implement such a feature under a different name, but it’s currently not being worked on. I hope that eventually it will be added to the package. Please bear in mind that even though my implementation works and I haven’t got any problems with it, it hasn’t yet been audited or properly tested on a bigger scale!</p>
 </div>
-<div id="box-plot" class="section level3">
-<h3>Box-plot</h3>
+<div id="initial-setup" class="section level1">
+<h1>Initial setup</h1>
+<p>Let’s load a couple packages that we will use here:</p>
 <pre class="sourceCode r"><code class="sourceCode r">
-diamonds <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">plot_boxplot</span>(<span class="dt">x =</span> cut,
-               <span class="dt">y =</span> carat,
-               <span class="dt">fill =</span> cut)</code></pre>
-<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-</div>
-<div id="decile-plot" class="section level3">
-<h3>Decile plot</h3>
-<pre class="sourceCode r"><code class="sourceCode r">
-diamonds <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">filter</span>(cut <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Ideal&quot;</span>, <span class="st">&quot;Premium&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">calculate_decile_table</span>(price, cut, <span class="st">&quot;Ideal&quot;</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">plot_deciles</span>()</code></pre>
-<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-</div>
-<div id="correlation" class="section level3">
-<h3>Correlation</h3>
-<pre class="sourceCode r"><code class="sourceCode r">
-diamonds <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">plot_correlation</span>()</code></pre>
-<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-</div>
-<div id="barplot" class="section level3">
-<h3>Barplot</h3>
-<pre class="sourceCode r"><code class="sourceCode r">
-diamonds <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">plot_bars</span>(<span class="dt">x =</span> carat,
-            <span class="dt">x_type =</span> <span class="st">&quot;num&quot;</span>,
-            <span class="dt">fill =</span> cut)</code></pre>
-<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-</div>
-<div id="lineplot" class="section level3">
-<h3>Lineplot</h3>
-<pre class="sourceCode r"><code class="sourceCode r">
-<span class="kw">tibble</span>(
-  <span class="dt">time =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">20</span>,
-  <span class="dt">value =</span> <span class="kw">rnorm</span>(<span class="dv">20</span>, <span class="fl">0.5</span>, <span class="dv">2</span>)
-  ) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">plot_line</span>(
-    <span class="dt">x =</span> time,
-    <span class="dt">y =</span> value
-  )</code></pre>
-<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
-</div>
-</div>
-<div id="main-arguments" class="section level1">
-<h1>Main arguments</h1>
-<p>The most commonly implemented <code>ggplot</code> arguments across all main <code>ggrapid</code> functions ensure that you can build your basic EDA report without making additional changes or custom functions. <code>ggrapid</code> tries to do most things for you but many of those arguments you can modify yourself. They are mainly (might slightly differ across functions):</p>
-<ul>
-<li>fill</li>
-<li>facet</li>
-<li>position</li>
-<li>ticks</li>
-<li>angle</li>
-<li>title</li>
-<li>subtitle</li>
-<li>caption</li>
-<li>lab_x</li>
-<li>lab_y</li>
-<li>legend</li>
-<li>vline/ hline</li>
-<li>alpha</li>
-<li>quantile_low</li>
-<li>quantile_high</li>
-<li>theme_type</li>
-<li>palette</li>
-</ul>
-<p>They allow the user to further customize the plot almost as flexibly as if you were using the classic ggplot:</p>
-<pre class="sourceCode r"><code class="sourceCode r">
-diamonds <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">plot_density</span>(<span class="dt">x =</span> carat)</code></pre>
-<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<pre class="sourceCode r"><code class="sourceCode r">
-diamonds <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">plot_density</span>(<span class="dt">x =</span> carat,
-               <span class="dt">fill =</span> cut,
-               <span class="dt">position =</span> <span class="st">&quot;stack&quot;</span>)</code></pre>
-<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<pre class="sourceCode r"><code class="sourceCode r">
-diamonds <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">plot_density</span>(<span class="dt">x =</span> carat,
-               <span class="dt">fill =</span> cut,
-               <span class="dt">position =</span> <span class="st">&quot;fill&quot;</span>)</code></pre>
-<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
-<pre class="sourceCode r"><code class="sourceCode r">
-diamonds <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">plot_density</span>(<span class="dt">x =</span> carat,
-               <span class="dt">fill =</span> cut,
-               <span class="dt">facet =</span> cut,
-               <span class="dt">title =</span> <span class="st">&quot;Write your title here&quot;</span>,
-               <span class="dt">subtitle =</span> <span class="st">&quot;Write your subtitle here&quot;</span>,
-               <span class="dt">caption =</span> <span class="st">&quot;Write your caption here&quot;</span>,
-               <span class="dt">lab_x =</span> <span class="st">&quot;Carat&quot;</span>,
-               <span class="dt">alpha =</span> <span class="fl">.5</span>,
-               <span class="dt">vline =</span> <span class="dv">1</span>)</code></pre>
-<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
-</div>
-<div id="complete-usage" class="section level1">
-<h1>Complete usage</h1>
-<p>The main idea of <code>ggrapid</code> is to apply it’s functions programatically to your entire dataset and then leverage this single object in the main reporting file. You can easily iterate across selected columns and create a set of plots for your EDA file:</p>
-<pre class="sourceCode r"><code class="sourceCode r">
-<span class="kw">library</span>(recipes)
+<span class="kw">set.seed</span>(<span class="dv">42</span>)
+<span class="kw">options</span>(<span class="dt">max.print =</span> <span class="dv">150</span>)
 
-credit_data_nested &lt;-<span class="st"> </span>credit_data <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">select</span>(<span class="op">-</span><span class="kw">one_of</span>(<span class="st">&quot;Home&quot;</span>, <span class="st">&quot;Marital&quot;</span>, <span class="st">&quot;Records&quot;</span>, <span class="st">&quot;Job&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># removing categorical variables</span>
-<span class="st">  </span><span class="kw">gather</span>(variable, variable_value,
-         <span class="kw">one_of</span>(<span class="st">&quot;Seniority&quot;</span>, <span class="st">&quot;Time&quot;</span>, <span class="st">&quot;Age&quot;</span>, <span class="st">&quot;Expenses&quot;</span>, <span class="co"># selecting variables to gather</span>
-                <span class="st">&quot;Income&quot;</span>, <span class="st">&quot;Assets&quot;</span>, <span class="st">&quot;Debt&quot;</span>, <span class="st">&quot;Amount&quot;</span>, <span class="st">&quot;Price&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">nest</span>(<span class="op">-</span>variable) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">mutate</span>(
-    <span class="dt">decile_table =</span> <span class="kw">map</span>(data, 
-                       <span class="op">~</span><span class="kw">calculate_decile_table</span>(
-                         .x,
-                         <span class="dt">binning =</span> variable_value,
-                         <span class="dt">grouping =</span> Status,
-                         <span class="dt">top_level =</span> <span class="st">&quot;bad&quot;</span>,
-                         <span class="dt">format =</span> <span class="ot">FALSE</span>
-                         )
-    ),
-    <span class="dt">plot_deciles  =</span> <span class="kw">pmap</span>(<span class="kw">list</span>(<span class="dt">x =</span> decile_table, <span class="dt">y =</span> variable),
-                         <span class="op">~</span><span class="kw">plot_deciles</span>(
-                           .x,
-                           <span class="dt">title =</span> glue<span class="op">::</span><span class="kw">glue</span>(<span class="st">&quot;Decile plot of {.y}&quot;</span>),
-                           <span class="dt">quantile_low =</span> <span class="dv">0</span>, 
-                           <span class="dt">quantile_high =</span> <span class="dv">1</span>, 
-                           <span class="dt">lab_x =</span> <span class="st">&quot;Decile&quot;</span>,
-                           <span class="dt">lab_y =</span> <span class="st">&quot;Bad rate, %&quot;</span>
-                           )
-    ),
-    <span class="dt">plot_boxplot  =</span> <span class="kw">pmap</span>(<span class="kw">list</span>(<span class="dt">x =</span> data, <span class="dt">y =</span> variable),
-                         <span class="op">~</span><span class="kw">plot_boxplot</span>(
-                           .x,
-                           <span class="dt">x =</span> Status,
-                           <span class="dt">y =</span> variable_value,
-                           <span class="dt">fill =</span> Status,
-                           <span class="dt">title =</span> glue<span class="op">::</span><span class="kw">glue</span>(<span class="st">&quot;Box plot of {.y} by Status&quot;</span>),
-                           <span class="dt">quantile_low =</span> <span class="fl">0.01</span>,
-                           <span class="dt">quantile_high =</span> <span class="fl">0.99</span>,
-                           <span class="dt">lab_x =</span> <span class="st">&quot;Performance&quot;</span>,
-                           <span class="dt">caption =</span> <span class="st">&quot;Removed 1% of observations from each side&quot;</span>,
-                           <span class="dt">palette =</span> <span class="st">&quot;inv_binary&quot;</span>
-                           )
-    ),
-    <span class="dt">plot_density  =</span> <span class="kw">pmap</span>(<span class="kw">list</span>(<span class="dt">x =</span> data, <span class="dt">y =</span> variable),
-                     <span class="op">~</span><span class="kw">plot_density</span>(
-                       .x,
-                       <span class="dt">x =</span> variable_value,
-                       <span class="dt">fill =</span> Status,
-                       <span class="dt">title =</span> glue<span class="op">::</span><span class="kw">glue</span>(<span class="st">&quot;Box plot of {.y} by Status&quot;</span>),
-                       <span class="dt">quantile_low =</span> <span class="fl">0.01</span>,
-                       <span class="dt">quantile_high =</span> <span class="fl">0.99</span>,
-                       <span class="dt">lab_x =</span> <span class="st">&quot;Performance&quot;</span>,
-                       <span class="dt">caption =</span> <span class="st">&quot;Removed 1% of observations from each side&quot;</span>,
-                       <span class="dt">palette =</span> <span class="st">&quot;inv_binary&quot;</span>
-                       )
-    )
-  )</code></pre>
-<p>This will give you the following tidy structure. Each row represents an individual variable, and columns are different plots you created before you would like to inspect:</p>
+<span class="kw">library</span>(yardstick)
+<span class="kw">library</span>(parsnip)
+<span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(recipes)
+<span class="kw">library</span>(rsample)
+<span class="kw">library</span>(parsnip)
+<span class="kw">library</span>(tune)</code></pre>
+</div>
+<div id="step-implementation" class="section level1">
+<h1>Step implementation</h1>
+<p>The full code of implementing my custom <code>recipes</code> step is available below. It consists of a couple different methods that are required for it to work with <code>prepping</code> and <code>baking</code>. I will pass on explaining all the implementation details as you can learn about them from the blogposts I referenced before, but the most basic information to take away from it is the following: for <strong>every variable that contains any missing value</strong>, <strong>an additional binary column</strong> is created with a prefix ‘shadow_’ where 1 stands for missing, and 0 for non-missing.</p>
+<p>Thanks to creation of such variables, when the patterns of missingness are not random, we can account for them when training our model and hence improve it’s predictive performance. When a variable is missing at random such approach will most likely not yield any additional increase in perfomance and actually quite an opposite - perhaps even worsen it!</p>
+<p>That could particularly happen when its application would result in an explosion of additional features - they could introduce too much additional noise that your model could take into consideration. What I’m trying to say is that applying such a step in your modelling practice doesn’t let you disregard and not analyse the patterns of missingness of your data at all!</p>
+<p>Ok, let’s finally take a look at the step implementation (the most important pieces have corresponding comments):</p>
 <pre class="sourceCode r"><code class="sourceCode r">
-credit_data_nested[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, ]
-<span class="co">## # A tibble: 3 x 6</span>
-<span class="co">##   variable  data       decile_table  plot_deciles plot_boxplot plot_density</span>
-<span class="co">##   &lt;chr&gt;     &lt;list&gt;     &lt;list&gt;        &lt;list&gt;       &lt;list&gt;       &lt;list&gt;      </span>
-<span class="co">## 1 Seniority &lt;tibble [… &lt;tibble [10 … &lt;gg&gt;         &lt;gg&gt;         &lt;gg&gt;        </span>
-<span class="co">## 2 Time      &lt;tibble [… &lt;tibble [10 … &lt;gg&gt;         &lt;gg&gt;         &lt;gg&gt;        </span>
-<span class="co">## 3 Age       &lt;tibble [… &lt;tibble [10 … &lt;gg&gt;         &lt;gg&gt;         &lt;gg&gt;</span></code></pre>
+step_shadow_missing_new &lt;-
+<span class="st">  </span><span class="cf">function</span>(<span class="dt">terms   =</span> <span class="ot">NULL</span>,
+           <span class="dt">role    =</span> <span class="ot">NA</span>,
+           <span class="dt">skip    =</span> <span class="ot">FALSE</span>,
+           <span class="dt">trained =</span> <span class="ot">FALSE</span>,
+           <span class="dt">prefix  =</span> <span class="ot">NULL</span>, 
+           <span class="dt">columns =</span> <span class="ot">NULL</span>) {
+    <span class="kw">step</span>(
+      <span class="dt">subclass =</span> <span class="st">&quot;shadow_missing&quot;</span>,
+      <span class="dt">terms    =</span> terms,
+      <span class="dt">role     =</span> role,
+      <span class="dt">skip     =</span> skip,
+      <span class="dt">trained  =</span> trained,
+      <span class="dt">prefix   =</span> prefix,
+      <span class="dt">columns  =</span> columns
+    )
+  }
+
+step_shadow_missing &lt;-
+<span class="st">  </span><span class="cf">function</span>(recipe,
+           ...,
+           <span class="dt">role    =</span> <span class="ot">NA</span>,
+           <span class="dt">skip    =</span> <span class="ot">FALSE</span>,
+           <span class="dt">trained =</span> <span class="ot">FALSE</span>,
+           <span class="dt">prefix  =</span> <span class="st">&quot;shadow&quot;</span>,
+           <span class="dt">columns =</span> <span class="ot">NULL</span>) {
+    <span class="kw">add_step</span>(
+      recipe,
+      <span class="kw">step_shadow_missing_new</span>(
+        <span class="dt">terms   =</span> <span class="kw">ellipse_check</span>(...),
+        <span class="dt">role    =</span> role,
+        <span class="dt">skip    =</span> skip,
+        <span class="dt">trained =</span> trained,
+        <span class="dt">prefix  =</span> prefix,
+        <span class="dt">columns =</span> columns
+      )
+    )
+  }
+
+prep.step_shadow_missing &lt;-<span class="st"> </span><span class="cf">function</span>(x,
+                                     training,
+                                     <span class="dt">info =</span> <span class="ot">NULL</span>,
+                                     ...) {
+  col_names &lt;-<span class="st"> </span><span class="kw">terms_select</span>(<span class="dt">terms =</span> x<span class="op">$</span>terms, <span class="dt">info =</span> info)
+  <span class="kw">step_shadow_missing_new</span>(
+    <span class="dt">terms   =</span> x<span class="op">$</span>terms,
+    <span class="dt">role    =</span> x<span class="op">$</span>role,
+    <span class="dt">skip    =</span> x<span class="op">$</span>skip,
+    <span class="dt">trained =</span> <span class="ot">TRUE</span>,
+    <span class="dt">prefix  =</span> x<span class="op">$</span>prefix,
+    <span class="dt">columns =</span> col_names
+  )
+}
+
+bake.step_shadow_missing &lt;-<span class="st"> </span><span class="cf">function</span>(object,
+                                     new_data,
+                                     ...) {
+  col_names &lt;-<span class="st"> </span>object<span class="op">$</span>columns
+  <span class="cf">for</span> (i <span class="cf">in</span> <span class="kw">seq_along</span>(col_names)) {
+    <span class="cf">if</span>(<span class="kw">sum</span>(<span class="kw">is.na</span>(new_data[[col_names[i]]])) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>){ <span class="co"># check if column has missing data </span>
+      col &lt;-<span class="st"> </span>new_data[[col_names[i]]]
+      new_data[, col_names[i]] &lt;-<span class="st"> </span>col <span class="co"># the original column should remain</span>
+      new_data[, <span class="kw">paste0</span>(object<span class="op">$</span>prefix, <span class="st">&quot;_&quot;</span>, col_names[i])] &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="kw">is.na</span>(col), <span class="dv">1</span>, <span class="dv">0</span>) <span class="co"># adding the shadowing column with a prefix </span>
+    } <span class="cf">else</span> {
+      <span class="cf">next</span> 
+    }
+  }
+  <span class="kw">as_tibble</span>(new_data)
+}
+
+print.bake.step_shadow_missing &lt;-
+<span class="st">  </span><span class="cf">function</span>(x, <span class="dt">width =</span> <span class="kw">max</span>(<span class="dv">20</span>, <span class="kw">options</span>()<span class="op">$</span>width <span class="op">-</span><span class="st"> </span><span class="dv">30</span>), ...) {
+    <span class="kw">cat</span>(<span class="st">&quot;Creating shadow variables for &quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>)
+    <span class="kw">printer</span>(x<span class="op">$</span>columns, x<span class="op">$</span>terms, x<span class="op">$</span>trained, <span class="dt">width =</span> width)
+    <span class="kw">invisible</span>(x)
+  }
+
+tidy.step_shadow_missing &lt;-<span class="st"> </span><span class="cf">function</span>(x, ...) {
+  <span class="cf">if</span> (<span class="kw">is_trained</span>(x)) {
+    res &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">terms =</span> x<span class="op">$</span>columns)
+  } <span class="cf">else</span> {
+    res &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">terms =</span> <span class="kw">sel2char</span>(x<span class="op">$</span>terms))
+  }
+  res
+}</code></pre>
 </div>
-<div id="exemplary-eda-format" class="section level1">
-<h1>Exemplary EDA format</h1>
-<p>Creating a standardised and elegant EDA file from the previous data structure is just as easy as calling your data frame and putting the results in a <code>Rmd</code> format:</p>
-<div id="variable-seniority" class="section level3">
-<h3>Variable: Seniority</h3>
-<p>[above code: glue::glue(“Variable: {credit_data_nested$variable[[1]]}”)]</p>
-<div id="decile-analysis" class="section level4">
-<h4>Decile analysis</h4>
-<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>decile_table[[<span class="dv">1</span>]]
-<span class="co">## # A tibble: 10 x 8</span>
-<span class="co">##    decile   min median   max top_level total bottom_level ratio     </span>
-<span class="co">##    &lt;fct&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;     &lt;int&gt; &lt;int&gt;        &lt;int&gt; &lt;formttbl&gt;</span>
-<span class="co">##  1 1          0      0     0       235   446          211 52.69%    </span>
-<span class="co">##  2 2          0      1     1       209   445          236 46.97%    </span>
-<span class="co">##  3 3          1      2     2       174   446          272 39.01%    </span>
-<span class="co">##  4 4          2      3     3       146   445          299 32.81%    </span>
-<span class="co">##  5 5          3      4     5       122   445          323 27.42%    </span>
-<span class="co">##  6 6          5      6     8       105   446          341 23.54%    </span>
-<span class="co">##  7 7          8     10    10        88   445          357 19.78%    </span>
-<span class="co">##  8 8         10     12    14        76   446          370 17.04%    </span>
-<span class="co">##  9 9         14     16    20        54   445          391 12.13%    </span>
-<span class="co">## 10 10        20     25    48        45   445          400 10.11%</span></code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>plot_deciles[[<span class="dv">1</span>]]</code></pre>
-<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<div id="basic-testing" class="section level1">
+<h1>Basic testing</h1>
+<p>Let’s test our new recipe on a very simple example. As you can see, the step records which variables had any missing data when prepping the recipe, and applies that information on the testing set while baking it. Note also that if a variable had no missing data in the training set, no ‘shadow’ missing variables will be created on the testing set.</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+train &lt;-
+<span class="st">  </span><span class="kw">data_frame</span>(
+    <span class="dt">a =</span> <span class="kw">c</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>, <span class="ot">NA</span>),
+    <span class="dt">b =</span> <span class="kw">c</span>(<span class="ot">NA</span>, <span class="st">&quot;d&quot;</span>, <span class="st">&quot;e&quot;</span>),
+    <span class="dt">c =</span> <span class="kw">c</span>(<span class="st">&quot;f&quot;</span>, <span class="st">&quot;g&quot;</span>, <span class="st">&quot;h&quot;</span>)
+  )
+
+test &lt;-
+<span class="st">  </span><span class="kw">data_frame</span>(
+    <span class="dt">a =</span> <span class="kw">c</span>(<span class="ot">NA</span>, <span class="ot">NA</span>, <span class="ot">NA</span>),
+    <span class="dt">b =</span> <span class="kw">c</span>(<span class="ot">NA</span>, <span class="st">&quot;d&quot;</span>, <span class="st">&quot;e&quot;</span>),
+    <span class="dt">c =</span> <span class="kw">c</span>(<span class="ot">NA</span>, <span class="st">&quot;f&quot;</span>, <span class="st">&quot;g&quot;</span>)
+  )
+
+rec &lt;-<span class="st"> </span><span class="kw">recipe</span>(train) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">step_shadow_missing</span>(a, b, c) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">prep</span>()
+
+<span class="kw">bake</span>(rec, train)
+<span class="co">## # A tibble: 3 x 5</span>
+<span class="co">##   a     b     c     shadow_a shadow_b</span>
+<span class="co">##   &lt;fct&gt; &lt;fct&gt; &lt;fct&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span>
+<span class="co">## 1 a     &lt;NA&gt;  f            0        1</span>
+<span class="co">## 2 b     d     g            0        0</span>
+<span class="co">## 3 &lt;NA&gt;  e     h            1        0</span>
+<span class="kw">bake</span>(rec, test)
+<span class="co">## # A tibble: 3 x 5</span>
+<span class="co">##   a     b     c     shadow_a shadow_b</span>
+<span class="co">##   &lt;fct&gt; &lt;fct&gt; &lt;fct&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span>
+<span class="co">## 1 &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;         1        1</span>
+<span class="co">## 2 &lt;NA&gt;  d     f            1        0</span>
+<span class="co">## 3 &lt;NA&gt;  e     g            1        0</span></code></pre>
 </div>
-<div id="aditional-plots" class="section level4">
-<h4>Aditional plots</h4>
-<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>plot_boxplot[[<span class="dv">1</span>]]</code></pre>
-<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
-<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>plot_density[[<span class="dv">1</span>]]</code></pre>
-<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
-</div>
-</div>
-<div id="variable-time" class="section level3">
-<h3>Variable: Time</h3>
-<p>[above code: glue::glue(“Variable: {credit_data_nested$variable[[2]]}”)]</p>
-<div id="decile-analysis-1" class="section level4">
-<h4>Decile analysis</h4>
-<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>decile_table[[<span class="dv">2</span>]]
-<span class="co">## # A tibble: 10 x 8</span>
-<span class="co">##    decile   min median   max top_level total bottom_level ratio     </span>
-<span class="co">##    &lt;fct&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;     &lt;int&gt; &lt;int&gt;        &lt;int&gt; &lt;formttbl&gt;</span>
-<span class="co">##  1 1          6     18    24        64   446          382 14.35%    </span>
-<span class="co">##  2 2         24     30    36       109   445          336 24.49%    </span>
-<span class="co">##  3 3         36     36    36       124   446          322 27.80%    </span>
-<span class="co">##  4 4         36     36    48       136   445          309 30.56%    </span>
-<span class="co">##  5 5         48     48    48       135   445          310 30.34%    </span>
-<span class="co">##  6 6         48     48    60       125   446          321 28.03%    </span>
-<span class="co">##  7 7         60     60    60       133   445          312 29.89%    </span>
-<span class="co">##  8 8         60     60    60       155   446          291 34.75%    </span>
-<span class="co">##  9 9         60     60    60       129   445          316 28.99%    </span>
-<span class="co">## 10 10        60     60    72       144   445          301 32.36%</span></code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>plot_deciles[[<span class="dv">2</span>]]</code></pre>
-<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
-</div>
-<div id="aditional-plots-1" class="section level4">
-<h4>Aditional plots</h4>
-<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>plot_boxplot[[<span class="dv">2</span>]]</code></pre>
-<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
-<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>plot_density[[<span class="dv">2</span>]]</code></pre>
-<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
-</div>
-</div>
-</div>
-<div id="predefined-rmd-skeleton-for-automated-eda" class="section level1">
-<h1>Predefined Rmd skeleton for automated EDA</h1>
-<p>It becomes even easier when you take advantage of the <code>Rmd child</code> document propery of every chunk. You need to have two <code>Rmd</code> documents to leverage that functionality and create customised and great looking EDA reports in no time:</p>
-<ul>
-<li>child Rmd template</li>
-<li>main Rmd file</li>
-</ul>
-<p>The <code>Rmd template</code> dictates the <code>main Rmd</code> document what type of reporting structure you would like to leverage for every single variable. The main advantage of that is that you do not maintain all the code in the main reporting file which could become very problematic when you’re working on a really large project. With a <code>child document</code> you just make changes to the child and they automatically take place in the main report file - you can think of it as defining a simple R function!</p>
-<p>A simple example of a child template could be something like the one presented below - it needs to be saved as an individual Rmd file called e.g.: ‘child_template.Rmd’. It can obviously become much more complicated and could leverage <code>Rmd tabsets</code> and other Rmd functionalities to offer the best user experience. Note the intentional usage of <code>[[i]]</code> which I’m explaining further.</p>
-<hr />
-<p><strong>Decile analysis</strong></p>
-<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>decile_table[[i]]</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>plot_deciles[[i]]</code></pre>
-<p><strong>Aditional plots</strong></p>
-<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>plot_boxplot[[i]]</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>plot_density[[i]]</code></pre>
-<hr />
-<p>In the <code>main Rmd</code> file you then apply the following pattern:</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># ```{r include=FALSE}</span>
-i &lt;-<span class="st"> </span><span class="dv">1</span> 
-<span class="co"># ```</span></code></pre>
-<p><strong>glue::glue(“Variable: {credit_data_nested$variable[[i]]}”)</strong></p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># ```{r child=&#39;child_template.Rmd&#39;}</span>
-<span class="co"># ```</span></code></pre>
-<p>Then when the <code>main Rmd</code> file renders it imports the <code>Rmd child</code> every time it’s called, plugs in the respective <code>[[i]]</code> object into it and renders the chunk. So you would repeat that pattern for every single attribute (row) of the main data frame with all the rendered plots while changing the <code>i &lt;-</code> assignment to account for the next attribute. It’s most probably not the most streamlined solution, but it used to work out for me very well for a long time and offered the best trade-off between speed, maintenance and elegance of the overall solution.</p>
+<div id="usage-in-a-predictive-model" class="section level1">
+<h1>Usage in a predictive model</h1>
+<p>Let’s now use our new recipe step with a simple model example on the <code>wa_churn</code> dataset. This dataset has not missing values so we will need to generate them artificially. It would be best to test it on an example with many, not randomly missing values, but I couldn’t recall of an example from the top of my head. If you come up with one, let me know!</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+<span class="kw">data</span>(<span class="st">&quot;wa_churn&quot;</span>)
+
+df_churn &lt;-<span class="st"> </span>wa_churn <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(churn, female, senior_citizen, partner, 
+         dependents, tenure, phone_service, contract,
+         multiple_lines, internet_service, streaming_tv,
+         streaming_movies, monthly_charges, total_charges)
+
+<span class="kw">glimpse</span>(df_churn)
+<span class="co">## Observations: 7,043</span>
+<span class="co">## Variables: 14</span>
+<span class="co">## $ churn            &lt;fct&gt; No, No, Yes, No, Yes, Yes, No, No, Yes, No, No,…</span>
+<span class="co">## $ female           &lt;dbl&gt; 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1,…</span>
+<span class="co">## $ senior_citizen   &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span>
+<span class="co">## $ partner          &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1,…</span>
+<span class="co">## $ dependents       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1,…</span>
+<span class="co">## $ tenure           &lt;int&gt; 1, 34, 2, 45, 2, 8, 22, 10, 28, 62, 13, 16, 58,…</span>
+<span class="co">## $ phone_service    &lt;dbl&gt; 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1,…</span>
+<span class="co">## $ contract         &lt;fct&gt; Month-to-month, One year, Month-to-month, One y…</span>
+<span class="co">## $ multiple_lines   &lt;fct&gt; No phone service, No, No, No phone service, No,…</span>
+<span class="co">## $ internet_service &lt;fct&gt; DSL, DSL, DSL, DSL, Fiber optic, Fiber optic, F…</span>
+<span class="co">## $ streaming_tv     &lt;fct&gt; No, No, No, No, No, Yes, Yes, No, Yes, No, No, …</span>
+<span class="co">## $ streaming_movies &lt;fct&gt; No, No, No, No, No, Yes, No, No, Yes, No, No, N…</span>
+<span class="co">## $ monthly_charges  &lt;dbl&gt; 29.85, 56.95, 53.85, 42.30, 70.70, 99.65, 89.10…</span>
+<span class="co">## $ total_charges    &lt;dbl&gt; 29.85, 1889.50, 108.15, 1840.75, 151.65, 820.50…</span></code></pre>
+<p>We will now apply the following function to generate some randomly missing data. The function will select 50% of the features at random, and for each selected feature it will replace from 1% to 20% of values with missing data.</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+generate_missing &lt;-<span class="st"> </span><span class="cf">function</span>(df){
+  <span class="cf">for</span>(i <span class="cf">in</span> <span class="kw">seq_along</span>(df)){
+    <span class="cf">if</span>(<span class="kw">runif</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>) <span class="op">&gt;=</span><span class="st"> </span><span class="fl">0.50</span>){
+      col &lt;-<span class="st"> </span>df[[i]]
+      n_row &lt;-<span class="st"> </span><span class="kw">length</span>(col)
+      
+      n_random &lt;-<span class="st"> </span>n_row <span class="op">*</span><span class="st"> </span><span class="kw">runif</span>(<span class="dv">1</span>, <span class="fl">0.01</span>, <span class="fl">0.20</span>)
+      indices &lt;-<span class="st"> </span><span class="kw">round</span>(<span class="kw">runif</span>(n_random, <span class="dv">0</span>, n_row), <span class="dv">0</span>)
+      df[[i]] &lt;-<span class="st"> </span><span class="kw">replace</span>(col, indices, <span class="ot">NA</span>)
+    } <span class="cf">else</span> {
+      <span class="cf">next</span> 
+    }
+  }
+  <span class="kw">return</span>(df)
+}</code></pre>
+<p>No let’s apply that function on our dataset and inspect the results with <code>naniar</code>:</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+df_churn_na &lt;-<span class="st"> </span><span class="kw">generate_missing</span>(df_churn[, <span class="dv">-1</span>])
+naniar<span class="op">::</span><span class="kw">miss_var_summary</span>(df_churn_na)
+<span class="co">## # A tibble: 13 x 3</span>
+<span class="co">##    variable         n_miss pct_miss</span>
+<span class="co">##    &lt;chr&gt;             &lt;int&gt;    &lt;dbl&gt;</span>
+<span class="co">##  1 female             1216    17.3 </span>
+<span class="co">##  2 senior_citizen     1097    15.6 </span>
+<span class="co">##  3 multiple_lines     1003    14.2 </span>
+<span class="co">##  4 streaming_tv        563     7.99</span>
+<span class="co">##  5 total_charges       375     5.32</span>
+<span class="co">##  6 partner             107     1.52</span>
+<span class="co">##  7 dependents            0     0   </span>
+<span class="co">##  8 tenure                0     0   </span>
+<span class="co">##  9 phone_service         0     0   </span>
+<span class="co">## 10 contract              0     0   </span>
+<span class="co">## 11 internet_service      0     0   </span>
+<span class="co">## 12 streaming_movies      0     0   </span>
+<span class="co">## 13 monthly_charges       0     0</span></code></pre>
+<p>At the end let’s join back the target variable and the dataset with our artificially generated missing values:</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+df_churn &lt;-<span class="st"> </span><span class="kw">bind_cols</span>(
+  df_churn[, <span class="dv">1</span>],
+  df_churn_na
+  )
+
+df_churn
+<span class="co">## # A tibble: 7,043 x 14</span>
+<span class="co">##    churn female senior_citizen partner dependents tenure phone_service</span>
+<span class="co">##    &lt;fct&gt;  &lt;dbl&gt;          &lt;int&gt;   &lt;dbl&gt;      &lt;dbl&gt;  &lt;int&gt;         &lt;dbl&gt;</span>
+<span class="co">##  1 No         1              0       1          0      1             0</span>
+<span class="co">##  2 No        NA              0       0          0     34             1</span>
+<span class="co">##  3 Yes       NA             NA       0          0      2             1</span>
+<span class="co">##  4 No         0              0       0          0     45             0</span>
+<span class="co">##  5 Yes        1              0       0          0      2             1</span>
+<span class="co">##  6 Yes        1              0       0          0      8             1</span>
+<span class="co">##  7 No         0              0       0          1     22             1</span>
+<span class="co">##  8 No         1              0       0          0     10             0</span>
+<span class="co">##  9 Yes       NA              0       1          0     28             1</span>
+<span class="co">## 10 No        NA              0       0          1     62             1</span>
+<span class="co">## # … with 7,033 more rows, and 7 more variables: contract &lt;fct&gt;,</span>
+<span class="co">## #   multiple_lines &lt;fct&gt;, internet_service &lt;fct&gt;, streaming_tv &lt;fct&gt;,</span>
+<span class="co">## #   streaming_movies &lt;fct&gt;, monthly_charges &lt;dbl&gt;, total_charges &lt;dbl&gt;</span></code></pre>
+<p>Now we will test the step in a very basic modelling example. We will split our dataset intro training &amp; testing and prep our recipe. At the end I’m checking if the number of columns of both datasets are same - as you can see the number of columns is exactly the same, which means that the new, ‘shadow’ variables were properly generated for our testing set.</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+split &lt;-<span class="st"> </span><span class="kw">initial_split</span>(df_churn, <span class="dt">prop =</span> <span class="fl">0.80</span>, <span class="dt">strata =</span> <span class="st">&quot;churn&quot;</span>)
+
+df_train &lt;-<span class="st"> </span><span class="kw">training</span>(split)
+df_test  &lt;-<span class="st"> </span><span class="kw">testing</span>(split)
+
+recipe &lt;-<span class="st"> </span>df_train <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">recipe</span>(churn <span class="op">~</span><span class="st"> </span>.) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">step_shadow_missing</span>(<span class="kw">all_predictors</span>()) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># use the new recipes step</span>
+<span class="st">  </span><span class="kw">step_medianimpute</span>(<span class="kw">all_numeric</span>()) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">step_modeimpute</span>(<span class="kw">all_nominal</span>(), <span class="op">-</span>churn) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">step_dummy</span>(<span class="kw">all_nominal</span>(), <span class="op">-</span>churn) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">step_upsample</span>(churn)
+
+recipe_prep &lt;-<span class="st"> </span><span class="kw">prep</span>(recipe)
+
+<span class="kw">all_equal</span>(
+  <span class="kw">bake</span>(recipe_prep, df_train),
+  <span class="kw">bake</span>(recipe_prep, df_test),
+)
+<span class="co">## [1] &quot;Different number of rows&quot;</span></code></pre>
+<p>As a final proof let’s train a basic model and make a prediction. Everything runs without any errors which proves our small, custom recipes step works like a charm!</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+(fit &lt;-<span class="st"> </span><span class="kw">rand_forest</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">set_mode</span>(<span class="st">&quot;classification&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">set_engine</span>(<span class="st">&quot;ranger&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">fit</span>(churn <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> <span class="kw">juice</span>(recipe_prep)))
+<span class="co">## parsnip model object</span>
+<span class="co">## </span>
+<span class="co">## Fit in:  4.3sRanger result</span>
+<span class="co">## </span>
+<span class="co">## Call:</span>
+<span class="co">##  ranger::ranger(formula = formula, data = data, num.threads = 1,      verbose = FALSE, seed = sample.int(10^5, 1), probability = TRUE) </span>
+<span class="co">## </span>
+<span class="co">## Type:                             Probability estimation </span>
+<span class="co">## Number of trees:                  500 </span>
+<span class="co">## Sample size:                      8280 </span>
+<span class="co">## Number of independent variables:  24 </span>
+<span class="co">## Mtry:                             4 </span>
+<span class="co">## Target node size:                 10 </span>
+<span class="co">## Variable importance mode:         none </span>
+<span class="co">## Splitrule:                        gini </span>
+<span class="co">## OOB prediction error (Brier s.):  0.1057557</span>
+
+pred &lt;-<span class="st"> </span><span class="kw">predict</span>(fit, <span class="kw">bake</span>(recipe_prep, df_test), <span class="st">&quot;prob&quot;</span>)</code></pre>
 </div>
 <div id="wrapping-up" class="section level1">
 <h1>Wrapping up</h1>
-<p>That would be really it with <code>ggrapid</code> for now - I hope you guys enjoyed this blogpost and will find the package usefull in your day-to-day practice! I’m planning to continue working on it to offer a more comprehensive solution (perhaps by combining it’s functionalities with <code>DataExplorer</code>?) and would invite you to participate and give your ideas as well. Thanks!</p>
+<p>I hope some of you will find that step usefull and you will incorporate it in your modelling practice - please give me a shout with some feedback! I also hope that eventually such a feature will be available in <code>recipes</code>, which would definitely fill the current gap when it comes to comprehensive handling of missing values by the package.</p>
 </div>
 
               
@@ -565,13 +575,11 @@ i &lt;-<span class="st"> </span><span class="dv">1</span>
                   <div class="post-footer-tags">
                     <span class="text-color-light text-small">TAGGED IN</span><br/>
                     
-  <a class="tag tag--primary tag--small" href="/tags/ggplot/">ggplot</a>
+  <a class="tag tag--primary tag--small" href="/tags/tidymodels/">tidymodels</a>
 
-  <a class="tag tag--primary tag--small" href="/tags/ggrapid/">ggrapid</a>
+  <a class="tag tag--primary tag--small" href="/tags/predictive-modelling/">predictive modelling</a>
 
-  <a class="tag tag--primary tag--small" href="/tags/eda/">eda</a>
-
-  <a class="tag tag--primary tag--small" href="/tags/plotting/">plotting</a>
+  <a class="tag tag--primary tag--small" href="/tags/missing-values/">missing values</a>
 
                   </div>
                 
@@ -584,7 +592,7 @@ i &lt;-<span class="st"> </span><span class="dv">1</span>
           
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2019/10/testing-the-tune-package-from-tidymodels-analysing-the-relationship-between-the-upsampling-ratio-and-model-performance/" data-tooltip="Testing the tune package from tidymodels - analysing the relationship between the upsampling ratio and model performance">
+                <a class="post-action-btn btn btn--disabled">
               
                   <i class="fa fa-angle-left"></i>
                   <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
@@ -592,7 +600,7 @@ i &lt;-<span class="st"> </span><span class="dv">1</span>
             </li>
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2019/08/caret-vs-tidymodels-comparing-the-old-and-new/" data-tooltip="Caret vs. tidymodels - comparing the old and new">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2019/10/testing-the-tune-package-from-tidymodels-analysing-the-relationship-between-the-upsampling-ratio-and-model-performance/" data-tooltip="Testing the tune package from tidymodels - analysing the relationship between the upsampling ratio and model performance">
               
                   <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
                   <i class="fa fa-angle-right"></i>
@@ -610,13 +618,13 @@ i &lt;-<span class="st"> </span><span class="dv">1</span>
         </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2019/08/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2019/11/step-shadow-missing-implementing-a-custom-recipes-step-to-account-for-missing-data-patterns/">
               <i class="fa fa-facebook-official"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2019/08/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2019/11/step-shadow-missing-implementing-a-custom-recipes-step-to-account-for-missing-data-patterns/">
               <i class="fa fa-twitter"></i>
             </a>
           </li>
@@ -664,7 +672,7 @@ i &lt;-<span class="st"> </span><span class="dv">1</span>
           
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2019/10/testing-the-tune-package-from-tidymodels-analysing-the-relationship-between-the-upsampling-ratio-and-model-performance/" data-tooltip="Testing the tune package from tidymodels - analysing the relationship between the upsampling ratio and model performance">
+                <a class="post-action-btn btn btn--disabled">
               
                   <i class="fa fa-angle-left"></i>
                   <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
@@ -672,7 +680,7 @@ i &lt;-<span class="st"> </span><span class="dv">1</span>
             </li>
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="/2019/08/caret-vs-tidymodels-comparing-the-old-and-new/" data-tooltip="Caret vs. tidymodels - comparing the old and new">
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2019/10/testing-the-tune-package-from-tidymodels-analysing-the-relationship-between-the-upsampling-ratio-and-model-performance/" data-tooltip="Testing the tune package from tidymodels - analysing the relationship between the upsampling ratio and model performance">
               
                   <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
                   <i class="fa fa-angle-right"></i>
@@ -690,13 +698,13 @@ i &lt;-<span class="st"> </span><span class="dv">1</span>
         </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2019/08/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2019/11/step-shadow-missing-implementing-a-custom-recipes-step-to-account-for-missing-data-patterns/">
               <i class="fa fa-facebook-official"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2019/08/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2019/11/step-shadow-missing-implementing-a-custom-recipes-step-to-account-for-missing-data-patterns/">
               <i class="fa fa-twitter"></i>
             </a>
           </li>
@@ -726,13 +734,13 @@ i &lt;-<span class="st"> </span><span class="dv">1</span>
   <ul class="share-options">
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=%2F2019%2F08%2F2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible%2F">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=%2F2019%2F11%2Fstep-shadow-missing-implementing-a-custom-recipes-step-to-account-for-missing-data-patterns%2F">
           <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
         </a>
       </li>
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=%2F2019%2F08%2F2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible%2F">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=%2F2019%2F11%2Fstep-shadow-missing-implementing-a-custom-recipes-step-to-account-for-missing-data-patterns%2F">
           <i class="fa fa-twitter"></i><span>Share on Twitter</span>
         </a>
       </li>
@@ -1186,9 +1194,9 @@ $(document).ready(function() {
     
       <script>
         var disqus_config = function () {
-          this.page.url = '\/2019\/08\/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible\/';
+          this.page.url = '\/2019\/11\/step-shadow-missing-implementing-a-custom-recipes-step-to-account-for-missing-data-patterns\/';
           
-            this.page.identifier = '\/2019\/08\/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible\/'
+            this.page.identifier = '\/2019\/11\/step-shadow-missing-implementing-a-custom-recipes-step-to-account-for-missing-data-patterns\/'
           
         };
         (function() {
