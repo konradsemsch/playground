@@ -534,6 +534,36 @@ recipe_prep &lt;-<span class="st"> </span><span class="kw">prep</span>(recipe)
   <span class="kw">bake</span>(recipe_prep, df_test),
 )
 <span class="co">## [1] &quot;Different number of rows&quot;</span></code></pre>
+<p>Let’s take a look at the entire dataset with the newly generated columns:</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+<span class="kw">glimpse</span>(<span class="kw">bake</span>(recipe_prep, df_train))
+<span class="co">## Observations: 5,636</span>
+<span class="co">## Variables: 25</span>
+<span class="co">## $ churn                                &lt;fct&gt; No, No, No, Yes, Yes, No, N…</span>
+<span class="co">## $ female                               &lt;dbl&gt; 1, 0, 0, 1, 1, 0, 1, 0, 0, …</span>
+<span class="co">## $ senior_citizen                       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span>
+<span class="co">## $ partner                              &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 0, 1, 0, …</span>
+<span class="co">## $ dependents                           &lt;dbl&gt; 0, 0, 0, 0, 0, 1, 0, 0, 1, …</span>
+<span class="co">## $ tenure                               &lt;int&gt; 1, 34, 45, 2, 8, 22, 10, 28…</span>
+<span class="co">## $ phone_service                        &lt;dbl&gt; 0, 1, 0, 1, 1, 1, 0, 1, 1, …</span>
+<span class="co">## $ monthly_charges                      &lt;dbl&gt; 29.85, 56.95, 42.30, 70.70,…</span>
+<span class="co">## $ total_charges                        &lt;dbl&gt; 29.85, 1889.50, 1840.75, 15…</span>
+<span class="co">## $ shadow_female                        &lt;dbl&gt; 0, 1, 0, 0, 0, 0, 0, 1, 1, …</span>
+<span class="co">## $ shadow_senior_citizen                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span>
+<span class="co">## $ shadow_partner                       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span>
+<span class="co">## $ shadow_multiple_lines                &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span>
+<span class="co">## $ shadow_streaming_tv                  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span>
+<span class="co">## $ shadow_total_charges                 &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span>
+<span class="co">## $ contract_One.year                    &lt;dbl&gt; 0, 1, 1, 0, 0, 0, 0, 0, 1, …</span>
+<span class="co">## $ contract_Two.year                    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span>
+<span class="co">## $ multiple_lines_No.phone.service      &lt;dbl&gt; 1, 0, 1, 0, 0, 0, 1, 0, 0, …</span>
+<span class="co">## $ multiple_lines_Yes                   &lt;dbl&gt; 0, 0, 0, 0, 1, 1, 0, 1, 0, …</span>
+<span class="co">## $ internet_service_Fiber.optic         &lt;dbl&gt; 0, 0, 0, 1, 1, 1, 0, 1, 0, …</span>
+<span class="co">## $ internet_service_No                  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span>
+<span class="co">## $ streaming_tv_No.internet.service     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span>
+<span class="co">## $ streaming_tv_Yes                     &lt;dbl&gt; 0, 0, 0, 0, 1, 1, 0, 1, 0, …</span>
+<span class="co">## $ streaming_movies_No.internet.service &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span>
+<span class="co">## $ streaming_movies_Yes                 &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 1, 0, …</span></code></pre>
 <p>As a final proof let’s train a basic model and make a prediction. Everything runs without any errors which proves our small, custom recipes step works like a charm!</p>
 <pre class="sourceCode r"><code class="sourceCode r">
 (fit &lt;-<span class="st"> </span><span class="kw">rand_forest</span>() <span class="op">%&gt;%</span><span class="st"> </span>
@@ -542,7 +572,7 @@ recipe_prep &lt;-<span class="st"> </span><span class="kw">prep</span>(recipe)
 <span class="st">  </span><span class="kw">fit</span>(churn <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> <span class="kw">juice</span>(recipe_prep)))
 <span class="co">## parsnip model object</span>
 <span class="co">## </span>
-<span class="co">## Fit in:  4.3sRanger result</span>
+<span class="co">## Fit in:  10.3sRanger result</span>
 <span class="co">## </span>
 <span class="co">## Call:</span>
 <span class="co">##  ranger::ranger(formula = formula, data = data, num.threads = 1,      verbose = FALSE, seed = sample.int(10^5, 1), probability = TRUE) </span>

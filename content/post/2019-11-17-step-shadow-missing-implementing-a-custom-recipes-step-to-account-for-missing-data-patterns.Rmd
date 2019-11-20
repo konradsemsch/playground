@@ -280,6 +280,14 @@ all_equal(
 
 ```
 
+Let's take a look at the entire dataset with the newly generated columns:
+
+```{r}
+
+glimpse(bake(recipe_prep, df_train))
+
+```
+
 As a final proof let's train a basic model and make a prediction. Everything runs without any errors which proves our small, custom recipes step works like a charm! 
 
 ```{r}
