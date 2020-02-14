@@ -1,24 +1,45 @@
-
-
-
-  
-
-
-
-
-
-  
-
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
     
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="Hugo 0.56.3">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.56.3 with theme Tranquilpeak 0.4.7-BETA">
+<meta name="author" content="Konrad Semsch">
+<meta name="keywords" content=", data science, statistics, machine learning, predictive modelling, fintech, banking, r">
+<meta name="description" content="Practitioners view on predictive modelling">
+
+
+<meta property="og:description" content="Practitioners view on predictive modelling">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tags">
+<meta name="twitter:title" content="Tags">
+<meta property="og:url" content="/tags/">
+<meta property="twitter:url" content="/tags/">
+<meta property="og:site_name" content="Practitioners view on predictive modelling">
+<meta property="og:description" content="Practitioners view on predictive modelling">
+<meta name="twitter:description" content="Practitioners view on predictive modelling">
+<meta property="og:locale" content="en-us">
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="/images/profile.png">
+  <meta property="twitter:image" content="/images/profile.png">
+
+
     <title>Tags</title>
-    <meta name="author" content="Konrad Semsch">
-    <meta name="keywords" content=", data science, statistics, machine learning, predictive modelling, fintech, banking, r">
 
     <link rel="icon" href="/favicon.png">
     
@@ -26,30 +47,8 @@
     
 
     
-    <meta name="description" content="Practitioners view on predictive modelling">
-    <meta property="og:description" content="Practitioners view on predictive modelling">
-    <meta property="og:type" content="blog">
-    <meta property="og:title" content="Tags">
-    <meta property="og:url" content="/tags/">
-    <meta property="og:site_name" content="Practitioners view on predictive modelling">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Practitioners view on predictive modelling">
-    <meta name="twitter:description" content="Practitioners view on predictive modelling">
-    
-    
 
-    
-    
-
-    
-      <meta property="og:image" content="/images/profile.png">
-    
-
-    
-    
-    
-
-    
+    <link rel="canonical" href="/tags/">
 
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
@@ -57,7 +56,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
     
     
-    <link rel="stylesheet" href="/css/style-jsjn0006wyhpyzivf6yceb31gvpjatbcs3qzjvlumobfnugccvobqwxnnaj8.min.css" />
+    <link rel="stylesheet" href="/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
     
     
 
@@ -168,6 +167,16 @@ if (!doNotTrack) {
       <i class="sidebar-button-icon fa fa-lg fa-github"></i>
       
       <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="mailto:konrad.semsch@gmail.com" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-envelope"></i>
+      
+      <span class="sidebar-button-desc">Email me</span>
     </a>
   </li>
 
@@ -589,7 +598,6 @@ if (!doNotTrack) {
 
     
   
-    
     <div id="cover" style="background-image:url('https://res.cloudinary.com/dl7yqljrx/image/upload/v1581584232/background_dark.jpg');"></div>
   
 
@@ -603,9 +611,23 @@ if (!doNotTrack) {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
 
 
-<script src="/js/script-qi9wbxp2ya2j6p7wx1i6tgavftewndznf4v0hy2gvivk1rxgc3lm7njqb6bz.min.js"></script>
+<script src="/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
 
 
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
 
 <script>
 $(document).ready(function() {
@@ -618,6 +640,7 @@ $(document).ready(function() {
   });
 });
 </script>
+
 
 
 
