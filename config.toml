@@ -37,11 +37,11 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 # Menu Configuration
 [[menu.main]]
   weight = 1
-  identifier = "home"
-  name = "Home"
-  pre = "<b><i class=\"sidebar-button-icon fa fa-lg fa-home\"></i></b>"
+  identifier = "blog"
+  name = "Blog"
+  pre = "<b><i class=\"sidebar-button-icon fa fa-lg fa-book-reader\"></i></b>"
   url = "/"
-[[menu.main]]
+[[menu.main]] 
   weight = 2
   identifier = "about"
   name = "About"
