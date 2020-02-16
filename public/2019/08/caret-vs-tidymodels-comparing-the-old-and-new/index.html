@@ -385,7 +385,7 @@ if (!doNotTrack) {
 ##  n obs: 4454 
 ##  n variables: 14 
 ## 
-## ── Variable type:factor ──────────────────────────────────────────────────────────
+## ── Variable type:factor ────────────────────────────────────────────────────────
 ##  variable missing complete    n n_unique
 ##      home       6     4448 4454        6
 ##       job       2     4452 4454        4
@@ -399,7 +399,7 @@ if (!doNotTrack) {
 ##                 no: 3681, yes: 773, NA: 0   FALSE
 ##               goo: 3200, bad: 1254, NA: 0   FALSE
 ## 
-## ── Variable type:integer ─────────────────────────────────────────────────────────
+## ── Variable type:integer ───────────────────────────────────────────────────────
 ##   variable missing complete    n    mean       sd  p0     p25  p50    p75
 ##        age       0     4454 4454   37.08    10.98  18   28      36   45  
 ##     amount       0     4454 4454 1038.92   474.55 100  700    1000 1300  
@@ -543,7 +543,7 @@ train_cv_caret &lt;-<span class="st"> </span><span class="kw">rsample2caret</spa
 ## 30   13       gini             5</code></pre>
 <p>The great advantage of <code>caret</code> is that it wraps a lot of small code pieces in just one, high-level API call that does all the job for you - fits all individual models across CV folds and resamples, selects the best one and fits it already on the entire training dataset. It also makes sure it’s done as fast as possible thanks to parallel processing whenever it’s an enabled option.</p>
 <p>The drawback on the other hand is that it’s quite monolythic, untidy and at the end doesn’t offer a great deal of granularity to the end user.</p>
-<pre class="sourceCode r"><code class="sourceCode r">(model_caret &lt;-<span class="st"> </span><span class="kw">train</span>(
+<pre class="sourceCode r"><code class="sourceCode r">model_caret &lt;-<span class="st"> </span><span class="kw">train</span>(
   status <span class="op">~</span><span class="st"> </span>.,
   <span class="dt">data =</span> <span class="kw">juice</span>(recipe_preped),
   <span class="dt">method =</span> <span class="st">&quot;ranger&quot;</span>,
@@ -552,7 +552,9 @@ train_cv_caret &lt;-<span class="st"> </span><span class="kw">rsample2caret</spa
   <span class="dt">tuneGrid =</span> grid_caret,
   <span class="dt">importance =</span> <span class="st">&quot;impurity&quot;</span>,
   <span class="dt">num.trees =</span> <span class="dv">500</span>
-  ))</code></pre>
+  )
+
+<span class="kw">print</span>(model_caret)</code></pre>
 <pre><code>## Random Forest 
 ## 
 ## 3565 samples
@@ -708,7 +710,18 @@ train_cv_caret &lt;-<span class="st"> </span><span class="kw">rsample2caret</spa
   <span class="dt">grid =</span> gridy_tidym,
   <span class="dt">metrics =</span> <span class="kw">metric_set</span>(roc_auc),
   <span class="dt">control =</span> <span class="kw">control_grid</span>(<span class="dt">save_pred =</span> <span class="ot">TRUE</span>)
-  )</code></pre>
+  )
+
+<span class="kw">print</span>(grid_tidym)</code></pre>
+<pre><code>## #  5-fold cross-validation using stratification 
+## # A tibble: 5 x 5
+##   splits           id    .metrics        .notes         .predictions       
+## * &lt;list&gt;           &lt;chr&gt; &lt;list&gt;          &lt;list&gt;         &lt;list&gt;             
+## 1 &lt;split [2.9K/71… Fold1 &lt;tibble [30 × … &lt;tibble [30 ×… &lt;tibble [21,420 × …
+## 2 &lt;split [2.9K/71… Fold2 &lt;tibble [30 × … &lt;tibble [0 × … &lt;tibble [21,390 × …
+## 3 &lt;split [2.9K/71… Fold3 &lt;tibble [30 × … &lt;tibble [30 ×… &lt;tibble [21,390 × …
+## 4 &lt;split [2.9K/71… Fold4 &lt;tibble [30 × … &lt;tibble [30 ×… &lt;tibble [21,390 × …
+## 5 &lt;split [2.9K/71… Fold5 &lt;tibble [30 × … &lt;tibble [30 ×… &lt;tibble [21,360 × …</code></pre>
 <p>You can aggregate the performance metrics for each parameter combination across all cross-validation folds to find the best performing set, which I will use in the final model.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">collect_metrics</span>(grid_tidym)</code></pre>
 <pre><code>## # A tibble: 30 x 8
@@ -728,11 +741,11 @@ train_cv_caret &lt;-<span class="st"> </span><span class="kw">rsample2caret</spa
 <p>We can propagate the best combination of parameters into the workflow by using the <code>finalize_workflow</code> function. At this point, we’re almost finished with finalizing our pipeline. The last step involves refitting that workflow on the entire training data.</p>
 <pre class="sourceCode r"><code class="sourceCode r">grid_tidym_best &lt;-<span class="st"> </span><span class="kw">select_best</span>(grid_tidym)
 (wkfl_tidym_best &lt;-<span class="st"> </span><span class="kw">finalize_workflow</span>(wkfl_tidym, grid_tidym_best))</code></pre>
-<pre><code>## ══ Workflow ══════════════════════════════════════════════════════════════════════
+<pre><code>## ══ Workflow ════════════════════════════════════════════════════════════════════
 ## Preprocessor: Recipe
 ## Model: rand_forest()
 ## 
-## ── Preprocessor ──────────────────────────────────────────────────────────────────
+## ── Preprocessor ────────────────────────────────────────────────────────────────
 ## 5 Recipe Steps
 ## 
 ## ● step_unknown()
@@ -741,7 +754,7 @@ train_cv_caret &lt;-<span class="st"> </span><span class="kw">rsample2caret</spa
 ## ● step_novel()
 ## ● step_dummy()
 ## 
-## ── Model ─────────────────────────────────────────────────────────────────────────
+## ── Model ───────────────────────────────────────────────────────────────────────
 ## Random Forest Model Specification (classification)
 ## 
 ## Main Arguments:

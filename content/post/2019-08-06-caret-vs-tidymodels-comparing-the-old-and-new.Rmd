@@ -204,7 +204,7 @@ The drawback on the other hand is that it's quite monolythic, untidy and at the 
 
 ```{r}
 
-(model_caret <- train(
+model_caret <- train(
   status ~ .,
   data = juice(recipe_preped),
   method = "ranger",
@@ -213,7 +213,9 @@ The drawback on the other hand is that it's quite monolythic, untidy and at the 
   tuneGrid = grid_caret,
   importance = "impurity",
   num.trees = 500
-  ))
+  )
+
+print(model_caret)
 
 ```
 
@@ -312,6 +314,8 @@ grid_tidym <- tune_grid(
   metrics = metric_set(roc_auc),
   control = control_grid(save_pred = TRUE)
   )
+
+print(grid_tidym)
 
 ```
 
