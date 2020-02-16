@@ -320,8 +320,7 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
 
 
 &lt;style&gt;
-body {
-text-align: justify}
+body {text-align: justify};
 &lt;/style&gt;
 &lt;p&gt;In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: caret and its successor packages being written by the same author (Max Kuhn) that are wrapped together in a so called tidymodels framework.&lt;/p&gt;
 </description>
