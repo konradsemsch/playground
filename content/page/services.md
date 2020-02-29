@@ -5,9 +5,9 @@ showMeta:       false
 showActions:    false
 ---
 
-During my professional career I’ve worked on many different data science projects, but I've collected the most extensive experience in implementing novel machine learning solutions in the financial industry. The disruptive nature of Fintech pushed me to coming up with innovative solutions for doing classic credit scoring. For the past couple of years, I’ve been mainly working on the creation of highly predictive variables based solely on bank account transactional data.
+During my professional career I’ve worked on many different data science projects, but I've collected the most extensive experience in implementing novel machine learning solutions in the financial industry. The disruptive nature of Fintech pushed me to coming up with innovative solutions for doing classic credit scoring. For the past couple of years, I have mainly worked on developing highly predictive credit scoring models based on non-traditional data sources and bank account transactional data.
 
-Moreover, I’ve developed and assessed various types of non-classical scoring models that aimed at automating loan processing while providing high predictive power. They were proved to meet their ambitious goals both internally, as well as with external partners and institutions.
+The models I have developed aimed at automating loan processing as much as possible, while still providing high predictive power. They were proved to meet their ambitious goals both internally, as well as with external partners and institutions.
 
 My main areas of financial services modelling expertise are:
 
