@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Practitioners view on predictive modelling</title>
+    <link>/tags/</link>
+    <description>Recent content in Tags on Practitioners view on predictive modelling</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 28 May 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>embed</title>
+      <link>/tags/embed/</link>
+      <pubDate>Thu, 28 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/embed/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>predictive modelling</title>
+      <link>/tags/predictive-modelling/</link>
+      <pubDate>Thu, 28 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/predictive-modelling/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tidymodels</title>
+      <link>/tags/tidymodels/</link>
+      <pubDate>Thu, 28 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/tidymodels/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>xgboost</title>
+      <link>/tags/xgboost/</link>
+      <pubDate>Thu, 28 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/xgboost/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>missing values</title>
+      <link>/tags/missing-values/</link>
+      <pubDate>Sun, 17 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/missing-values/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>upsamling</title>
+      <link>/tags/upsamling/</link>
+      <pubDate>Fri, 11 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/upsamling/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>eda</title>
+      <link>/tags/eda/</link>
+      <pubDate>Thu, 29 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/eda/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ggplot</title>
+      <link>/tags/ggplot/</link>
+      <pubDate>Thu, 29 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/ggplot/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ggrapid</title>
+      <link>/tags/ggrapid/</link>
+      <pubDate>Thu, 29 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/ggrapid/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>plotting</title>
+      <link>/tags/plotting/</link>
+      <pubDate>Thu, 29 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/plotting/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>caret</title>
+      <link>/tags/caret/</link>
+      <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/caret/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

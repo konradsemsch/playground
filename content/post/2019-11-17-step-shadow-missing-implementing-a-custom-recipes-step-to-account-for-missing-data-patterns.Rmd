@@ -1,0 +1,306 @@
+---
+title: "step_shadow_missing - implementing a custom {recipes} step to account for missing data patterns"
+author: "Konrad Semsch"
+date: "2019-11-17"
+slug: step-shadow-missing-implementing-a-custom-recipes-step-to-account-for-missing-data-patterns
+tags: ["tidymodels", "predictive modelling", "missing values"]
+categories: ["predictive modelling"]
+output:
+  blogdown::html_page:
+    highlight: tango
+---
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+<style>
+body {
+text-align: justify}
+</style>
+
+Have you also always wanted to seemlessly account for missing data patterns when doing data modelling in R? In the following blogpost I will provide you with a ready-to-use, custom recipes step that will allow you to incorporate such technique easily and quickly in all your machine learning projects.
+
+<!--more-->
+
+Have you also always wanted to seemlessly account for missing data patterns when doing data modelling in R? In the following blogpost I will provide you with a ready-to-use, custom [recipes](https://tidymodels.github.io/recipes/) step that will allow you to incorporate such technique easily and quickly in all your machine learning projects.
+
+# Introduction
+
+It has often been proven in many machine learning tasks, that accounting for missing data patterns before imputing data could be vital to your model's predictive performance. The basic problem is that whenever you impute your values with e.g.: mean or median, but do not preserve the original information that a given value was 
+missing in the first place (as a binary feature), your model has no possibility of learning about that - the imputed value is just as any other in a given column (unless you impute it with a 'special' value as e.g. 99999 or so). When working in R and the ```recipes``` package in particular, I have always wished there was such feature as in [scikit-learn](https://scikit-learn.org/stable/modules/generated/sklearn.impute.MissingIndicator.html#sklearn.impute.MissingIndicator), where adding 'shadow' missing variables is implemented as optional in its imputation function.
+
+In the following blogpost I will not walk you through the steps on how to implement such a step in recipes. Instead, I will directly provide you with a ready-to-use piece of code you can immediately incorporate in your projects!
+
+These resources helped me to implement the step presented in this post:
+
+* https://edwinth.github.io/blog/recipes_blog/
+* https://tidymodels.github.io/recipes/articles/Custom_Steps.html
+
+
+There is already a PR on the ```recipes``` [githhub page](https://github.com/tidymodels/recipes/pull/272) to implement such a feature under a different name, but it's currently not being worked on. I hope that eventually it will be added to the package. Please bear in mind that even though my implementation works and I haven't got any problems with it, it hasn't yet been audited or properly tested on a bigger scale!
+
+# Initial setup
+
+Let's load a couple packages that we will use here:
+
+```{r message=FALSE, warning=FALSE, results="hide"}
+
+set.seed(42)
+options(max.print = 150)
+
+library(yardstick)
+library(parsnip)
+library(tidyverse)
+library(recipes)
+library(rsample)
+library(parsnip)
+library(tune)
+
+```
+
+# Step implementation
+
+The full code of implementing my custom ```recipes``` step is available below. It consists of a couple different methods that are required for it to work with ```prepping``` and ```baking```. I will pass on explaining all the implementation details as you can learn about them from the blogposts I referenced before, but the most basic information to take away from it is the following: for **every variable that contains any missing value**, **an additional binary column** is created with a prefix 'shadow_' where 1 stands for missing, and 0 for non-missing.
+
+Thanks to creation of such variables, when the patterns of missingness are not random, we can account for them when training our model and hence improve it's predictive performance. When a variable is missing at random such approach will most likely not yield any additional increase in perfomance and actually quite an opposite - perhaps even worsen it! 
+
+That could particularly happen when its application would result in an explosion of additional features - they could introduce too much additional noise that your model could take into consideration. What I'm trying to say is that applying such a step in your modelling practice doesn't let you disregard and not analyse the patterns of missingness of your data at all!
+
+Ok, let's finally take a look at the step implementation (the most important pieces have corresponding comments):
+
+```{r}
+
+step_shadow_missing_new <-
+  function(terms   = NULL,
+           role    = NA,
+           skip    = FALSE,
+           trained = FALSE,
+           prefix  = NULL, 
+           columns = NULL) {
+    step(
+      subclass = "shadow_missing",
+      terms    = terms,
+      role     = role,
+      skip     = skip,
+      trained  = trained,
+      prefix   = prefix,
+      columns  = columns
+    )
+  }
+
+step_shadow_missing <-
+  function(recipe,
+           ...,
+           role    = NA,
+           skip    = FALSE,
+           trained = FALSE,
+           prefix  = "shadow",
+           columns = NULL) {
+    add_step(
+      recipe,
+      step_shadow_missing_new(
+        terms   = ellipse_check(...),
+        role    = role,
+        skip    = skip,
+        trained = trained,
+        prefix  = prefix,
+        columns = columns
+      )
+    )
+  }
+
+prep.step_shadow_missing <- function(x,
+                                     training,
+                                     info = NULL,
+                                     ...) {
+  col_names <- terms_select(terms = x$terms, info = info)
+  step_shadow_missing_new(
+    terms   = x$terms,
+    role    = x$role,
+    skip    = x$skip,
+    trained = TRUE,
+    prefix  = x$prefix,
+    columns = col_names
+  )
+}
+
+bake.step_shadow_missing <- function(object,
+                                     new_data,
+                                     ...) {
+  col_names <- object$columns
+  for (i in seq_along(col_names)) {
+    if(sum(is.na(new_data[[col_names[i]]])) > 0){ # check if column has missing data 
+      col <- new_data[[col_names[i]]]
+      new_data[, col_names[i]] <- col # the original column should remain
+      new_data[, paste0(object$prefix, "_", col_names[i])] <- ifelse(is.na(col), 1, 0) # adding the shadowing column with a prefix 
+    } else {
+      next 
+    }
+  }
+  as_tibble(new_data)
+}
+
+print.bake.step_shadow_missing <-
+  function(x, width = max(20, options()$width - 30), ...) {
+    cat("Creating shadow variables for ", sep = "")
+    printer(x$columns, x$terms, x$trained, width = width)
+    invisible(x)
+  }
+
+tidy.step_shadow_missing <- function(x, ...) {
+  if (is_trained(x)) {
+    res <- tibble(terms = x$columns)
+  } else {
+    res <- tibble(terms = sel2char(x$terms))
+  }
+  res
+}
+
+```
+
+# Basic testing
+
+Let's test our new recipe on a very simple example. As you can see, the step records which variables had any missing data when prepping the recipe, and applies that information on the testing set while baking it. Note also that if a variable had no missing data in the training set, no 'shadow' missing variables will be created on the testing set.
+
+```{r}
+
+train <-
+  data_frame(
+    a = c("a", "b", NA),
+    b = c(NA, "d", "e"),
+    c = c("f", "g", "h")
+  )
+
+test <-
+  data_frame(
+    a = c(NA, NA, NA),
+    b = c(NA, "d", "e"),
+    c = c(NA, "f", "g")
+  )
+
+rec <- recipe(train) %>%
+  step_shadow_missing(a, b, c) %>%
+  prep()
+
+bake(rec, train)
+bake(rec, test)
+
+```
+
+# Usage in a predictive model
+
+Let's now use our new recipe step with a simple model example on the ```wa_churn``` dataset. This dataset has not missing values so we will need to generate them artificially. It would be best to test it on an example with many, not randomly missing values, but I couldn't recall of an example from the top of my head. If you come up with one, let me know!
+
+```{r}
+
+data("wa_churn")
+
+df_churn <- wa_churn %>% 
+  select(churn, female, senior_citizen, partner, 
+         dependents, tenure, phone_service, contract,
+         multiple_lines, internet_service, streaming_tv,
+         streaming_movies, monthly_charges, total_charges)
+
+glimpse(df_churn)
+
+```
+
+We will now apply the following function to generate some randomly missing data. The function will select 50% of the features at random, and for each selected feature it will replace from 1% to 20% of values with missing data.
+
+```{r}
+
+generate_missing <- function(df){
+  for(i in seq_along(df)){
+    if(runif(1, 0, 1) >= 0.50){
+      col <- df[[i]]
+      n_row <- length(col)
+      
+      n_random <- n_row * runif(1, 0.01, 0.20)
+      indices <- round(runif(n_random, 0, n_row), 0)
+      df[[i]] <- replace(col, indices, NA)
+    } else {
+      next 
+    }
+  }
+  return(df)
+}
+
+```
+
+No let's apply that function on our dataset and inspect the results with ```naniar```:
+
+```{r}
+
+df_churn_na <- generate_missing(df_churn[, -1])
+naniar::miss_var_summary(df_churn_na)
+
+```
+
+At the end let's join back the target variable and the dataset with our artificially generated missing values:
+
+```{r}
+
+df_churn <- bind_cols(
+  df_churn[, 1],
+  df_churn_na
+  )
+
+df_churn
+
+```
+
+Now we will test the step in a very basic modelling example. We will split our dataset intro training & testing and prep our recipe. At the end I'm checking if the number of columns of both datasets are same - as you can see the number of columns is exactly the same, which means that the new, 'shadow' variables were properly generated for our testing set.
+
+```{r}
+
+split <- initial_split(df_churn, prop = 0.80, strata = "churn")
+
+df_train <- training(split)
+df_test  <- testing(split)
+
+recipe <- df_train %>% 
+  recipe(churn ~ .) %>% 
+  step_shadow_missing(all_predictors()) %>% # use the new recipes step
+  step_medianimpute(all_numeric()) %>% 
+  step_modeimpute(all_nominal(), -churn) %>% 
+  step_dummy(all_nominal(), -churn) %>% 
+  step_upsample(churn)
+
+recipe_prep <- prep(recipe)
+
+all_equal(
+  bake(recipe_prep, df_train),
+  bake(recipe_prep, df_test),
+)
+
+```
+
+Let's take a look at the entire dataset with the newly generated columns:
+
+```{r}
+
+glimpse(bake(recipe_prep, df_train))
+
+```
+
+As a final proof let's train a basic model and make a prediction. Everything runs without any errors which proves our small, custom recipes step works like a charm! 
+
+```{r}
+
+(fit <- rand_forest() %>% 
+  set_mode("classification") %>% 
+  set_engine("ranger") %>% 
+  fit(churn ~ ., data = juice(recipe_prep)))
+
+pred <- predict(fit, bake(recipe_prep, df_test), "prob")
+
+```
+
+# Wrapping up
+
+I hope some of you will find that step usefull and you will incorporate it in your modelling practice - please give me a shout with some feedback! I also hope that eventually such a feature will be available in ```recipes```, which would definitely fill the current gap when it comes to comprehensive handling of missing values by the package.

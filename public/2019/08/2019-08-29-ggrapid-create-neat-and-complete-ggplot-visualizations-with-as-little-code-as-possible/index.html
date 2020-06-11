@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.72.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="author" content="Konrad Semsch">
+<meta name="keywords" content=", data science, statistics, machine learning, predictive modelling, fintech, banking, r">
+<meta name="description" content="
+
+
+
+
+In this post I will make a an introduction to a new data visulazation package that I recently published on Github - ggrapid! ggrapid enables creation of the most common ggplot-based visualizations fast and with just a few lines of code.
+">
+
+
+<meta property="og:description" content="
+
+
+
+
+In this post I will make a an introduction to a new data visulazation package that I recently published on Github - ggrapid! ggrapid enables creation of the most common ggplot-based visualizations fast and with just a few lines of code.
+">
+<meta property="og:type" content="article">
+<meta property="og:title" content="{ggrapid}: Create neat &amp; complete ggplot visualizations with as little code as possible">
+<meta name="twitter:title" content="{ggrapid}: Create neat &amp; complete ggplot visualizations with as little code as possible">
+<meta property="og:url" content="/2019/08/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible/">
+<meta property="twitter:url" content="/2019/08/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible/">
+<meta property="og:site_name" content="Practitioners view on predictive modelling">
+<meta property="og:description" content="
+
+
+
+
+In this post I will make a an introduction to a new data visulazation package that I recently published on Github - ggrapid! ggrapid enables creation of the most common ggplot-based visualizations fast and with just a few lines of code.
+">
+<meta name="twitter:description" content="
+
+
+
+
+In this post I will make a an introduction to a new data visulazation package that I recently published on Github - ggrapid! ggrapid enables creation of the most common ggplot-based visualizations fast and with just a few lines of code.
+">
+<meta property="og:locale" content="en-us">
+
+  
+    <meta property="article:published_time" content="2019-08-29T00:00:00">
+  
+  
+    <meta property="article:modified_time" content="2019-08-29T00:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="eda">
+    
+  
+  
+    
+      <meta property="article:tag" content="ggplot">
+    
+      <meta property="article:tag" content="ggrapid">
+    
+      <meta property="article:tag" content="eda">
+    
+      <meta property="article:tag" content="plotting">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="/images/profile.png">
+  <meta property="twitter:image" content="/images/profile.png">
+
+
+    <title>{ggrapid}: Create neat &amp; complete ggplot visualizations with as little code as possible</title>
+
+    <link rel="icon" href="/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="/2019/08/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    
+    
+
+    
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-146680003-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="/">Practitioners view on predictive modelling</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="/images/profile.png" alt="Author&#39;s picture" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="/#about">
+          <img class="sidebar-profile-picture" src="/images/profile.png" alt="Author&#39;s picture" />
+        </a>
+        <h4 class="sidebar-profile-name">Konrad Semsch</h4>
+        
+          <h5 class="sidebar-profile-bio">Practitioners view on predictive modelling</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="/">
+    
+      <b><i class="sidebar-button-icon fa fa-lg fa-home"></i></b>
+      
+      <span class="sidebar-button-desc">Home</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-address-card"></i>
+      
+      <span class="sidebar-button-desc">About</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="/page/experience/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-briefcase"></i>
+      
+      <span class="sidebar-button-desc">Experience</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.linkedin.com/in/konradsemsch/">
+    
+      <i class="sidebar-button-icon fa fa-linkedin-square"></i>
+      
+      <span class="sidebar-button-desc">Linkedin</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/konradsemsch">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="mailto:konrad.semsch@gmail.com" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-envelope"></i>
+      
+      <span class="sidebar-button-desc">Email me</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">Archives</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">Tags</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      {ggrapid}: Create neat &amp; complete ggplot visualizations with as little code as possible
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2019-08-29T00:00:00Z">
+        
+  
+  
+  
+  
+    29 August 2019
+  
+
+      </time>
+    
+    
+  
+  
+    <span>in</span>
+    
+      <a class="category-link" href="/categories/eda">eda</a>
+    
+  
+
+  </div>
+
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>In this post I will make a an introduction to a new data visulazation package that I recently published on Github - <a href="https://github.com/konradsemsch/ggrapid">ggrapid</a>! ggrapid enables creation of the most common ggplot-based visualizations fast and with just a few lines of code.</p>
+<p>Doing EDA (Exploratory Data Analysis) is a crucial step in every Data Sciene &amp; Machine Learning project and typically that’s were all Data Scientists spend most of their time when working on a project. There’s already many great visualization packages in the R community that specifically aim at streamlining that process: <a href="https://boxuancui.github.io/DataExplorer/">DataExplorer</a> or <a href="https://ggobi.github.io/ggally/">GGally</a> for instance, but none of them was 100% fulfilling my needs. My main requirements were: speed of usage, interface consistency and elegance. As long as <code>DataExplorer</code> pretty much offers the first two points (although the execution is different), I think it’s missing out on the last factor - especially when you would like to share that report with managers or externals.</p>
+<p>That’s probably where <code>ggrapid</code> fits much better - EDA and reporting that’s intented to be shared in an elegant way with managers and externals, while still built simply and with speed with the help of a specific <code>Rmd</code> syntax. Let’s check it out!</p>
+<p>Note: similarity of names with <code>DataExplorer</code> is coincidental. I’ve been working on the <code>ggrapid</code> package for a long time already not having known that DataExplorer even exists. It was only very recently when I eventually decided to publish ggrapid to Github. Nevertheless, perhaps there’s room for the two packages to merge and offer a single, cohesive solution on all fronts :)</p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p><code>ggrapid</code> offers a couple wrappers around the most commonly used <code>ggplot</code> functions in the course of doing an EDA or building a report:</p>
+<ul>
+<li><code>plot_density</code></li>
+<li><code>plot_boxplot</code></li>
+<li><code>plot_deciles</code> (with <code>calculate_decile_table</code>)</li>
+<li><code>plot_correlation</code></li>
+<li><code>plot_bars</code></li>
+<li><code>plot_line</code></li>
+</ul>
+<div id="density-plot" class="section level3">
+<h3>Density plot</h3>
+<pre class="sourceCode r"><code class="sourceCode r">
+<span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(ggrapid)</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">
+diamonds <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">plot_density</span>(<span class="dt">x =</span> carat)</code></pre>
+<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="box-plot" class="section level3">
+<h3>Box-plot</h3>
+<pre class="sourceCode r"><code class="sourceCode r">
+diamonds <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">plot_boxplot</span>(<span class="dt">x =</span> cut,
+               <span class="dt">y =</span> carat,
+               <span class="dt">fill =</span> cut)</code></pre>
+<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="decile-plot" class="section level3">
+<h3>Decile plot</h3>
+<pre class="sourceCode r"><code class="sourceCode r">
+diamonds <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(cut <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Ideal&quot;</span>, <span class="st">&quot;Premium&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">calculate_decile_table</span>(price, cut, <span class="st">&quot;Ideal&quot;</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">plot_deciles</span>()</code></pre>
+<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="correlation" class="section level3">
+<h3>Correlation</h3>
+<pre class="sourceCode r"><code class="sourceCode r">
+diamonds <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">plot_correlation</span>()</code></pre>
+<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="barplot" class="section level3">
+<h3>Barplot</h3>
+<pre class="sourceCode r"><code class="sourceCode r">
+diamonds <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">plot_bars</span>(<span class="dt">x =</span> carat,
+            <span class="dt">x_type =</span> <span class="st">&quot;num&quot;</span>,
+            <span class="dt">fill =</span> cut)</code></pre>
+<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+<div id="lineplot" class="section level3">
+<h3>Lineplot</h3>
+<pre class="sourceCode r"><code class="sourceCode r">
+<span class="kw">tibble</span>(
+  <span class="dt">time =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">20</span>,
+  <span class="dt">value =</span> <span class="kw">rnorm</span>(<span class="dv">20</span>, <span class="fl">0.5</span>, <span class="dv">2</span>)
+  ) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">plot_line</span>(
+    <span class="dt">x =</span> time,
+    <span class="dt">y =</span> value
+  )</code></pre>
+<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+</div>
+<div id="main-arguments" class="section level1">
+<h1>Main arguments</h1>
+<p>The most commonly implemented <code>ggplot</code> arguments across all main <code>ggrapid</code> functions ensure that you can build your basic EDA report without making additional changes or custom functions. <code>ggrapid</code> tries to do most things for you but many of those arguments you can modify yourself. They are mainly (might slightly differ across functions):</p>
+<ul>
+<li>fill</li>
+<li>facet</li>
+<li>position</li>
+<li>ticks</li>
+<li>angle</li>
+<li>title</li>
+<li>subtitle</li>
+<li>caption</li>
+<li>lab_x</li>
+<li>lab_y</li>
+<li>legend</li>
+<li>vline/ hline</li>
+<li>alpha</li>
+<li>quantile_low</li>
+<li>quantile_high</li>
+<li>theme_type</li>
+<li>palette</li>
+</ul>
+<p>They allow the user to further customize the plot almost as flexibly as if you were using the classic ggplot:</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+diamonds <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">plot_density</span>(<span class="dt">x =</span> carat)</code></pre>
+<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="sourceCode r"><code class="sourceCode r">
+diamonds <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">plot_density</span>(<span class="dt">x =</span> carat,
+               <span class="dt">fill =</span> cut,
+               <span class="dt">position =</span> <span class="st">&quot;stack&quot;</span>)</code></pre>
+<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="sourceCode r"><code class="sourceCode r">
+diamonds <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">plot_density</span>(<span class="dt">x =</span> carat,
+               <span class="dt">fill =</span> cut,
+               <span class="dt">position =</span> <span class="st">&quot;fill&quot;</span>)</code></pre>
+<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre class="sourceCode r"><code class="sourceCode r">
+diamonds <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">plot_density</span>(<span class="dt">x =</span> carat,
+               <span class="dt">fill =</span> cut,
+               <span class="dt">facet =</span> cut,
+               <span class="dt">title =</span> <span class="st">&quot;Write your title here&quot;</span>,
+               <span class="dt">subtitle =</span> <span class="st">&quot;Write your subtitle here&quot;</span>,
+               <span class="dt">caption =</span> <span class="st">&quot;Write your caption here&quot;</span>,
+               <span class="dt">lab_x =</span> <span class="st">&quot;Carat&quot;</span>,
+               <span class="dt">alpha =</span> <span class="fl">.5</span>,
+               <span class="dt">vline =</span> <span class="dv">1</span>)</code></pre>
+<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+</div>
+<div id="complete-usage" class="section level1">
+<h1>Complete usage</h1>
+<p>The main idea of <code>ggrapid</code> is to apply it’s functions programatically to your entire dataset and then leverage this single object in the main reporting file. You can easily iterate across selected columns and create a set of plots for your EDA file:</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+<span class="kw">library</span>(recipes)
+
+credit_data_nested &lt;-<span class="st"> </span>credit_data <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(<span class="op">-</span><span class="kw">one_of</span>(<span class="st">&quot;Home&quot;</span>, <span class="st">&quot;Marital&quot;</span>, <span class="st">&quot;Records&quot;</span>, <span class="st">&quot;Job&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># removing categorical variables</span>
+<span class="st">  </span><span class="kw">gather</span>(variable, variable_value,
+         <span class="kw">one_of</span>(<span class="st">&quot;Seniority&quot;</span>, <span class="st">&quot;Time&quot;</span>, <span class="st">&quot;Age&quot;</span>, <span class="st">&quot;Expenses&quot;</span>, <span class="co"># selecting variables to gather</span>
+                <span class="st">&quot;Income&quot;</span>, <span class="st">&quot;Assets&quot;</span>, <span class="st">&quot;Debt&quot;</span>, <span class="st">&quot;Amount&quot;</span>, <span class="st">&quot;Price&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">nest</span>(<span class="op">-</span>variable) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(
+    <span class="dt">decile_table =</span> <span class="kw">map</span>(data, 
+                       <span class="op">~</span><span class="kw">calculate_decile_table</span>(
+                         .x,
+                         <span class="dt">binning =</span> variable_value,
+                         <span class="dt">grouping =</span> Status,
+                         <span class="dt">top_level =</span> <span class="st">&quot;bad&quot;</span>,
+                         <span class="dt">format =</span> <span class="ot">FALSE</span>
+                         )
+    ),
+    <span class="dt">plot_deciles  =</span> <span class="kw">pmap</span>(<span class="kw">list</span>(<span class="dt">x =</span> decile_table, <span class="dt">y =</span> variable),
+                         <span class="op">~</span><span class="kw">plot_deciles</span>(
+                           .x,
+                           <span class="dt">title =</span> glue<span class="op">::</span><span class="kw">glue</span>(<span class="st">&quot;Decile plot of {.y}&quot;</span>),
+                           <span class="dt">quantile_low =</span> <span class="dv">0</span>, 
+                           <span class="dt">quantile_high =</span> <span class="dv">1</span>, 
+                           <span class="dt">lab_x =</span> <span class="st">&quot;Decile&quot;</span>,
+                           <span class="dt">lab_y =</span> <span class="st">&quot;Bad rate, %&quot;</span>
+                           )
+    ),
+    <span class="dt">plot_boxplot  =</span> <span class="kw">pmap</span>(<span class="kw">list</span>(<span class="dt">x =</span> data, <span class="dt">y =</span> variable),
+                         <span class="op">~</span><span class="kw">plot_boxplot</span>(
+                           .x,
+                           <span class="dt">x =</span> Status,
+                           <span class="dt">y =</span> variable_value,
+                           <span class="dt">fill =</span> Status,
+                           <span class="dt">title =</span> glue<span class="op">::</span><span class="kw">glue</span>(<span class="st">&quot;Box plot of {.y} by Status&quot;</span>),
+                           <span class="dt">quantile_low =</span> <span class="fl">0.01</span>,
+                           <span class="dt">quantile_high =</span> <span class="fl">0.99</span>,
+                           <span class="dt">lab_x =</span> <span class="st">&quot;Performance&quot;</span>,
+                           <span class="dt">caption =</span> <span class="st">&quot;Removed 1% of observations from each side&quot;</span>,
+                           <span class="dt">palette =</span> <span class="st">&quot;inv_binary&quot;</span>
+                           )
+    ),
+    <span class="dt">plot_density  =</span> <span class="kw">pmap</span>(<span class="kw">list</span>(<span class="dt">x =</span> data, <span class="dt">y =</span> variable),
+                     <span class="op">~</span><span class="kw">plot_density</span>(
+                       .x,
+                       <span class="dt">x =</span> variable_value,
+                       <span class="dt">fill =</span> Status,
+                       <span class="dt">title =</span> glue<span class="op">::</span><span class="kw">glue</span>(<span class="st">&quot;Box plot of {.y} by Status&quot;</span>),
+                       <span class="dt">quantile_low =</span> <span class="fl">0.01</span>,
+                       <span class="dt">quantile_high =</span> <span class="fl">0.99</span>,
+                       <span class="dt">lab_x =</span> <span class="st">&quot;Performance&quot;</span>,
+                       <span class="dt">caption =</span> <span class="st">&quot;Removed 1% of observations from each side&quot;</span>,
+                       <span class="dt">palette =</span> <span class="st">&quot;inv_binary&quot;</span>
+                       )
+    )
+  )</code></pre>
+<p>This will give you the following tidy structure. Each row represents an individual variable, and columns are different plots you created before you would like to inspect:</p>
+<pre class="sourceCode r"><code class="sourceCode r">
+credit_data_nested[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, ]
+<span class="co">## # A tibble: 3 x 6</span>
+<span class="co">##   variable  data       decile_table  plot_deciles plot_boxplot plot_density</span>
+<span class="co">##   &lt;chr&gt;     &lt;list&gt;     &lt;list&gt;        &lt;list&gt;       &lt;list&gt;       &lt;list&gt;      </span>
+<span class="co">## 1 Seniority &lt;tibble [… &lt;tibble [10 … &lt;gg&gt;         &lt;gg&gt;         &lt;gg&gt;        </span>
+<span class="co">## 2 Time      &lt;tibble [… &lt;tibble [10 … &lt;gg&gt;         &lt;gg&gt;         &lt;gg&gt;        </span>
+<span class="co">## 3 Age       &lt;tibble [… &lt;tibble [10 … &lt;gg&gt;         &lt;gg&gt;         &lt;gg&gt;</span></code></pre>
+</div>
+<div id="exemplary-eda-format" class="section level1">
+<h1>Exemplary EDA format</h1>
+<p>Creating a standardised and elegant EDA file from the previous data structure is just as easy as calling your data frame and putting the results in a <code>Rmd</code> format:</p>
+<div id="variable-seniority" class="section level3">
+<h3>Variable: Seniority</h3>
+<p>[above code: glue::glue(“Variable: {credit_data_nested$variable[[1]]}”)]</p>
+<div id="decile-analysis" class="section level4">
+<h4>Decile analysis</h4>
+<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>decile_table[[<span class="dv">1</span>]]
+<span class="co">## # A tibble: 10 x 8</span>
+<span class="co">##    decile   min median   max top_level total bottom_level ratio     </span>
+<span class="co">##    &lt;fct&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;     &lt;int&gt; &lt;int&gt;        &lt;int&gt; &lt;formttbl&gt;</span>
+<span class="co">##  1 1          0      0     0       235   446          211 52.69%    </span>
+<span class="co">##  2 2          0      1     1       209   445          236 46.97%    </span>
+<span class="co">##  3 3          1      2     2       174   446          272 39.01%    </span>
+<span class="co">##  4 4          2      3     3       146   445          299 32.81%    </span>
+<span class="co">##  5 5          3      4     5       122   445          323 27.42%    </span>
+<span class="co">##  6 6          5      6     8       105   446          341 23.54%    </span>
+<span class="co">##  7 7          8     10    10        88   445          357 19.78%    </span>
+<span class="co">##  8 8         10     12    14        76   446          370 17.04%    </span>
+<span class="co">##  9 9         14     16    20        54   445          391 12.13%    </span>
+<span class="co">## 10 10        20     25    48        45   445          400 10.11%</span></code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>plot_deciles[[<span class="dv">1</span>]]</code></pre>
+<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+</div>
+<div id="aditional-plots" class="section level4">
+<h4>Aditional plots</h4>
+<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>plot_boxplot[[<span class="dv">1</span>]]</code></pre>
+<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>plot_density[[<span class="dv">1</span>]]</code></pre>
+<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+</div>
+</div>
+<div id="variable-time" class="section level3">
+<h3>Variable: Time</h3>
+<p>[above code: glue::glue(“Variable: {credit_data_nested$variable[[2]]}”)]</p>
+<div id="decile-analysis-1" class="section level4">
+<h4>Decile analysis</h4>
+<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>decile_table[[<span class="dv">2</span>]]
+<span class="co">## # A tibble: 10 x 8</span>
+<span class="co">##    decile   min median   max top_level total bottom_level ratio     </span>
+<span class="co">##    &lt;fct&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;     &lt;int&gt; &lt;int&gt;        &lt;int&gt; &lt;formttbl&gt;</span>
+<span class="co">##  1 1          6     18    24        64   446          382 14.35%    </span>
+<span class="co">##  2 2         24     30    36       109   445          336 24.49%    </span>
+<span class="co">##  3 3         36     36    36       124   446          322 27.80%    </span>
+<span class="co">##  4 4         36     36    48       136   445          309 30.56%    </span>
+<span class="co">##  5 5         48     48    48       135   445          310 30.34%    </span>
+<span class="co">##  6 6         48     48    60       125   446          321 28.03%    </span>
+<span class="co">##  7 7         60     60    60       133   445          312 29.89%    </span>
+<span class="co">##  8 8         60     60    60       155   446          291 34.75%    </span>
+<span class="co">##  9 9         60     60    60       129   445          316 28.99%    </span>
+<span class="co">## 10 10        60     60    72       144   445          301 32.36%</span></code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>plot_deciles[[<span class="dv">2</span>]]</code></pre>
+<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+</div>
+<div id="aditional-plots-1" class="section level4">
+<h4>Aditional plots</h4>
+<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>plot_boxplot[[<span class="dv">2</span>]]</code></pre>
+<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>plot_density[[<span class="dv">2</span>]]</code></pre>
+<p><img src="/post/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+</div>
+</div>
+</div>
+<div id="predefined-rmd-skeleton-for-automated-eda" class="section level1">
+<h1>Predefined Rmd skeleton for automated EDA</h1>
+<p>It becomes even easier when you take advantage of the <code>Rmd child</code> document propery of every chunk. You need to have two <code>Rmd</code> documents to leverage that functionality and create customised and great looking EDA reports in no time:</p>
+<ul>
+<li>child Rmd template</li>
+<li>main Rmd file</li>
+</ul>
+<p>The <code>Rmd template</code> dictates the <code>main Rmd</code> document what type of reporting structure you would like to leverage for every single variable. The main advantage of that is that you do not maintain all the code in the main reporting file which could become very problematic when you’re working on a really large project. With a <code>child document</code> you just make changes to the child and they automatically take place in the main report file - you can think of it as defining a simple R function!</p>
+<p>A simple example of a child template could be something like the one presented below - it needs to be saved as an individual Rmd file called e.g.: ‘child_template.Rmd’. It can obviously become much more complicated and could leverage <code>Rmd tabsets</code> and other Rmd functionalities to offer the best user experience. Note the intentional usage of <code>[[i]]</code> which I’m explaining further.</p>
+<hr />
+<p><strong>Decile analysis</strong></p>
+<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>decile_table[[i]]</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>plot_deciles[[i]]</code></pre>
+<p><strong>Aditional plots</strong></p>
+<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>plot_boxplot[[i]]</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">credit_data_nested<span class="op">$</span>plot_density[[i]]</code></pre>
+<hr />
+<p>In the <code>main Rmd</code> file you then apply the following pattern:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># ```{r include=FALSE}</span>
+i &lt;-<span class="st"> </span><span class="dv">1</span> 
+<span class="co"># ```</span></code></pre>
+<p><strong>glue::glue(“Variable: {credit_data_nested$variable[[i]]}”)</strong></p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># ```{r child=&#39;child_template.Rmd&#39;}</span>
+<span class="co"># ```</span></code></pre>
+<p>Then when the <code>main Rmd</code> file renders it imports the <code>Rmd child</code> every time it’s called, plugs in the respective <code>[[i]]</code> object into it and renders the chunk. So you would repeat that pattern for every single attribute (row) of the main data frame with all the rendered plots while changing the <code>i &lt;-</code> assignment to account for the next attribute. It’s most probably not the most streamlined solution, but it used to work out for me very well for a long time and offered the best trade-off between speed, maintenance and elegance of the overall solution.</p>
+</div>
+<div id="wrapping-up" class="section level1">
+<h1>Wrapping up</h1>
+<p>That would be really it with <code>ggrapid</code> for now - I hope you guys enjoyed this blogpost and will find the package usefull in your day-to-day practice! I’m planning to continue working on it to offer a more comprehensive solution (perhaps by combining it’s functionalities with <code>DataExplorer</code>?) and would invite you to participate and give your ideas as well. Thanks!</p>
+</div>
+
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">TAGGED IN</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="/tags/ggplot/">ggplot</a>
+
+  <a class="tag tag--primary tag--small" href="/tags/ggrapid/">ggrapid</a>
+
+  <a class="tag tag--primary tag--small" href="/tags/eda/">eda</a>
+
+  <a class="tag tag--primary tag--small" href="/tags/plotting/">plotting</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2019/10/testing-the-tune-package-from-tidymodels-analysing-the-relationship-between-the-upsampling-ratio-and-model-performance/" data-tooltip="Testing the tune package from tidymodels - analysing the relationship between the upsampling ratio and model performance">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2019/08/caret-vs-tidymodels-comparing-the-old-and-new/" data-tooltip="Caret vs. tidymodels - comparing the old and new">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2019/08/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2019/08/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2020 Konrad Semsch. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2019/10/testing-the-tune-package-from-tidymodels-analysing-the-relationship-between-the-upsampling-ratio-and-model-performance/" data-tooltip="Testing the tune package from tidymodels - analysing the relationship between the upsampling ratio and model performance">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2019/08/caret-vs-tidymodels-comparing-the-old-and-new/" data-tooltip="Caret vs. tidymodels - comparing the old and new">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2019/08/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2019/08/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=%2F2019%2F08%2F2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible%2F">
+          <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=%2F2019%2F08%2F2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible%2F">
+          <i class="fa fa-twitter"></i><span>Share on Twitter</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="/images/profile.png" alt="Author&#39;s picture" />
+    
+    <h4 id="about-card-name">Konrad Semsch</h4>
+    
+      <div id="about-card-bio">Practitioners view on predictive modelling</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Senior Data Scientist @ innogy SE
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Dortmund, Germany
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    <div id="cover" style="background-image:url('https://res.cloudinary.com/dl7yqljrx/image/upload/v1581584232/background_dark.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = '\/2019\/08\/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible\/';
+          
+            this.page.identifier = '\/2019\/08\/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'konradsemsch';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+
+    
+  </body>
+</html>
+

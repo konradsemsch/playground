@@ -1,0 +1,395 @@
+---
+title: "My contribution to the tidymodels ecosystem - implementing supervised discretization step with XgBoost backend"
+author: "Konrad Semsch"
+date: "2020-05-28"
+slug: my-contribution-to-tidymodels-ecosystem-implementing-supervised-discretization-step-with-xgboost-backend
+tags: ["tidymodels", "embed", "predictive modelling", "xgboost"]
+categories: ["predictive modelling"]
+output:
+  blogdown::html_page:
+    highlight: tango
+---
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+<style>
+body {
+text-align: justify}
+</style>
+
+There's already a lot of cool features that the tidymodels ecosystem offers, which makes data science and predictive modelling easy and effective, but at times I lacked this one: automated, supervised discretization procedure of numeric variables. In this blogpost I'd like to present to you a new step that I implemented with Max Kuhn with a PR into the embed package, which recently became officially available on CRAN!
+
+<!--more-->
+
+There's already a lot of cool features that the `tidymodels` ecosystem offers, which makes data science and predictive modelling easy and effective, but at times I lacked this one: automated, supervised discretization procedure of numeric variables. In this blogpost I'd like to present to you a new step that I implemented with Max Kuhn with a PR into the `embed` package, which recently became officially available on CRAN!
+
+# Introduction
+
+One could ask: why do we need such step at all, if we could simply use the raw numeric variables and fit an XgBoost model (or any other tree-based algorithm) on top of them? One answer to this question could be when one needs to use an interpretable, linear model on top of binned, numerical data to account for non-linear patterns. In such a situation using the step presented in this blog could come very handy, as it would save the data scientist a lot of time getting a first idea about how good such an implementation could be (and fine-tune the splits later with proper analysis).
+
+Another idea that comes to my mind, and proved to give very good results in my real-life projects, is to combine the predictions of a linear model (e.g. Elastic-Net) trained on top of binned, numerical data, with the very same umodified variables trained using a boosting algorithm. The reason why it may work well in many cases is that stacking predictions this way may smoothen the results of the boosting algorithm in situations when there isn't a lot of training data available.
+
+# Status Quo
+
+So far there was only one function in the `tidymodels` ecosystem that allowed for binning numerical variables and it was `step_discretize`. The problem with it is that it 'blindly' bins your data into a predefined number of bins, and doesn't take into consideration the relation with the target variable. You can quess the result - such binning approach isn't particularly powerful. Therefore I've decided to contribute to the `tidymodels` ecosystem by creating a PR and implementing a new function called `step_discretize_xgb`. After some discusions with Max, he proposed to implement an additional variant of this function called `step_discretize_cart`.
+
+What do both functions do? In a nutshell, they perform supervised discretization of numerical variables specified in the recipe, while using the information about the target to perfom it in an optimal way. The first function uses `xgboost` and the second `rpart` as the backend engine. Both approaches implement an internal validation scheme (early stopping and prunning respectively), to give results prone to overfitting (which is often the problem with binning strategies). Additionally, both of them are compatible with the `tune` package, which means that you can optimize their parameters to your particular data science use case.
+
+In which situation should each implementation be used? It's unclear when one of the approaches could prove better - ideally you should try out both. Perhaps `step_discretize_xgb` could give slightly better results when you're dealing with a bigger data volume and `step_discretize_cart` with smaller data, but that's just my subjective gut feeling. Let's see now a short, practical example below!
+
+# Initial setup
+
+First of all, install the latest packages from the `tidymodels` ecosystem, as well as `xgboost` and `rpart`, that are required for our newly implemented `embed` steps. Subsequently, let's load some libraries that we will need for this blogpost.
+
+```{r message=FALSE, warning=FALSE, results="hide"}
+
+### Install the latest versions of packages
+# install.packages("tidymodels")
+# install.packages("embed")
+# install.packages("tune")
+
+### Additionally needed for our new embed steps
+# install.packages("xgboost")
+# install.packages("rpart")
+
+```
+
+```{r message=FALSE, warning=FALSE, results="hide"}
+
+set.seed(42)
+options(max.print = 150)
+
+library(magrittr)
+library(tidyverse)
+library(tidymodels)
+library(modeldata)
+library(embed)
+library(tune)
+
+```
+
+Let's use our good-old ```credit_data``` dataset for illustration purposes. It's actually quite common in financial services to use the technique described in this post as it captures non-linear patterns and gives interpretable results.
+
+```{r}
+
+data("credit_data")
+
+credit_data %<>%
+  set_names(., tolower(names(.))) %>%
+  mutate(status = if_else(status == "bad", "1", "0"))
+
+glimpse(credit_data)
+
+```
+
+We're applying pretty standard data splitting strategy. Let's split the dataset in a 80:20 proportion between the training and test sets. Additionally, let's apply 3-times repeated 5-fold cross-validation as we have relatively many parameters to tune. Repeating the process will help us find the best (non-overfitting) parameters.
+
+```{r}
+
+target <- "status"
+split <- initial_split(credit_data, prop = 0.80, strata = all_of(target))
+
+df_train <- training(split)
+df_test  <- testing(split)
+
+train_cv <- vfold_cv(df_train, v = 5, repeats = 3, strata = all_of(target))
+
+```
+
+# Model specification
+
+Let's specify an Elastic-Net modelling engine. Mind placing `tune()` as a placeholder for `penalty` and `mixture`, as both hyperparameters will be later optimized.
+
+```{r}
+
+(engine <- logistic_reg(
+    penalty = tune(),
+    mixture = tune()
+  ) %>% 
+  set_engine("glmnet") %>% 
+  set_mode("classification")
+)
+
+```
+
+# Formulating recipes and workflows
+
+Let's specify in total four different recipes: two using `step_discretize_xgb` and two `step_discretize_cart` respectively. For each method there is a '*_default' and '*_tune' version, where the first one applies default parameter values and the second one `tune()` placeholders. At the end of the process we'll have a chance to assess performance differences betweeen both methods, as well as their default and fine-tuned versions.
+
+Apart from that each recipe implements pretty standard steps:
+
+  * median imputation for numerical variables
+  * creates an additional factor level for missing values for nominal variables
+  * dummy codding of nominal variables
+  * upsampling of the minority class
+
+```{r}
+
+### XgBoost
+recipe_xgb_default <- df_train %>%
+  recipe(~ .) %>%
+  update_role(one_of(target), new_role = "outcome") %>% 
+  step_medianimpute(all_numeric()) %>%
+  step_unknown(all_nominal(), -all_outcomes()) %>%
+  step_discretize_xgb(
+    all_numeric(),
+    outcome = target
+  ) %>% 
+  step_dummy(all_nominal(), -all_outcomes()) %>% 
+  step_upsample(one_of(target))
+
+recipe_xgb_tune <- df_train %>%
+  recipe(~ .) %>%
+  update_role(one_of(target), new_role = "outcome") %>% 
+  step_medianimpute(all_numeric()) %>%
+  step_unknown(all_nominal(), -all_outcomes()) %>%
+  step_discretize_xgb(
+    all_numeric(),
+    outcome = target,
+    num_breaks = tune(),
+    tree_depth = tune(),
+    min_n = tune()
+  ) %>% 
+  step_dummy(all_nominal(), -all_outcomes()) %>% 
+  step_upsample(one_of(target))
+
+### CART
+recipe_cart_default <- df_train %>%
+  recipe(~ .) %>%
+  update_role(one_of(target), new_role = "outcome") %>% 
+  step_medianimpute(all_numeric()) %>%
+  step_unknown(all_nominal(), -all_outcomes()) %>%
+  step_discretize_cart(
+    all_numeric(),
+    outcome = target
+  ) %>% 
+  step_dummy(all_nominal(), -all_outcomes()) %>% 
+  step_upsample(one_of(target))
+
+recipe_cart_tune <- df_train %>%
+  recipe(~ .) %>%
+  update_role(one_of(target), new_role = "outcome") %>% 
+  step_medianimpute(all_numeric()) %>%
+  step_unknown(all_nominal(), -all_outcomes()) %>%
+  step_discretize_cart(
+    all_numeric(),
+    outcome = target,
+    cost_complexity = tune(),
+    tree_depth = tune(),
+    min_n = tune()
+  ) %>% 
+  step_dummy(all_nominal(), -all_outcomes()) %>% 
+  step_upsample(one_of(target))
+
+```
+
+Let's compare bins produced by each of the default versions. What you will notice in the `step_discretize_xgb` output below is that the function might produce slightly different results on every run. The reason for this is that the function uses an internal `early_stopping` validation scheme to prevent overfitting, which uses a small sample from the training data. The larger the dataset, the more stable the results will be on every run, however, volatility might be quite high for smaller datasets. Therefore it's important to perform repeated CV to find the optimal parameters.
+
+Let's analyse the results using a persistant random seed from `withr`. In this particular example only `time` variable was not binned, most other variables were binned using a single split, and more complicated bins were only derived for `seniority` variable.
+
+```{r}
+
+withr::with_seed(
+    91,
+    recipe_xgb_default %>% 
+      prep() %>% 
+      juice()
+  ) %>% 
+  glimpse()
+
+```
+
+On the other hand, `step_discretize_cart` hardly finds any meaningful splits except for the `seniority` variable for which three bins were derived. All other numerical variables were preserved in their original form.
+
+```{r}
+
+recipe_cart_default %>% 
+  prep() %>% 
+  juice() %>% 
+  glimpse()
+
+```
+
+Lastly, we will bind the initially created modelling engine with each individual recipe, which forms a so called `workflow.` These will be optimized using a parameter grid in the next step.
+
+```{r}
+
+workflow_xgb_default <- workflow() %>% 
+  add_model(engine) %>% 
+  add_recipe(recipe_xgb_default)
+
+workflow_xgb_tune <- workflow() %>% 
+  add_model(engine) %>% 
+  add_recipe(recipe_xgb_tune)
+
+workflow_cart_default <- workflow() %>% 
+  add_model(engine) %>% 
+  add_recipe(recipe_cart_default)
+
+workflow_cart_tune <- workflow() %>% 
+  add_model(engine) %>% 
+  add_recipe(recipe_cart_tune)
+
+```
+
+# Building up tuning grids
+
+Let's use `roc_auc` as our performance metric for evaluating results. Additionally, a single grid for both default recipes and separate grids for each workflow are specified using `grid_max_entropy()` to ensure maximum entropy of searched parameter space. Separate grids are needed for both `tunable` workflows as they have slightly different hyperparameters.
+
+```{r}
+
+tune_metrics <- metric_set(roc_auc)
+tune_control <- control_grid(verbose = FALSE,
+                             save_pred = TRUE)
+
+### Default
+grid_default <- grid_max_entropy(
+  penalty(), 
+  mixture(),
+  size = 10
+  )
+
+### XgBoost tune
+(grid_xgboost_tune <- grid_max_entropy(
+  penalty(), 
+  mixture(),
+  num_breaks(),
+  tree_depth(),
+  min_n(),
+  size = 25
+  ))
+
+### CART tune
+grid_cart_tune <- grid_max_entropy(
+  penalty(), 
+  mixture(),
+  cost_complexity(),
+  tree_depth(),
+  min_n(),
+  size = 25
+  )
+
+```
+
+In the next step we will bind the specified workflows with the tuning grids using `tune_grid()` function. It will fit all model possibilites using the CV scheme. Keep in mind that we have relatively many parameters to tune across many folds, therefore training all models may take a while.
+
+```{r max.print = 10}
+
+### XgBoost
+fits_xgb_default <- tune_grid(
+  workflow_xgb_default,
+  resamples = train_cv,
+  grid = grid_default,
+  metrics = tune_metrics,
+  control = tune_control
+  )
+
+fits_xgb_tune <- tune_grid(
+  workflow_xgb_tune,
+  resamples = train_cv,
+  grid = grid_xgboost_tune,
+  metrics = tune_metrics,
+  control = tune_control
+  )
+
+### CART
+fits_cart_default <- tune_grid(
+  workflow_cart_default,
+  resamples = train_cv,
+  grid = grid_default,
+  metrics = tune_metrics,
+  control = tune_control
+  )
+
+fits_cart_tune <- tune_grid(
+  workflow_cart_tune,
+  resamples = train_cv,
+  grid = grid_cart_tune,
+  metrics = tune_metrics,
+  control = tune_control
+  )
+
+```
+
+# Analyzing results
+
+After all models have been estimated let's see which one gives the best results. From the tibble below we can see that the default `cart` performs better than the default `xgb` recipe. On the other hand, `xbg` gives better results than `cart` after fine-tunning. What's also interesting is that the best performing model has much lower performance volatility than all the others.
+
+```{r max.print = 10}
+
+compare_results <- function(tune, type){
+  show_best(tune, "roc_auc", 1) %>% 
+    select(mean, std_err) %>% 
+    add_column(type = type, .before = 1)
+}
+
+(tune_compare <- map2_dfr(
+  .x = list(fits_xgb_default, fits_xgb_tune, fits_cart_default, fits_cart_tune), 
+  .y = list("xgb_default", "xgb_tune", "cart_default", "cart_tune"), 
+  ~compare_results(.x, .y)
+  ) %>% 
+  arrange(desc(mean)))
+
+```
+
+Let's analyse the performance distribution of the best model to see its volatility across all folds of all repetitions. As we can see from the density plot below, our results vary between 0.80 and around 0.87 AUC on the outer set.
+
+```{r}
+
+collect_predictions(fits_xgb_tune, 
+                    parameters = select_best(fits_xgb_tune, "roc_auc", 1)) %>% 
+  group_by(id, id2) %>%
+  roc_auc(status, .pred_1) %>% 
+  ggplot() + 
+  geom_density(aes(.estimate)) + 
+  scale_x_continuous(limits = c(0.75, 0.90)) +
+  theme_linedraw()
+
+```
+
+# Finalizing the best workflow
+
+In the last step I'd like to assess if our best model doesn't overfit to the test set. Before doing it I need to finalize our workflow with the best-performing parameter combination obtained with `select_best()`. The `tune` package has a set of `finalize_*` functions, however, neither `finalize_workflow()` or `finalize_recipe()` was working for my example. I will submit a PR to address this issue.
+
+In the meantime, we're also able to finalize our `workflow` using a workaround. The best engine parameters were finalized using the `finalize_model()` function. When it comes to updating our recipe I had to use the `update`() function and point individual parameters from `select_best()`. Lastly, I updated both the model, as well as the recipe in the workflow using the `update_*` functions.
+ 
+```{r max.print = 10}
+
+engine_xgb_tune_fin <- finalize_model(
+  engine, 
+  select_best(fits_xgb_tune, "roc_auc") %>% select(1:2)
+  )
+
+recipe_xgb_tune_fin <- recipe_xgb_tune
+
+recipe_xgb_tune_fin$steps[[3]] <- update(
+  recipe_xgb_tune_fin$steps[[3]], 
+  num_breaks = select_best(fits_xgb_tune, "roc_auc")$num_breaks,
+  tree_depth = select_best(fits_xgb_tune, "roc_auc")$tree_depth,
+  min_n = select_best(fits_xgb_tune, "roc_auc")$min_n
+  )
+
+workflow_xgb_tune_fin <- workflow_xgb_tune %>% 
+  update_model(engine_xgb_tune_fin) %>% 
+  update_recipe(recipe_xgb_tune_fin)
+
+```
+
+```{r}
+
+last_fit <- last_fit(workflow_xgb_tune_fin, split)
+collect_metrics(last_fit)
+
+```
+
+In the last step I used the `last_fit()` function that refits the workflow with the final parameters on the entire training data and evaluates the model on the test data. As you can see, the model has a performance of `r round(collect_metrics(last_fit)$.estimate[[2]], 2)` AUC on the test data set. I believe that proves that we have a pretty stable model that generalizes quite well to unseen data.
+
+# Wrapping up
+
+That's all for this round! I hope you found my summary usefull and that some of you will incorporate the new `embed` steps in your day-to-day data science projects. Let me know if you have any feedback!

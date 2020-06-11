@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>/tags/embed/</loc>
+    <lastmod>2020-05-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2020/05/my-contribution-to-tidymodels-ecosystem-implementing-supervised-discretization-step-with-xgboost-backend/</loc>
+    <lastmod>2020-05-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/</loc>
+    <lastmod>2020-05-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/</loc>
+    <lastmod>2020-05-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/predictive-modelling/</loc>
+    <lastmod>2020-05-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2020-05-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/tidymodels/</loc>
+    <lastmod>2020-05-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/xgboost/</loc>
+    <lastmod>2020-05-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/missing-values/</loc>
+    <lastmod>2019-11-17T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2019/11/step-shadow-missing-implementing-a-custom-recipes-step-to-account-for-missing-data-patterns/</loc>
+    <lastmod>2019-11-17T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2019/10/testing-the-tune-package-from-tidymodels-analysing-the-relationship-between-the-upsampling-ratio-and-model-performance/</loc>
+    <lastmod>2019-10-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/upsamling/</loc>
+    <lastmod>2019-10-11T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/eda/</loc>
+    <lastmod>2019-08-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/ggplot/</loc>
+    <lastmod>2019-08-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/ggrapid/</loc>
+    <lastmod>2019-08-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/plotting/</loc>
+    <lastmod>2019-08-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2019/08/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible/</loc>
+    <lastmod>2019-08-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/caret/</loc>
+    <lastmod>2019-08-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2019/08/caret-vs-tidymodels-comparing-the-old-and-new/</loc>
+    <lastmod>2019-08-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/archives/</loc>
+  </url>
+  
+  <url>
+    <loc>/page/experience/</loc>
+  </url>
+  
+  <url>
+    <loc>/page/</loc>
+  </url>
+  
+</urlset>

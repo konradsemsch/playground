@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.72.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="author" content="Konrad Semsch">
+<meta name="keywords" content=", data science, statistics, machine learning, predictive modelling, fintech, banking, r">
+<meta name="description" content="
+
+
+
+
+In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: caret and its successor packages being written by the same author (Max Kuhn) that are wrapped together in a so called tidymodels framework.
+">
+
+
+<meta property="og:description" content="
+
+
+
+
+In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: caret and its successor packages being written by the same author (Max Kuhn) that are wrapped together in a so called tidymodels framework.
+">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Caret vs. tidymodels - comparing the old and new">
+<meta name="twitter:title" content="Caret vs. tidymodels - comparing the old and new">
+<meta property="og:url" content="/2019/08/caret-vs-tidymodels-comparing-the-old-and-new/">
+<meta property="twitter:url" content="/2019/08/caret-vs-tidymodels-comparing-the-old-and-new/">
+<meta property="og:site_name" content="Practitioners view on predictive modelling">
+<meta property="og:description" content="
+
+
+
+
+In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: caret and its successor packages being written by the same author (Max Kuhn) that are wrapped together in a so called tidymodels framework.
+">
+<meta name="twitter:description" content="
+
+
+
+
+In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: caret and its successor packages being written by the same author (Max Kuhn) that are wrapped together in a so called tidymodels framework.
+">
+<meta property="og:locale" content="en-us">
+
+  
+    <meta property="article:published_time" content="2019-08-06T00:00:00">
+  
+  
+    <meta property="article:modified_time" content="2019-08-06T00:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="predictive modelling">
+    
+  
+  
+    
+      <meta property="article:tag" content="caret">
+    
+      <meta property="article:tag" content="tidymodels">
+    
+      <meta property="article:tag" content="predictive modelling">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="/images/profile.png">
+  <meta property="twitter:image" content="/images/profile.png">
+
+
+    <title>Caret vs. tidymodels - comparing the old and new</title>
+
+    <link rel="icon" href="/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="/2019/08/caret-vs-tidymodels-comparing-the-old-and-new/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    
+    
+
+    
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-146680003-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="/">Practitioners view on predictive modelling</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="/images/profile.png" alt="Author&#39;s picture" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="/#about">
+          <img class="sidebar-profile-picture" src="/images/profile.png" alt="Author&#39;s picture" />
+        </a>
+        <h4 class="sidebar-profile-name">Konrad Semsch</h4>
+        
+          <h5 class="sidebar-profile-bio">Practitioners view on predictive modelling</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="/">
+    
+      <b><i class="sidebar-button-icon fa fa-lg fa-home"></i></b>
+      
+      <span class="sidebar-button-desc">Home</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-address-card"></i>
+      
+      <span class="sidebar-button-desc">About</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="/page/experience/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-briefcase"></i>
+      
+      <span class="sidebar-button-desc">Experience</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.linkedin.com/in/konradsemsch/">
+    
+      <i class="sidebar-button-icon fa fa-linkedin-square"></i>
+      
+      <span class="sidebar-button-desc">Linkedin</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/konradsemsch">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="mailto:konrad.semsch@gmail.com" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-envelope"></i>
+      
+      <span class="sidebar-button-desc">Email me</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">Archives</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">Tags</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      Caret vs. tidymodels - comparing the old and new
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2019-08-06T00:00:00Z">
+        
+  
+  
+  
+  
+    6 August 2019
+  
+
+      </time>
+    
+    
+  
+  
+    <span>in</span>
+    
+      <a class="category-link" href="/categories/predictive-modelling">predictive modelling</a>
+    
+  
+
+  </div>
+
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>In this post I will make a comparison between the most popular (by number of monthly downloads from Github) ML framework available for R to date: <a href="https://github.com/topepo/caret">caret</a> and its successor packages being written by the same author (<a href="https://github.com/topepo">Max Kuhn</a>) that are wrapped together in a so called <a href="https://github.com/tidymodels/tidymodels">tidymodels</a> framework. <code>Tidymodels</code> is a collection of different packages such as: <a href="https://tidymodels.github.io/rsample/">rsample</a>, <a href="https://tidymodels.github.io/recipes/">recipes</a>, <a href="https://tidymodels.github.io/parsnip/">parsnip</a>, <a href="https://tidymodels.github.io/dials/">dials</a> and more, that allow running an entire ML project in a tidy format end-to-end.</p>
+<p>Many of them are still in a development phase, which will still take a couple good months before they settle down, so I’ll try to keep this post up-to-date over time. Nevertheless, I’ve wanted to take a closer look at what <code>tidymodels</code> have to offer for a while already, and thought a blogpost would be a great way to demonstrate that.</p>
+<p><strong>Update 16.02.2020</strong> - the following parts of this blogpost were updated:</p>
+<ul>
+<li>since the initial write-up of this post many <code>tidymodels</code> packages were updated and the following, new packages were released: <a href="https://tidymodels.github.io/tune/">tune</a> &amp; <a href="https://tidymodels.github.io/workflows/">workflows</a>, which significantly simplified the overall modelling workflow</li>
+<li>updated the entire tidymodels implementation using new functions instead of the handler functions I had to write before. Previous post content is kept in its original form at the very end if anyone is interested</li>
+<li>added variable importance for the tidymodel implementation using the <code>vip</code> package</li>
+</ul>
+<p>In order to write this blog I’ve been reading carefully all individual package websites and this excellent <a href="https://www.alexpghayes.com/blog/implementing-the-super-learner-with-tidymodels/">blogpost</a> from Alex Hayes helped me a lot to put things together.</p>
+<div id="initial-setup" class="section level1">
+<h1>Initial setup</h1>
+<p>In the beginning, let’s load all the required packages and the <code>credit_data</code> dataset available from <code>recipes</code> that we will use for modelling. Note also that I’m setting the random seed to make sampling reproducible, as well as set the <a href="https://davisvaughan.github.io/furrr/">furrr</a> plan to <code>multicore</code>. It’s important unless you want this script to run really long on your machine - we’ll be fitting many different models, so making sure you utilize all your local resources will speed things up a lot.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">42</span>)
+<span class="kw">options</span>(<span class="dt">max.print =</span> <span class="dv">150</span>)
+
+<span class="kw">library</span>(modeldata)
+<span class="kw">library</span>(tidymodels)
+<span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(caret)
+<span class="kw">library</span>(magrittr)
+<span class="kw">library</span>(naniar)
+<span class="kw">library</span>(furrr)
+<span class="kw">library</span>(skimr)
+<span class="kw">library</span>(vip)
+<span class="kw">library</span>(workflows)
+<span class="kw">library</span>(tune)
+
+<span class="kw">plan</span>(multicore)  
+<span class="kw">data</span>(<span class="st">&quot;credit_data&quot;</span>)</code></pre>
+</div>
+<div id="data-preparation" class="section level1">
+<h1>Data preparation</h1>
+<p>In this example, I’m building a classification model to distinguish between good and bad loans indicated by column ‘Status’. We have relatively many observations compared to the number of variables available for modelling. Before making any other steps let’s convert all columns to lowercase.</p>
+<pre class="sourceCode r"><code class="sourceCode r">credit_data <span class="op">%&lt;&gt;%</span>
+<span class="st">  </span><span class="kw">set_names</span>(., <span class="kw">tolower</span>(<span class="kw">names</span>(.)))
+
+<span class="kw">glimpse</span>(credit_data)</code></pre>
+<pre><code>## Observations: 4,454
+## Variables: 14
+## $ status    &lt;fct&gt; good, good, bad, good, good, good, good, good, good, b…
+## $ seniority &lt;int&gt; 9, 17, 10, 0, 0, 1, 29, 9, 0, 0, 6, 7, 8, 19, 0, 0, 15…
+## $ home      &lt;fct&gt; rent, rent, owner, rent, rent, owner, owner, parents, …
+## $ time      &lt;int&gt; 60, 60, 36, 60, 36, 60, 60, 12, 60, 48, 48, 36, 60, 36…
+## $ age       &lt;int&gt; 30, 58, 46, 24, 26, 36, 44, 27, 32, 41, 34, 29, 30, 37…
+## $ marital   &lt;fct&gt; married, widow, married, single, single, married, marr…
+## $ records   &lt;fct&gt; no, no, yes, no, no, no, no, no, no, no, no, no, no, n…
+## $ job       &lt;fct&gt; freelance, fixed, freelance, fixed, fixed, fixed, fixe…
+## $ expenses  &lt;int&gt; 73, 48, 90, 63, 46, 75, 75, 35, 90, 90, 60, 60, 75, 75…
+## $ income    &lt;int&gt; 129, 131, 200, 182, 107, 214, 125, 80, 107, 80, 125, 1…
+## $ assets    &lt;int&gt; 0, 0, 3000, 2500, 0, 3500, 10000, 0, 15000, 0, 4000, 3…
+## $ debt      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2500, 260, 0, 0, 0…
+## $ amount    &lt;int&gt; 800, 1000, 2000, 900, 310, 650, 1600, 200, 1200, 1200,…
+## $ price     &lt;int&gt; 846, 1658, 2985, 1325, 910, 1645, 1800, 1093, 1957, 14…</code></pre>
+<p>With the help of the excellent <a href="http://naniar.njtierney.com/">naniar</a> package I’m checking the percentage of missing data per each variable. For this particular dataset there are very few missing values so they won’t pose a problem for us during modelling.</p>
+<pre class="sourceCode r"><code class="sourceCode r">credit_data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">miss_var_summary</span>()</code></pre>
+<pre><code>## # A tibble: 14 x 3
+##    variable  n_miss pct_miss
+##    &lt;chr&gt;      &lt;int&gt;    &lt;dbl&gt;
+##  1 income       381   8.55  
+##  2 assets        47   1.06  
+##  3 debt          18   0.404 
+##  4 home           6   0.135 
+##  5 job            2   0.0449
+##  6 marital        1   0.0225
+##  7 status         0   0     
+##  8 seniority      0   0     
+##  9 time           0   0     
+## 10 age            0   0     
+## 11 records        0   0     
+## 12 expenses       0   0     
+## 13 amount         0   0     
+## 14 price          0   0</code></pre>
+<p>Another important step would be to make some basic numerical summaries of the data in order to catch any unusual observations. I will do it using the <a href="https://ropensci.github.io/skimr/">skimr</a> package. Apart from the fact that many numerical variables show high skewness and some categorical variables have levels with very low frequency, it doesn’t seem that we will have to deal with any special encoded numbers or other problems.</p>
+<pre class="sourceCode r"><code class="sourceCode r">credit_data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">skim</span>()</code></pre>
+<pre><code>## Skim summary statistics
+##  n obs: 4454 
+##  n variables: 14 
+## 
+## ── Variable type:factor ────────────────────────────────────────────────────────
+##  variable missing complete    n n_unique
+##      home       6     4448 4454        6
+##       job       2     4452 4454        4
+##   marital       1     4453 4454        5
+##   records       0     4454 4454        2
+##    status       0     4454 4454        2
+##                                top_counts ordered
+##   own: 2107, ren: 973, par: 783, oth: 319   FALSE
+##  fix: 2805, fre: 1024, par: 452, oth: 171   FALSE
+##    mar: 3241, sin: 977, sep: 130, wid: 67   FALSE
+##                 no: 3681, yes: 773, NA: 0   FALSE
+##               goo: 3200, bad: 1254, NA: 0   FALSE
+## 
+## ── Variable type:integer ───────────────────────────────────────────────────────
+##   variable missing complete    n    mean       sd  p0     p25  p50    p75
+##        age       0     4454 4454   37.08    10.98  18   28      36   45  
+##     amount       0     4454 4454 1038.92   474.55 100  700    1000 1300  
+##     assets      47     4407 4454 5403.98 11574.42   0    0    3000 6000  
+##       debt      18     4436 4454  343.03  1245.99   0    0       0    0  
+##   expenses       0     4454 4454   55.57    19.52  35   35      51   72  
+##     income     381     4073 4454  141.69    80.75   6   90     125  170  
+##      price       0     4454 4454 1462.78   628.13 105 1117.25 1400 1691.5
+##  seniority       0     4454 4454    7.99     8.17   0    2       5   12  
+##       time       0     4454 4454   46.44    14.66   6   36      48   60  
+##   p100     hist
+##     68 ▅▇▇▇▅▃▂▁
+##   5000 ▅▇▃▁▁▁▁▁
+##  3e+05 ▇▁▁▁▁▁▁▁
+##  30000 ▇▁▁▁▁▁▁▁
+##    180 ▇▃▃▁▁▁▁▁
+##    959 ▇▆▁▁▁▁▁▁
+##  11140 ▇▆▁▁▁▁▁▁
+##     48 ▇▃▂▁▁▁▁▁
+##     72 ▁▁▂▃▁▃▇▁</code></pre>
+<p>Another point we need to keep in mind when dealing with credit scoring problems is something called a target <a href="https://machinelearningmastery.com/tactics-to-combat-imbalanced-classes-in-your-machine-learning-dataset/">class imbalance</a>, but in this particular case it’s not that severe. For the sake of comparing programming frameworks and not implementing the best ML model I will ignore it.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table</span>(credit_data<span class="op">$</span>status)</code></pre>
+<pre><code>## 
+##  bad good 
+## 1254 3200</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">prop.table</span>(<span class="kw">table</span>(credit_data<span class="op">$</span>status)), <span class="dv">2</span>)</code></pre>
+<pre><code>## 
+##  bad good 
+## 0.28 0.72</code></pre>
+</div>
+<div id="data-preparation-1" class="section level1">
+<h1>Data preparation</h1>
+<p>Let’s finally move on and start modelling! In the beginning I’ll start with dividing our dataset into training and testing sets with the help of the <code>rsample</code> package. Let’s set an initial, stratified split where 80% of the data is dedicated to training and the rest to evaluating both models.</p>
+<p>Furthermore, I’m creating cross-validation splits from the testing data of 5 folds. For compatibility with <code>caret</code> I’m using the <code>rsample2caret</code> function to make use of the same splits in both frameworks - otherwise both solutions wouldn’t be 100% comparable.</p>
+<pre class="sourceCode r"><code class="sourceCode r">split &lt;-<span class="st"> </span><span class="kw">initial_split</span>(credit_data, <span class="dt">prop =</span> <span class="fl">0.80</span>, <span class="dt">strata =</span> <span class="st">&quot;status&quot;</span>)
+
+df_train &lt;-<span class="st"> </span><span class="kw">training</span>(split)
+df_test  &lt;-<span class="st"> </span><span class="kw">testing</span>(split)
+
+train_cv &lt;-<span class="st"> </span><span class="kw">vfold_cv</span>(df_train, <span class="dt">v =</span> <span class="dv">5</span>, <span class="dt">strata =</span> <span class="st">&quot;status&quot;</span>)
+train_cv_caret &lt;-<span class="st"> </span><span class="kw">rsample2caret</span>(train_cv)
+
+<span class="co"># write_rds(split, &quot;split.rds&quot;)</span>
+<span class="co"># write_rds(train_cv, &quot;train_cv.rds&quot;)</span></code></pre>
+<p>I would like to fit a Random Forest model for which I will specify a simple <code>recipe</code>. In principle, tree-based models require very little preprocessing, and in this particular example I mainly focus on imputting missing data or assigning them a new categorical level, infrequent/ unobserved values and hot-encoding them. The same recipe will be used for both: <code>caret</code> and <code>tidymodels</code> model.</p>
+<p>Normally I would do much more feature engineering, try to assess potential interactions etc., but I will write a separate post dedicated for that to so see how much further we can improve the model!</p>
+<pre class="sourceCode r"><code class="sourceCode r">recipe &lt;-<span class="st"> </span>df_train <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">recipe</span>(status <span class="op">~</span><span class="st"> </span>.) <span class="op">%&gt;%</span>
+
+<span class="st">  </span><span class="co"># Imputation: assigning NAs to a new level for categorical and median imputation for numeric</span>
+<span class="st">  </span><span class="kw">step_unknown</span>(<span class="kw">all_nominal</span>(), <span class="op">-</span>status) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">step_medianimpute</span>(<span class="kw">all_numeric</span>()) <span class="op">%&gt;%</span>
+
+<span class="st">  </span><span class="co"># Combining infrequent categorical levels and introducing a new level for prediction time</span>
+<span class="st">  </span><span class="kw">step_other</span>(<span class="kw">all_nominal</span>(), <span class="op">-</span>status, <span class="dt">other =</span> <span class="st">&quot;infrequent_combined&quot;</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">step_novel</span>(<span class="kw">all_nominal</span>(), <span class="op">-</span>status, <span class="dt">new_level =</span> <span class="st">&quot;unrecorded_observation&quot;</span>) <span class="op">%&gt;%</span>
+
+<span class="st">  </span><span class="co"># Hot-encoding categorical variables</span>
+<span class="st">  </span><span class="kw">step_dummy</span>(<span class="kw">all_nominal</span>(), <span class="op">-</span>status, <span class="dt">one_hot =</span> <span class="ot">TRUE</span>)</code></pre>
+<p>Let’s take a quick look at the output of the recipe:</p>
+<pre class="sourceCode r"><code class="sourceCode r">(recipe_preped &lt;-<span class="st"> </span><span class="kw">prep</span>(recipe, <span class="dt">retain =</span> <span class="ot">TRUE</span>))</code></pre>
+<pre><code>## Data Recipe
+## 
+## Inputs:
+## 
+##       role #variables
+##    outcome          1
+##  predictor         13
+## 
+## Training data contained 3565 data points and 335 incomplete rows. 
+## 
+## Operations:
+## 
+## Unknown factor level assignment for home, marital, records, job [trained]
+## Median Imputation for seniority, time, age, expenses, ... [trained]
+## Collapsing factor levels for home, marital, records, job [trained]
+## Novel factor level assignment for home, marital, records, job [trained]
+## Dummy variables from home, marital, records, job [trained]</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tidy</span>(recipe_preped)</code></pre>
+<pre><code>## # A tibble: 5 x 6
+##   number operation type         trained skip  id                
+##    &lt;int&gt; &lt;chr&gt;     &lt;chr&gt;        &lt;lgl&gt;   &lt;lgl&gt; &lt;chr&gt;             
+## 1      1 step      unknown      TRUE    FALSE unknown_XU845     
+## 2      2 step      medianimpute TRUE    FALSE medianimpute_tS05C
+## 3      3 step      other        TRUE    FALSE other_FHtHk       
+## 4      4 step      novel        TRUE    FALSE novel_ncrtZ       
+## 5      5 step      dummy        TRUE    FALSE dummy_VMDKC</code></pre>
+</div>
+<div id="fitting-our-models" class="section level1">
+<h1>Fitting our models</h1>
+<div id="caret" class="section level2">
+<h2>Caret</h2>
+<p>In the code below I’m setting control parameters for the <code>caret</code> model fit, as well as the grid of hyperparameters that will be assessed in order to pick the best performing combination. Note that I’m using the very original observation indexes for cross-validation to ensure reproducability. The <code>trainControl</code> function will also ensure that final hold-out predictions from cross-validation will be persisted for further assessment thanks to <code>savePredictions = &quot;final&quot;</code>.</p>
+<p>We have 5 different CV folds and 30 grid combinations to assess, which results in 150 models that will be fit and each comprising of 500 individual trees! All models will be assessed based on the <code>prSummary</code> function which is know as the AUC.</p>
+<pre class="sourceCode r"><code class="sourceCode r">control_caret &lt;-<span class="st"> </span><span class="kw">trainControl</span>(
+  <span class="dt">method =</span> <span class="st">&quot;cv&quot;</span>,
+  <span class="dt">verboseIter =</span> <span class="ot">FALSE</span>,
+  <span class="dt">classProbs =</span> <span class="ot">TRUE</span>,
+  <span class="dt">summaryFunction =</span> twoClassSummary,
+  <span class="dt">returnResamp =</span> <span class="st">&quot;final&quot;</span>,
+  <span class="dt">savePredictions =</span> <span class="st">&quot;final&quot;</span>,
+  <span class="dt">index =</span> train_cv_caret<span class="op">$</span>index,
+  <span class="dt">indexOut =</span> train_cv_caret<span class="op">$</span>indexOut,
+  )
+
+(grid_caret &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(
+  <span class="dt">mtry =</span> <span class="kw">seq</span>(<span class="dv">1</span>, <span class="kw">ncol</span>(df_train) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">3</span>),
+  <span class="dt">splitrule =</span> <span class="kw">c</span>(<span class="st">&quot;extratrees&quot;</span>, <span class="st">&quot;gini&quot;</span>),
+  <span class="dt">min.node.size =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>)
+  ))</code></pre>
+<pre><code>##    mtry  splitrule min.node.size
+## 1     1 extratrees             1
+## 2     4 extratrees             1
+## 3     7 extratrees             1
+## 4    10 extratrees             1
+## 5    13 extratrees             1
+## 6     1       gini             1
+## 7     4       gini             1
+## 8     7       gini             1
+## 9    10       gini             1
+## 10   13       gini             1
+## 11    1 extratrees             3
+## 12    4 extratrees             3
+## 13    7 extratrees             3
+## 14   10 extratrees             3
+## 15   13 extratrees             3
+## 16    1       gini             3
+## 17    4       gini             3
+## 18    7       gini             3
+## 19   10       gini             3
+## 20   13       gini             3
+## 21    1 extratrees             5
+## 22    4 extratrees             5
+## 23    7 extratrees             5
+## 24   10 extratrees             5
+## 25   13 extratrees             5
+## 26    1       gini             5
+## 27    4       gini             5
+## 28    7       gini             5
+## 29   10       gini             5
+## 30   13       gini             5</code></pre>
+<p>The great advantage of <code>caret</code> is that it wraps a lot of small code pieces in just one, high-level API call that does all the job for you - fits all individual models across CV folds and resamples, selects the best one and fits it already on the entire training dataset. It also makes sure it’s done as fast as possible thanks to parallel processing whenever it’s an enabled option.</p>
+<p>The drawback on the other hand is that it’s quite monolythic, untidy and at the end doesn’t offer a great deal of granularity to the end user.</p>
+<pre class="sourceCode r"><code class="sourceCode r">model_caret &lt;-<span class="st"> </span><span class="kw">train</span>(
+  status <span class="op">~</span><span class="st"> </span>.,
+  <span class="dt">data =</span> <span class="kw">juice</span>(recipe_preped),
+  <span class="dt">method =</span> <span class="st">&quot;ranger&quot;</span>,
+  <span class="dt">metric =</span> <span class="st">&quot;ROC&quot;</span>,
+  <span class="dt">trControl =</span> control_caret,
+  <span class="dt">tuneGrid =</span> grid_caret,
+  <span class="dt">importance =</span> <span class="st">&quot;impurity&quot;</span>,
+  <span class="dt">num.trees =</span> <span class="dv">500</span>
+  )
+
+<span class="kw">print</span>(model_caret)</code></pre>
+<pre><code>## Random Forest 
+## 
+## 3565 samples
+##   29 predictor
+##    2 classes: &#39;bad&#39;, &#39;good&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 2851, 2852, 2852, 2852, 2853 
+## Resampling results across tuning parameters:
+## 
+##   mtry  splitrule   min.node.size  ROC        Sens          Spec     
+##    1    extratrees  1              0.7901464  0.0000000000  1.0000000
+##    1    extratrees  3              0.7902729  0.0000000000  1.0000000
+##    1    extratrees  5              0.7897509  0.0000000000  1.0000000
+##    1    gini        1              0.8222071  0.0009950249  1.0000000
+##    1    gini        3              0.8203006  0.0000000000  1.0000000
+##    1    gini        5              0.8194996  0.0000000000  1.0000000
+##    4    extratrees  1              0.8066284  0.4492786070  0.9191734
+##    4    extratrees  3              0.8077006  0.4422786070  0.9226852
+##    4    extratrees  5              0.8064328  0.4442587065  0.9226844
+##    4    gini        1              0.8326194  0.4671791045  0.9238563
+##    4    gini        3              0.8336397  0.4602089552  0.9254188
+##    4    gini        5              0.8351950  0.4711691542  0.9281509
+##    7    extratrees  1              0.8089259  0.4841144279  0.9086280
+##    7    extratrees  3              0.8101340  0.4831144279  0.9094100
+##    7    extratrees  5              0.8108062  0.4791343284  0.9117515
+##    7    gini        1              0.8325371  0.4960696517  0.9125335
+##    7    gini        3              0.8334290  0.4910696517  0.9160491
+##    7    gini        5              0.8321708  0.4990447761  0.9140975
+##   10    extratrees  1              0.8088898  0.4880945274  0.9039405
+##   10    extratrees  3              0.8097806  0.4821044776  0.9074569
+##   10    extratrees  5              0.8116245  0.4821194030  0.9066787
+##   10    gini        1              0.8304535  0.5050248756  0.9074622
+##   10    gini        3              0.8318021  0.5040348259  0.9098022
+##   10    gini        5              0.8326123  0.5070248756  0.9121429
+##   13    extratrees  1              0.8081539  0.4880845771  0.9031615
+##  [ reached getOption(&quot;max.print&quot;) -- omitted 5 rows ]
+## 
+## ROC was used to select the optimal model using the largest value.
+## The final values used for the model were mtry = 4, splitrule = gini
+##  and min.node.size = 5.</code></pre>
+<p><code>Caret</code> also comes with built-in handy functions for assessing model’s individual predictors strength. By setting the <code>importance = &quot;impurity&quot;</code> in the <code>ranger</code> engine we ensure that variable importance will be returned by the final train object. As of now there is no such possibility directly within the <code>tidymodels</code> ecosystem, but this can be solved using another great package called <code>vip</code>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Accessing most predictive attributes from caret </span>
+<span class="kw">varImp</span>(model_caret, <span class="dt">scale =</span> <span class="ot">TRUE</span>)<span class="op">$</span>importance <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">rownames_to_column</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">arrange</span>(<span class="op">-</span>Overall)</code></pre>
+<pre><code>##                           rowname    Overall
+## 1                          income 100.000000
+## 2                       seniority  97.871716
+## 3                          amount  85.421899
+## 4                           price  79.249485
+## 5                             age  66.333280
+## 6                          assets  65.518786
+## 7                     records_yes  50.558920
+## 8                      records_no  50.378803
+## 9                        expenses  49.052474
+## 10                           time  34.953502
+## 11                    job_partime  29.341679
+## 12                      job_fixed  27.799490
+## 13                           debt  23.744981
+## 14                     home_owner  19.524707
+## 15                      home_rent  12.910345
+## 16                  job_freelance  11.051452
+## 17                     home_other  10.008306
+## 18                   home_parents   9.289318
+## 19                marital_married   8.808904
+## 20                 marital_single   7.715428
+## 21    marital_infrequent_combined   6.194835
+## 22                      home_priv   4.499495
+## 23        job_infrequent_combined   3.441151
+## 24       home_infrequent_combined   1.463759
+## 25    home_unrecorded_observation   0.000000
+## 26 marital_unrecorded_observation   0.000000
+## 27    records_infrequent_combined   0.000000
+## 28 records_unrecorded_observation   0.000000
+## 29     job_unrecorded_observation   0.000000</code></pre>
+<p>Final cross-validated and test results are easily available with just a couple lines of code. Note that cross-validation performance is aggregated per each index (observation) and averaged out before the final performance metric is calculated.</p>
+<p>Getting the test performance is a matter of <code>baking</code> the test set with the already prepped recipe and then making the prediction using the train object. 83.1% AUC for cross-validated training performance and 82.1% for testing - not a bad result for so little preprocessing! Close results also suggest that our model is likely to generalize well to new samples.</p>
+<pre class="sourceCode r"><code class="sourceCode r">df_train_pred_caret &lt;-<span class="st"> </span>model_caret<span class="op">$</span>pred <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(rowIndex) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="dt">bad =</span> <span class="kw">mean</span>(bad)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">transmute</span>(<span class="dt">estimate =</span> bad) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">add_column</span>(<span class="dt">truth =</span> df_train<span class="op">$</span>status)
+
+<span class="co"># Cross-validated training performance</span>
+<span class="kw">percent</span>(<span class="kw">roc_auc</span>(df_train_pred_caret, truth, estimate)<span class="op">$</span>.estimate)</code></pre>
+<pre><code>## [1] &quot;83.5%&quot;</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">df_test_pred_caret &lt;-<span class="st"> </span><span class="kw">predict</span>(
+    model_caret,
+    <span class="dt">newdata =</span> <span class="kw">bake</span>(recipe_preped, df_test),
+    <span class="dt">type =</span> <span class="st">&quot;prob&quot;</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">as_tibble</span>() <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">transmute</span>(<span class="dt">estimate =</span> bad) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">add_column</span>(<span class="dt">truth =</span> df_test<span class="op">$</span>status)
+
+<span class="co"># Test performance</span>
+<span class="kw">percent</span>(<span class="kw">roc_auc</span>(df_test_pred_caret, truth, estimate)<span class="op">$</span>.estimate)</code></pre>
+<pre><code>## [1] &quot;81.3%&quot;</code></pre>
+</div>
+<div id="tidymodels" class="section level2">
+<h2>Tidymodels</h2>
+<p>First, let’s use <code>parsnip</code> to define our ‘modelling engine’ - just like before we’re setting it as a classification problem, using Random Forest running on the <code>ranger</code> engine. On top of that I’m using <code>dials</code> to define a grid of parameters to optimize. <code>dials</code> provides a set of handy functions, such as: <code>grid_random</code> or <code>grid_regular</code>, that let you choose the range of parameters in a very flexible way. Lastly, I will use <code>tune</code> and <code>workflows</code> to optimize parameters, build the overal modelling workflow and finalize it with the best parameter values.</p>
+<p>From what I can see the parameters that could be optimized slightly differ between both frameworks: <code>caret</code> allows for tunning the ‘min.node.size’ while keeping the ‘trees’ constant, while <code>parsnip</code> allows for tuning ‘trees’ while keeping ‘min.node.size’ constant (I assume it’s using the default <code>ranger</code> values). Nevertheless, the total amount of combinations is same in both cases and equal to 30.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Specifying the modelling engine</span>
+(engine_tidym &lt;-<span class="st"> </span><span class="kw">rand_forest</span>(
+    <span class="dt">mode =</span> <span class="st">&quot;classification&quot;</span>,
+    <span class="dt">mtry =</span> <span class="kw">tune</span>(),
+    <span class="dt">trees =</span> <span class="kw">tune</span>(),
+    <span class="dt">min_n =</span> <span class="kw">tune</span>()
+  ) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">set_engine</span>(<span class="st">&quot;ranger&quot;</span>, <span class="dt">importance =</span> <span class="st">&quot;impurity&quot;</span>)) <span class="co"># you can provide additional, engine specific arguments to &#39;...&#39;</span></code></pre>
+<pre><code>## Random Forest Model Specification (classification)
+## 
+## Main Arguments:
+##   mtry = tune()
+##   trees = tune()
+##   min_n = tune()
+## 
+## Engine-Specific Arguments:
+##   importance = impurity
+## 
+## Computational engine: ranger</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Specifying the grid of hyperparameters that should be tested</span>
+(gridy_tidym &lt;-<span class="st"> </span><span class="kw">grid_random</span>(
+  <span class="kw">mtry</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">range_set</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">20</span>)),
+  <span class="kw">trees</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">range_set</span>(<span class="kw">c</span>(<span class="dv">500</span>, <span class="dv">1000</span>)), 
+  <span class="kw">min_n</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">range_set</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">10</span>)),
+  <span class="dt">size =</span> <span class="dv">30</span>
+  ))</code></pre>
+<pre><code>## # A tibble: 30 x 3
+##     mtry trees min_n
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;
+##  1     9   525     4
+##  2     7   970     7
+##  3    20   835     4
+##  4     1   567     5
+##  5    15   813     8
+##  6     9   589     4
+##  7    14   821     8
+##  8    11   763     6
+##  9     1   500     3
+## 10    19   861     7
+## # … with 20 more rows</code></pre>
+<p>Then we can combine the model recipe we specified before with the modelling engine to form a so called <code>workflow</code>. A <code>workflow</code> puts together all pieces of the overall modelling pipeline, which makes it easier to manipulate and control them.</p>
+<pre class="sourceCode r"><code class="sourceCode r">wkfl_tidym &lt;-<span class="st"> </span><span class="kw">workflow</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">add_recipe</span>(recipe) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">add_model</span>(engine_tidym)</code></pre>
+<p>Next, I combine the grid of parameters and workflow together for tuning to find the best performing combination of hyperparameters.</p>
+<pre class="sourceCode r"><code class="sourceCode r">grid_tidym &lt;-<span class="st"> </span><span class="kw">tune_grid</span>(
+  wkfl_tidym,
+  <span class="dt">resamples =</span> train_cv,
+  <span class="dt">grid =</span> gridy_tidym,
+  <span class="dt">metrics =</span> <span class="kw">metric_set</span>(roc_auc),
+  <span class="dt">control =</span> <span class="kw">control_grid</span>(<span class="dt">save_pred =</span> <span class="ot">TRUE</span>)
+  )
+
+<span class="kw">print</span>(grid_tidym)</code></pre>
+<pre><code>## #  5-fold cross-validation using stratification 
+## # A tibble: 5 x 5
+##   splits           id    .metrics        .notes         .predictions       
+## * &lt;list&gt;           &lt;chr&gt; &lt;list&gt;          &lt;list&gt;         &lt;list&gt;             
+## 1 &lt;split [2.9K/71… Fold1 &lt;tibble [30 × … &lt;tibble [30 ×… &lt;tibble [21,420 × …
+## 2 &lt;split [2.9K/71… Fold2 &lt;tibble [30 × … &lt;tibble [0 × … &lt;tibble [21,390 × …
+## 3 &lt;split [2.9K/71… Fold3 &lt;tibble [30 × … &lt;tibble [30 ×… &lt;tibble [21,390 × …
+## 4 &lt;split [2.9K/71… Fold4 &lt;tibble [30 × … &lt;tibble [30 ×… &lt;tibble [21,390 × …
+## 5 &lt;split [2.9K/71… Fold5 &lt;tibble [30 × … &lt;tibble [30 ×… &lt;tibble [21,360 × …</code></pre>
+<p>You can aggregate the performance metrics for each parameter combination across all cross-validation folds to find the best performing set, which I will use in the final model.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">collect_metrics</span>(grid_tidym)</code></pre>
+<pre><code>## # A tibble: 30 x 8
+##     mtry trees min_n .metric .estimator  mean     n std_err
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+##  1     1   500     3 roc_auc binary     0.823     5  0.0101
+##  2     1   567     5 roc_auc binary     0.820     5  0.0111
+##  3     1   568     5 roc_auc binary     0.820     5  0.0109
+##  4     1   644     2 roc_auc binary     0.822     5  0.0114
+##  5     1   676     2 roc_auc binary     0.821     5  0.0102
+##  6     2   591     4 roc_auc binary     0.831     5  0.0118
+##  7     6   592     7 roc_auc binary     0.834     5  0.0109
+##  8     7   970     7 roc_auc binary     0.834     5  0.0104
+##  9     9   525     4 roc_auc binary     0.832     5  0.0102
+## 10     9   589     4 roc_auc binary     0.832     5  0.0106
+## # … with 20 more rows</code></pre>
+<p>We can propagate the best combination of parameters into the workflow by using the <code>finalize_workflow</code> function. At this point, we’re almost finished with finalizing our pipeline. The last step involves refitting that workflow on the entire training data.</p>
+<pre class="sourceCode r"><code class="sourceCode r">grid_tidym_best &lt;-<span class="st"> </span><span class="kw">select_best</span>(grid_tidym)
+(wkfl_tidym_best &lt;-<span class="st"> </span><span class="kw">finalize_workflow</span>(wkfl_tidym, grid_tidym_best))</code></pre>
+<pre><code>## ══ Workflow ════════════════════════════════════════════════════════════════════
+## Preprocessor: Recipe
+## Model: rand_forest()
+## 
+## ── Preprocessor ────────────────────────────────────────────────────────────────
+## 5 Recipe Steps
+## 
+## ● step_unknown()
+## ● step_medianimpute()
+## ● step_other()
+## ● step_novel()
+## ● step_dummy()
+## 
+## ── Model ───────────────────────────────────────────────────────────────────────
+## Random Forest Model Specification (classification)
+## 
+## Main Arguments:
+##   mtry = 7
+##   trees = 970
+##   min_n = 7
+## 
+## Engine-Specific Arguments:
+##   importance = impurity
+## 
+## Computational engine: ranger</code></pre>
+<p>This can be easily achieved using the <code>last_fit</code> function which fits the finalized workflow on the entire training data and at the same time provides test data performance metrics. This makes the workflow object complete and provides the data scientist with comprehensive insights into overall model performnce, as well as a fully operational model pipeline that can be deployed to production.</p>
+<pre class="sourceCode r"><code class="sourceCode r">(wkfl_tidym_final &lt;-<span class="st"> </span><span class="kw">last_fit</span>(wkfl_tidym_best, <span class="dt">split =</span> split))</code></pre>
+<pre><code>## ! Resample1: model (predictions): Novel levels found in column &#39;home&#39;: NA. The l...</code></pre>
+<pre><code>## # # Monte Carlo cross-validation (0.8/0.2) with 1 resamples  
+## # A tibble: 1 x 6
+##   splits       id          .metrics     .notes     .predictions   .workflow
+## * &lt;list&gt;       &lt;chr&gt;       &lt;list&gt;       &lt;list&gt;     &lt;list&gt;         &lt;list&gt;   
+## 1 &lt;split [3.6… train/test… &lt;tibble [2 … &lt;tibble [… &lt;tibble [889 … &lt;workflo…</code></pre>
+<p>We can then easily check both cross-validated training performance, as well as test set performance with just two lines of code.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Cross-validated training performance</span>
+<span class="kw">percent</span>(<span class="kw">show_best</span>(grid_tidym, <span class="dt">n =</span> <span class="dv">1</span>)<span class="op">$</span>mean)</code></pre>
+<pre><code>## [1] &quot;83.4%&quot;</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Test performance</span>
+<span class="kw">percent</span>(wkfl_tidym_final<span class="op">$</span>.metrics[[<span class="dv">1</span>]]<span class="op">$</span>.estimate[[<span class="dv">2</span>]])</code></pre>
+<pre><code>## [1] &quot;81.2%&quot;</code></pre>
+<p>At the moment there’s no package in the <code>tidymodels</code> universe for calculating model importance metrics (I assume that will change at some point), but this can be achieved either with the <a href="https://koalaverse.github.io/vip/index.html">vip</a> or <a href="https://modeloriented.github.io/DALEX/">DALEX</a> package. It would be fantastic if either of these packages seemlessly worked with <code>tidymodels</code> objects!</p>
+<p>In this case I decided to use model-specific metrics (by passing importance = ‘impurity’ to the engine before) and then simply used the <code>vip</code> function on the <code>model</code> object extracted from the workflow. However, you might need to change this for every specific model type that you decide to use. Additionally, at this <a href="https://github.com/tidymodels/parsnip/issues/127">link</a> you can find how to achieve the same using <code>DALEX</code>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">vip</span>(<span class="kw">pull_workflow_fit</span>(wkfl_tidym_final<span class="op">$</span>.workflow[[<span class="dv">1</span>]]))<span class="op">$</span>data</code></pre>
+<pre><code>## # A tibble: 10 x 2
+##    Variable    Importance
+##    &lt;chr&gt;            &lt;dbl&gt;
+##  1 income           150. 
+##  2 seniority        139. 
+##  3 amount           128. 
+##  4 price            123. 
+##  5 age               99.5
+##  6 assets            89.8
+##  7 expenses          71.5
+##  8 records_no        63.4
+##  9 records_yes       61.0
+## 10 time              47.3</code></pre>
+</div>
+</div>
+<div id="wrapping-up" class="section level1">
+<h1>Wrapping up</h1>
+<p>I’ve fit a credit scoring classification Random Forest model using both <code>caret</code> and <code>tidymodels</code> frameworks. I need to admit that before I started writing this post I expected a lot more additional code to be written in the <code>tidymodels</code> framework to achieve the same goal, but to my surprise those packages already offer a very concise (and tidy!) way of doing ML in R, and things will be even more streamlined in the upcoming months. That’s definitely a really big step-up for the entire R community when it comes to doing ML in R.</p>
+</div>
+<div id="future-considerations" class="section level1">
+<h1>Future considerations</h1>
+<ol style="list-style-type: decimal">
+<li><p>I still haven’t fully explored the <code>tidyposterior</code> and <code>probably</code> packages - I will do that in one of me next posts.</p></li>
+<li><p>On the `<code>rsample</code> page there’s an interesting article listed on so called: <a href="https://tidymodels.github.io/rsample/articles/Applications/Nested_Resampling.html">nested resampling</a>. I’ve never used it in practice but I’m curious to check it out and compare my model’s current cross-validated performance estimate with the one obtained through nested resampling.</p></li>
+<li><p>There’s also a lot of buzz in the R community regarding a BETA release of the successor of the <code>mlr</code> package (second most popular ML framework in R) - <a href="https://mlr-org.com/docs/mlr3-0-1-0/">mlr3</a>. <code>mlr3</code> could be very strong competition to the <code>tidymodels</code> framework, and since I’ve never really used <code>mlr</code> it’s an excellent opportunity to put it to a test. It is also modular in design like <code>tidymodels</code>, but is built on top of data.table and uses R6 object-oriented class system which could give it substantial speed advantage over <code>tidymodels</code> at the expenses of ‘tidyness’.</p></li>
+</ol>
+</div>
+<div id="previous-tidymodels-workflow" class="section level1">
+<h1>Previous <code>tidymodels</code> workflow</h1>
+<p>In case you’re inteterested you can find the original content of this blogpost below. Please note that sections below are not evaluated to avoid potential errors when renderring this blogpost due to deprecations/ changes.</p>
+<hr />
+<p>In the beginning, when I saw some of the very first articles about doing ML the tidy way by combining <code>recipes</code> and <code>rsample</code> my thoughts were that it was all way too complicated compared to what <code>caret</code> offered. I was very surprised now when I discovered how clean and simple it became over the last year, and apparently things will be further simplified over the next months (<a href="https://github.com/tidymodels/parsnip/issues/200">link</a>)!</p>
+<p>First let’s define two helper functions that will be used later during the modelling process. I imagine these might be wrapped into predefined helper functions in tidymodels packages instead of having to do that every time.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Defining helper functions that will be used later on</span>
+fit_on_fold &lt;-<span class="st"> </span><span class="cf">function</span>(spec, prepped) {
+  
+  x &lt;-<span class="st"> </span><span class="kw">juice</span>(prepped, <span class="kw">all_predictors</span>())
+  y &lt;-<span class="st"> </span><span class="kw">juice</span>(prepped, <span class="kw">all_outcomes</span>())
+  
+  <span class="kw">fit_xy</span>(spec, x, y)
+}
+
+predict_helper &lt;-<span class="st"> </span><span class="cf">function</span>(split, recipe, fit) {
+  
+  new_x &lt;-<span class="st"> </span><span class="kw">bake</span>(recipe, <span class="dt">new_data =</span> <span class="kw">assessment</span>(split), <span class="kw">all_predictors</span>())
+  
+  <span class="kw">predict</span>(fit, new_x, <span class="dt">type =</span> <span class="st">&quot;prob&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">bind_cols</span>(<span class="kw">assessment</span>(split) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(status)) 
+}</code></pre>
+<p>First, let’s use <code>parsnip</code> to define our ‘modelling engine’ - just like before we’re setting it as a classification problem, using Random Forest running on the <code>ranger</code> engine. On top of that I’m using <code>dials</code> to define a grid of parameters to optimize. <code>dials</code> provides a set of handy functions, such as: <code>grid_random</code> or <code>grid_regular</code>, that let you choose the range of parameters in a very flexible way.</p>
+<p>From what I can see the parameters that could be optimized slightly differ between both frameworks: <code>caret</code> allows for tunning the ‘min.node.size’ while keeping the ‘trees’ constant, while <code>parsnip</code> allows for tuning ‘trees’ while keeping ‘min.node.size’ constant (I assume it’s using the default <code>ranger</code> values). Nevertheless, the total amount of combinations is same in both cases and equal to 30.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Specifying the modelling engine</span>
+(engine_tidym &lt;-<span class="st"> </span><span class="kw">rand_forest</span>(<span class="dt">mode =</span> <span class="st">&quot;classification&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">set_engine</span>(<span class="st">&quot;ranger&quot;</span>))</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Specifying the grid of hyperparameters that should be tested</span>
+(gridy_tidym &lt;-<span class="st"> </span><span class="kw">grid_random</span>(
+  mtry <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">range_set</span>(<span class="kw">c</span>( <span class="dv">1</span>,  <span class="dv">20</span>)),
+  trees <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">range_set</span>(<span class="kw">c</span>( <span class="dv">500</span>, <span class="dv">1000</span>)), 
+  min_n <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">range_set</span>(<span class="kw">c</span>(<span class="dv">2</span>,  <span class="dv">10</span>)),
+  <span class="dt">size =</span> <span class="dv">30</span>
+  ))</code></pre>
+<p>Now comes the really interesting part of tidymodels: we’re using a merge helper function from dials to bind our predefined ‘modelling engine’ with all grid combinations of the hyperparameters to tune.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">merge</span>(engine_tidym, gridy_tidym)[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>] <span class="co"># just to see the top 3</span></code></pre>
+<p>Subsequently, I’m putting it into a tidy data frame structure where each model-parameters combination is bound together and assigned a model id that will be used later to make a distinction between consequtive fits.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Merging all possibilities with our cross-validated data frame</span>
+(spec_tidym &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">spec =</span> <span class="kw">merge</span>(engine_tidym, gridy_tidym)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">model_id =</span> <span class="kw">row_number</span>()))</code></pre>
+<p>Lastly, I’m adding the last component into this tidy structure: all cross-validation splits that were specified before with the use of the <code>crossing</code> function. This part is very likely to evolve and be simplified in the upcoming months. Now we’re all set to start the actual tidy-modelling!</p>
+<pre class="sourceCode r"><code class="sourceCode r">(spec_tidym &lt;-<span class="st"> </span><span class="kw">crossing</span>(train_cv, spec_tidym))</code></pre>
+<p>To speed thigs up let’s use the <code>furrr</code> package and fit many models simultaneously. In the following code our original recipe is first prepped on each split’s training set and than it’s used by the <code>fit_on_fold</code> helper function to fit a given model-parameter combination.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Fitting each model-fold pair</span>
+fits_tidym &lt;-<span class="st"> </span>spec_tidym <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(
+    <span class="dt">prepped =</span> <span class="kw">future_map</span>(splits, prepper, recipe),
+    <span class="dt">fit =</span> <span class="kw">future_map2</span>(spec, prepped, fit_on_fold)
+  )</code></pre>
+<p>The last step of modelling involves usage of the other <code>predict_helper</code> function that bakes the already prepped split’s recipe and applies it on the testing set of the split, in order to make a prediction of the given model-parameters combination.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Making predictions of each fitted model on the testing set</span>
+fits_pred_tidym &lt;-<span class="st"> </span>fits_tidym <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(
+    <span class="dt">preds =</span> <span class="kw">future_pmap</span>(<span class="kw">list</span>(splits, prepped, fit), predict_helper)
+  )</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Top row of the entire structure as example</span>
+fits_pred_tidym[<span class="dv">1</span>, ]</code></pre>
+<p>After training is done I would like to assess which model performs the best based on cross-validated hold-out performance. In order to do that, let’s calculate the AUC of all test sets across all model-parameter combinations. By averaging the results up, I can see the entire performance profile of all possibilities.</p>
+<p><code>Tidymodels</code> includes also two very handy packages: <a href="https://tidymodels.github.io/probably/index.html">probably</a> and <a href="https://tidymodels.github.io/tidyposterior/">tidyposterior</a>, which are very usefull for analysing model estimated probabilities and it’s resampled performance profile. I will make an introduction to those packages in one of my next posts.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Assessing individual model-fold performance and averaging performance across all folds for each model</span>
+(perf_summary_tidym &lt;-<span class="st"> </span>fits_pred_tidym <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">unnest</span>(preds) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(id, model_id) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">roc_auc</span>(<span class="dt">truth =</span> status, .pred_bad) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(model_id, .metric, .estimator) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">mean =</span> <span class="kw">mean</span>(.estimate, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">arrange</span>(<span class="op">-</span>mean)</code></pre>
+<p>Just by sorting the previous results we can easly see what is the best performing model. Let’s now take a step back and filter only that model specification, and fit it on the entire training set. As of now I’m not 100% sure what the recommended and most efficient way of doing that would be, but I decided to go for something like that:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Selecting the best model with:</span>
+<span class="co"># perf_summary_tidym$model_id[which.max(perf_summary_tidym$mean)]</span>
+
+<span class="co"># Fitting the best model on the full training set</span>
+(model_tidym &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">spec =</span> <span class="kw">merge</span>(engine_tidym, gridy_tidym)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">model_id =</span> <span class="kw">row_number</span>()) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(model_id <span class="op">==</span><span class="st"> </span>perf_summary_tidym<span class="op">$</span>model_id[<span class="kw">which.max</span>(perf_summary_tidym<span class="op">$</span>mean)]) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">pull</span>(spec) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span>.[[<span class="dv">1</span>]] <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">fit</span>(status <span class="op">~</span><span class="st"> </span>., <span class="kw">juice</span>(recipe_preped)))</code></pre>
+<p>Similarly like before with <code>caret</code>, I can now summarize our cross-validated and test performances.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Cross-validated training performance&quot;</span>
+<span class="kw">percent</span>(perf_summary_tidym<span class="op">$</span>mean[<span class="kw">which.max</span>(perf_summary_tidym<span class="op">$</span>mean)])</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Test performance</span>
+df_train_pred_tidym &lt;-<span class="st"> </span><span class="kw">predict</span>(
+  model_tidym, 
+  <span class="dt">new_data =</span> <span class="kw">bake</span>(recipe_preped, df_test), 
+  <span class="dt">type =</span> <span class="st">&quot;prob&quot;</span>
+  ) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">transmute</span>(<span class="dt">estimate =</span> .pred_bad) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">add_column</span>(<span class="dt">truth =</span> df_test<span class="op">$</span>status)
+
+<span class="kw">percent</span>(<span class="kw">roc_auc</span>(df_train_pred_tidym, truth, estimate)<span class="op">$</span>.estimate)</code></pre>
+<p>The entire <code>tidymodels</code> code that was scattered across above sections could be easily squeezed in one longer pipeline. Note that I limited the grid to just one row <code>gridy_tidym[1, ]</code> in order to demonstrate the solution and save on processing time.</p>
+<pre class="sourceCode r"><code class="sourceCode r">df_tidym &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">spec =</span> <span class="kw">merge</span>(engine_tidym, gridy_tidym[<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, ])) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">model_id =</span> <span class="kw">row_number</span>()) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">crossing</span>(train_cv, .) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(
+    <span class="dt">prepped =</span> <span class="kw">future_map</span>(splits, prepper, recipe),
+    <span class="dt">fit =</span> <span class="kw">future_map2</span>(spec, prepped, fit_on_fold),
+    <span class="dt">preds =</span> <span class="kw">future_pmap</span>(<span class="kw">list</span>(splits, prepped, fit), predict_helper)
+  )</code></pre>
+</div>
+
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">TAGGED IN</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="/tags/caret/">caret</a>
+
+  <a class="tag tag--primary tag--small" href="/tags/tidymodels/">tidymodels</a>
+
+  <a class="tag tag--primary tag--small" href="/tags/predictive-modelling/">predictive modelling</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2019/08/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible/" data-tooltip="{ggrapid}: Create neat &amp; complete ggplot visualizations with as little code as possible">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2019/08/caret-vs-tidymodels-comparing-the-old-and-new/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2019/08/caret-vs-tidymodels-comparing-the-old-and-new/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2020 Konrad Semsch. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2019/08/2019-08-29-ggrapid-create-neat-and-complete-ggplot-visualizations-with-as-little-code-as-possible/" data-tooltip="{ggrapid}: Create neat &amp; complete ggplot visualizations with as little code as possible">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2019/08/caret-vs-tidymodels-comparing-the-old-and-new/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2019/08/caret-vs-tidymodels-comparing-the-old-and-new/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=%2F2019%2F08%2Fcaret-vs-tidymodels-comparing-the-old-and-new%2F">
+          <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=%2F2019%2F08%2Fcaret-vs-tidymodels-comparing-the-old-and-new%2F">
+          <i class="fa fa-twitter"></i><span>Share on Twitter</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="/images/profile.png" alt="Author&#39;s picture" />
+    
+    <h4 id="about-card-name">Konrad Semsch</h4>
+    
+      <div id="about-card-bio">Practitioners view on predictive modelling</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Senior Data Scientist @ innogy SE
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Dortmund, Germany
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    <div id="cover" style="background-image:url('https://res.cloudinary.com/dl7yqljrx/image/upload/v1581584232/background_dark.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = '\/2019\/08\/caret-vs-tidymodels-comparing-the-old-and-new\/';
+          
+            this.page.identifier = '\/2019\/08\/caret-vs-tidymodels-comparing-the-old-and-new\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'konradsemsch';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+
+    
+  </body>
+</html>
+

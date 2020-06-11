@@ -1,0 +1,781 @@
+
+
+  
+    
+  
+
+
+  
+
+
+
+
+
+  
+
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.56.3">
+    <title>Fast and pretty ggploting with the aider package (part 1)</title>
+    <meta name="author" content="Konrad Semsch">
+    <meta name="keywords" content=", data science, statistics, machine learning, predictive modelling, fintech, banking, r">
+
+    <link rel="icon" href="/favicon.png">
+    
+
+    
+    <meta name="description" content="The ggplot package was like a fresh breeze of wind to the art of data visualization done with R. It enabled doing things that weren’t possible before with ease, and quickly gained adoption in the R community. The ggplot package is great and I surely pay my tribute to it, however, with such a great variety of options and flexibility comes a certain price to pay - speed of creating new plots.">
+    <meta property="og:description" content="The ggplot package was like a fresh breeze of wind to the art of data visualization done with R. It enabled doing things that weren’t possible before with ease, and quickly gained adoption in the R community. The ggplot package is great and I surely pay my tribute to it, however, with such a great variety of options and flexibility comes a certain price to pay - speed of creating new plots.">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="Fast and pretty ggploting with the aider package (part 1)">
+    <meta property="og:url" content="/2019/03/fast-and-pretty-ggploting-with-the-aider-package-part-1/">
+    <meta property="og:site_name" content="Konrad&#39;s playground">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Konrad&#39;s playground">
+    <meta name="twitter:description" content="The ggplot package was like a fresh breeze of wind to the art of data visualization done with R. It enabled doing things that weren’t possible before with ease, and quickly gained adoption in the R community. The ggplot package is great and I surely pay my tribute to it, however, with such a great variety of options and flexibility comes a certain price to pay - speed of creating new plots.">
+    
+    
+
+    
+    
+
+    
+      <meta property="og:image" content="/images/profile.png">
+    
+
+    
+    
+    
+
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="/css/style-jsjn0006wyhpyzivf6yceb31gvpjatbcs3qzjvlumobfnugccvobqwxnnaj8.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="/">Konrad&#39;s playground</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="/images/profile.png" alt="Author&#39;s picture" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="/#about">
+          <img class="sidebar-profile-picture" src="/images/profile.png" alt="Author&#39;s picture" />
+        </a>
+        <h4 class="sidebar-profile-name">Konrad Semsch</h4>
+        
+          <h5 class="sidebar-profile-bio">Practitioners view on predictive modelling</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="/">
+    
+      <b><i class="sidebar-button-icon fa fa-lg fa-home"></i></b>
+      
+      <span class="sidebar-button-desc">Home</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">Archives</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">Tags</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">About</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://www.linkedin.com/in/konradsemsch/">
+    
+      <i class="sidebar-button-icon fa fa-linkedin-square"></i>
+      
+      <span class="sidebar-button-desc">Linkedin</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/konradsemsch">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      Fast and pretty ggploting with the aider package (part 1)
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2019-03-30T00:00:00Z">
+        
+  
+  
+  
+  
+    30 March 2019
+  
+
+      </time>
+    
+    
+  
+  
+    <span>in</span>
+    
+      <a class="category-link" href="/categories/visualization">visualization</a>
+    
+  
+
+  </div>
+
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              
+
+
+<p>The ggplot package was like a fresh breeze of wind to the art of data visualization done with R. It enabled doing things that weren’t possible before with ease, and quickly gained adoption in the R community. The ggplot package is great and I surely pay my tribute to it, however, with such a great variety of options and flexibility comes a certain price to pay - speed of creating new plots. And I specifically mean creating many different plots: a) quickly and b) that would look great. Plots produced by the ggplot package already look very neat but in the end if the user is looking to give a “wow” effect, one needs to spend a bit of time.</p>
+<p>At one point I decided I would like to automate those things and started writing wrapper functions around different ggplot plotting functions which eventually made its way to a package called aider hosted on <a href="https://github.com/konradsemsch/aider">github</a>. The aim of the aider package is to facilitate day-to-day analytical and data science tasks. It’s a “catch-them-all” package to do a number of different DS/ ML tasks so it imports a number of different packages - I know, by no means perfect but it’s supposed to server a number of purposes in a single analytical task.</p>
+<p>So let’s finally get down to business and showcase some of the aider’s functionalities and create some great looking boxplots! For visualization purposes I will be using the <code>credit_data</code> data set from the <code>recipes</code> package. Let’s start with something really simple - plotting the marital status by time (requested loan duration).</p>
+<p>As you can see, the <code>plot_boxplot</code> function just needs two basic arguments: the x and y labels variables, and will try to infer all other attrbiutes of the plot automatically. It will populate the title inferred from aesthetics, replace both axis labels with more generic names, attach a standard grey theme, assign a fill color by default and scale the ticks. Already gives much more life to our standard ggplot graph!</p>
+<pre class="r"><code>library(aider)
+library(ggplot2)
+
+data &lt;- recipes::credit_data %&gt;%
+  first_to_lower()
+
+data %&gt;%
+  plot_boxplot(x = marital,
+               y = time)</code></pre>
+<p><img src="/post/2019-03-30-fast-and-pretty-ggploting-with-the-aider-package-part-1_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>data %&gt;%
+  ggplot() + 
+  geom_boxplot(aes(marital, time))</code></pre>
+<p><img src="/post/2019-03-30-fast-and-pretty-ggploting-with-the-aider-package-part-1_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
+<p>Now, with just a couple additional lines we can quickly start customizing that basic looking graph. Just populate the fill argument to get a nice looking fill of all your colors!</p>
+<pre class="r"><code>data %&gt;%
+  plot_boxplot(x = marital,
+               y = time,
+               fill = marital)</code></pre>
+<p><img src="/post/2019-03-30-fast-and-pretty-ggploting-with-the-aider-package-part-1_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>We can also change the theme to <code>ipsum</code> to make the plot look even more neat.</p>
+<pre class="r"><code>data %&gt;%
+  plot_boxplot(x = marital,
+               y = time,
+               fill = marital,
+               theme_type = &quot;ipsum&quot;)</code></pre>
+<p><img src="/post/2019-03-30-fast-and-pretty-ggploting-with-the-aider-package-part-1_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>Scaling that to multiple facets is not an issue at all:</p>
+<pre class="r"><code>data %&gt;%
+  plot_boxplot(x = marital,
+               y = time,
+               fill = marital,
+               facet = job,
+               theme_type = &quot;ipsum&quot;)</code></pre>
+<p><img src="/post/2019-03-30-fast-and-pretty-ggploting-with-the-aider-package-part-1_files/figure-html/unnamed-chunk-5-1.png" width="960" /></p>
+<p>And multiple other factors can be included in the function call such as: vertical alignment of afix elements, adding a horizontal/ vertical line to the plot to highlight e.g. an average value or shading the fill color.</p>
+<pre class="r"><code>data %&gt;%
+  plot_boxplot(x = marital,
+               y = time,
+               fill = marital,
+               facet = job,
+               ticks = 5,
+               vline = 45,
+               angle = 45,
+               alpha = .7,
+               title = &quot;Boxplots requested loan duration job type and marital status&quot;,
+               lab_x = &quot;Marital status&quot;,
+               lab_y = &quot;Time (requested loan duration)&quot;,
+               theme_type = &quot;ipsum&quot;)</code></pre>
+<p><img src="/post/2019-03-30-fast-and-pretty-ggploting-with-the-aider-package-part-1_files/figure-html/unnamed-chunk-6-1.png" width="768" /></p>
+<p>There is a number of other plotting functions in the <code>aider</code> package so please take a look at it at github and don’t hesitate to give me a shout with some feedback. Also the full code to generate the above plots using the <code>plot_boxplot</code> function is available below. There’s a number of quite advanced R programming practices using non-standard evaluation which I will discuss in my next posts. Cheerio!</p>
+<pre class="r"><code>plot_boxplot &lt;- function(df,
+                         x,
+                         y,
+                         fill = NULL,
+                         facet = NULL,
+                         ticks = 10,
+                         angle = 0,
+                         title = TRUE,
+                         subtitle = NULL,
+                         caption = NULL,
+                         lab_x = &quot;Level&quot;,
+                         lab_y = &quot;Value range&quot;,
+                         legend = TRUE,
+                         vline = c(NaN),
+                         alpha = .7,
+                         quantile_low = 0,
+                         quantile_high = 1,
+                         palette = &quot;cartography&quot;,
+                         theme_type = &quot;grey&quot;
+                         ) {
+
+  if (!is.data.frame(df))
+    stop(&quot;object must be a data frame&quot;)
+
+  if (!is.character(palette))
+    stop(&quot;argument must be character&quot;)
+
+  var_x     &lt;- rlang::enquo(x)
+  var_y     &lt;- rlang::enquo(y)
+  var_fill  &lt;- rlang::enquo(fill)
+  var_facet &lt;- rlang::enquo(facet)
+
+  limits &lt;- df %&gt;%
+    select(value = !!var_y) %&gt;%
+    summarise(
+      min = stats::quantile(value, quantile_low[[1]], na.rm = TRUE),
+      max = stats::quantile(value, quantile_high[[1]], na.rm = TRUE)
+    )
+
+  plot &lt;- df %&gt;%
+    ggplot() +
+    geom_hline(yintercept = vline, linetype = 2, size = 1, color = &quot;#6E7B8B&quot;, alpha = .8) +
+    ggtitle(
+      label = if (title == TRUE) {
+        glue::glue(&quot;Boxplot plot of {rlang::quo_text(var_y)} by {rlang::quo_text(var_x)}&quot;)
+      } else if (is.character(title)) {
+        title
+      } else {
+        element_blank()
+      }
+    ) +
+    labs(
+      fill = glue::glue(&quot;{first_to_upper(rlang::quo_text(var_fill))}:&quot;),
+      x = lab_x,
+      y = lab_y) +
+    labs(
+      subtitle = if (is.null(subtitle)) {element_blank()} else {subtitle}
+    ) +
+    labs(
+      caption = if (is.null(caption)) {element_blank()} else {caption}
+    ) +
+    scale_y_continuous(
+      limits = c(
+        limits$min,
+        limits$max
+      ),
+      breaks = number_ticks(ticks)
+    ) +
+    aider_theme(type = theme_type) +
+    theme(
+      legend.position = ifelse(legend == TRUE, &quot;bottom&quot;, &quot;none&quot;),
+      axis.text.x = element_text(angle = angle, hjust = ifelse(angle != 0, 1, .5))
+    )
+
+  if (!rlang::quo_is_null(var_facet)) {
+    plot &lt;- plot +
+      facet_wrap(rlang::quo_text(var_facet), scales = &quot;free_x&quot;)
+  }
+
+  if (rlang::quo_is_null(var_fill)) {
+
+    message(&quot;Wow, what a beautiful graph!&quot;)
+    plot +
+      geom_boxplot(
+        aes_string(
+          x = rlang::quo_text(var_x),
+          y = rlang::quo_text(var_y)
+        ),
+        alpha = alpha,
+        fill = &quot;#1d8fd2&quot;
+      )
+
+  } else {
+
+    levels &lt;- df %&gt;%
+      select(levels = !!var_fill)
+
+    if (!is.null(attributes(palette))) {
+
+      selected_palette &lt;- palette
+
+    } else if (palette == &quot;risk&quot;) {
+
+      selected_palette &lt;- select_palette(palette)
+
+    } else {
+
+      selected_palette &lt;- select_palette(palette) %&gt;%
+        tibble::as_data_frame() %&gt;%
+        mutate(
+          rank = row_number(),
+          fill = rank %% (round(n() / length(unique(levels$levels)), 0))
+        ) %&gt;%
+        filter(fill == 0) %&gt;%
+        select(value)
+
+      if (nrow(selected_palette) &lt; length(unique(levels$levels))) {
+        selected_palette &lt;- bind_rows(
+          slice(data_frame(value = select_palette(palette)), 1),
+          selected_palette
+        )
+      } else {
+        selected_palette
+      }
+    }
+
+    message(&quot;Damn, this graph is amazing!&quot;)
+    plot +
+      geom_boxplot(
+        aes_string(
+          x = rlang::quo_text(var_x),
+          y = rlang::quo_text(var_y),
+          fill = rlang::quo_text(var_fill)
+        ),
+        alpha = alpha
+      ) +
+      scale_fill_manual(values = if (is.data.frame(selected_palette) == TRUE) {
+        selected_palette$value
+      } else {
+        selected_palette
+      }
+      )
+  }
+}</code></pre>
+
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">TAGGED IN</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="/tags/ggplot2/">ggplot2</a>
+
+  <a class="tag tag--primary tag--small" href="/tags/aider/">aider</a>
+
+                  </div>
+                
+              
+            
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2019/08/caret-vs-tidymodels-comparing-the-old-and-new/" data-tooltip="Caret vs. tidymodels - comparing the old and new">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2019/03/fast-and-pretty-ggploting-with-the-aider-package-part-1/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2019/03/fast-and-pretty-ggploting-with-the-aider-package-part-1/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2019 Konrad Semsch. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="/2019/08/caret-vs-tidymodels-comparing-the-old-and-new/" data-tooltip="Caret vs. tidymodels - comparing the old and new">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">NEXT</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">PREVIOUS</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=/2019/03/fast-and-pretty-ggploting-with-the-aider-package-part-1/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=/2019/03/fast-and-pretty-ggploting-with-the-aider-package-part-1/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=%2F2019%2F03%2Ffast-and-pretty-ggploting-with-the-aider-package-part-1%2F">
+          <i class="fa fa-facebook-official"></i><span>Share on Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=%2F2019%2F03%2Ffast-and-pretty-ggploting-with-the-aider-package-part-1%2F">
+          <i class="fa fa-twitter"></i><span>Share on Twitter</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="/images/profile.png" alt="Author&#39;s picture" />
+    
+    <h4 id="about-card-name">Konrad Semsch</h4>
+    
+      <div id="about-card-bio">Practitioners view on predictive modelling</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Senior Data Scientist
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Dortmund, Germany
+      </div>
+    
+  </div>
+</div>
+
+    <div id="algolia-search-modal" class="modal-container">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="close-button"><i class="fa fa-close"></i></span>
+      <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+        <span class="searchby-algolia-text text-color-light text-small">by</span>
+        <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
+      </a>
+      <i class="search-icon fa fa-search"></i>
+      <form id="algolia-search-form">
+        <input type="text" id="algolia-search-input" name="search"
+          class="form-control input--large search-input" placeholder="Search" />
+      </form>
+    </div>
+    <div class="modal-body">
+      <div class="no-result text-color-light text-center">no post found</div>
+      <div class="results">
+        
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="/2019/08/caret-vs-tidymodels-comparing-the-old-and-new/">
+                <h3 class="media-heading">Caret vs. tidymodels - comparing the old and new</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Aug 8, 2019
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather">Summary In this post I will make a short comparison between the most popular (by number of monthly downloads from Github) ML framework available for R: [caret](https://github.com/topepo/caret) and it’s successors being written by the same author (Max Kuhn) that are wrapped together in so called tidymodels. Tidymodels is a collections of different packages such as: rsample, recipes, parsnip, dials etc.
+Many of them are still in a development phase which will still take a couple good months before they settle down so I’ll try to keep this post up-to-date.</div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="/2019/03/fast-and-pretty-ggploting-with-the-aider-package-part-1/">
+                <h3 class="media-heading">Fast and pretty ggploting with the aider package (part 1)</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Mar 3, 2019
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather">The ggplot package was like a fresh breeze of wind to the art of data visualization done with R. It enabled doing things that weren’t possible before with ease, and quickly gained adoption in the R community. The ggplot package is great and I surely pay my tribute to it, however, with such a great variety of options and flexibility comes a certain price to pay - speed of creating new plots.</div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+      </div>
+    </div>
+    <div class="modal-footer">
+      <p class="results-count text-medium"
+         data-message-zero="no post found"
+         data-message-one="1 post found"
+         data-message-other="{n} posts found">
+         2 posts found
+      </p>
+    </div>
+  </div>
+</div>
+    
+  
+    
+    <div id="cover" style="background-image:url('https://res.cloudinary.com/dl7yqljrx/image/upload/v1538116337/background_small.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="/js/script-qi9wbxp2ya2j6p7wx1i6tgavftewndznf4v0hy2gvivk1rxgc3lm7njqb6bz.min.js"></script>
+
+
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = '\/2019\/03\/fast-and-pretty-ggploting-with-the-aider-package-part-1\/';
+          
+            this.page.identifier = '\/2019\/03\/fast-and-pretty-ggploting-with-the-aider-package-part-1\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'hugo-tranquilpeak-theme';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+    
+  </body>
+</html>
+
