@@ -8,6 +8,7 @@
 
 # https://omahar.org/post/submitting-a-post-with-blogdown/
 # https://tclavelle.github.io/blog/blogdown_github/
+# https://amber.rbind.io/2017/11/15/syntaxhighlighting/
 
 baseURL = "https://konradsemsch.netlify.com/"
 languageCode = "en-us"
@@ -97,6 +98,8 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
   keywords = ["data science", "statistics", "machine learning", "predictive modelling", "fintech", "banking", "r"]
   
   syntaxHighlighter = "highlight.js"
+  # highlightjsLang = ["r", "yaml"]
+  # highlightjsTheme = "github"
 
   # Hide sidebar on all article page to let article take full width to improve reading, and enjoy wide images and cover images. (true: enable, false: disable)
   clearReading = true
@@ -154,16 +157,6 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
   #     url: /#search
   #     icon: search
   #     class: st-search-show-outputs
-
-  # Custom CSS. Put here your custom CSS files. They are loaded after the theme CSS;
-  # they have to be referred from static root. Example
-  # [[params.customCSS]]
-  #   href = "css/mystyle.css"
-
-  # Custom JS. Put here your custom JS files. They are loaded after the theme JS;
-  # they have to be referred from static root. Example
-  # [[params.customJS]]
-  #   src = "js/myscript.js"
 
   # Display `Next` on left side of the pagination, and `Prev` on right side one.
   # If you set this value to `true`, these positions swap.
