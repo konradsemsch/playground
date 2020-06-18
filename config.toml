@@ -97,7 +97,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
   dateFormat = "2 January 2006"
   keywords = ["data science", "statistics", "machine learning", "predictive modelling", "fintech", "banking", "r"]
   
-  syntaxHighlighter = "highlight.js"
+  # syntaxHighlighter = "highlight.js"
   # highlightjsLang = ["r", "yaml"]
   # highlightjsTheme = "github"
 

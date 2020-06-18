@@ -86,9 +86,10 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
 
 &lt;style&gt;
 body {
-text-align: justify}
+text-align: justify;
+}
 &lt;/style&gt;
-&lt;p&gt;There’s already a lot of cool features that the tidymodels ecosystem offers, which makes data science and predictive modelling easy and effective, but at times I lacked this one: automated, supervised discretization procedure of numeric variables. In this blogpost I’d like to present to you a new step that I implemented with Max Kuhn with a PR into the embed package, which recently became officially available on CRAN!&lt;/p&gt;
+&lt;p&gt;There’s already a lot of cool features that the tidymodels ecosystem offers, which make data science and predictive modelling easy and effective, but at times I lacked this one: automated, supervised discretization preprocessing of numeric variables. In this blogpost I’d like to present to you a new step that I implemented with Max Kuhn in the embed package, which recently became officially available on CRAN!&lt;/p&gt;
 </description>
     </item>
     

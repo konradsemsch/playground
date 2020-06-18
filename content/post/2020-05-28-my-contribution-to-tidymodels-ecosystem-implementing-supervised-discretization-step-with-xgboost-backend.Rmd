@@ -20,7 +20,8 @@ knitr::opts_chunk$set(
 
 <style>
 body {
-text-align: justify}
+text-align: justify;
+}
 </style>
 
 There's already a lot of cool features that the tidymodels ecosystem offers, which make data science and predictive modelling easy and effective, but at times I lacked this one: automated, supervised discretization preprocessing of numeric variables. In this blogpost I'd like to present to you a new step that I implemented with Max Kuhn in the embed package, which recently became officially available on CRAN!
@@ -323,7 +324,7 @@ fits_cart_tune <- tune_grid(
 
 # Analyzing results
 
-After all models have been estimated let's see which one gives the best results. From the tibble below we can see that the default `cart` performs better than the default `xgb` recipe. On the other hand, `xbg` gives better results than `cart` after fine-tunning. What's also interesting is that the best performing model has much lower performance volatility than all the others.
+After all models have been estimated let's see which one gives the best results. From the tibble below we can see that the default `cart` performs better than the default `xgb` recipe. On the other hand, `xbg` gives better results than `cart` after fine-tunning.
 
 ```{r max.print = 10}
 

@@ -14,7 +14,7 @@
 
 
 
-There’s already a lot of cool features that the tidymodels ecosystem offers, which makes data science and predictive modelling easy and effective, but at times I lacked this one: automated, supervised discretization procedure of numeric variables. In this blogpost I’d like to present to you a new step that I implemented with Max Kuhn with a PR into the embed package, which recently became officially available on CRAN!
+There’s already a lot of cool features that the tidymodels ecosystem offers, which make data science and predictive modelling easy and effective, but at times I lacked this one: automated, supervised discretization preprocessing of numeric variables. In this blogpost I’d like to present to you a new step that I implemented with Max Kuhn in the embed package, which recently became officially available on CRAN!
 ">
 
 
@@ -24,7 +24,7 @@ There’s already a lot of cool features that the tidymodels ecosystem offers, w
 
 
 
-There’s already a lot of cool features that the tidymodels ecosystem offers, which makes data science and predictive modelling easy and effective, but at times I lacked this one: automated, supervised discretization procedure of numeric variables. In this blogpost I’d like to present to you a new step that I implemented with Max Kuhn with a PR into the embed package, which recently became officially available on CRAN!
+There’s already a lot of cool features that the tidymodels ecosystem offers, which make data science and predictive modelling easy and effective, but at times I lacked this one: automated, supervised discretization preprocessing of numeric variables. In this blogpost I’d like to present to you a new step that I implemented with Max Kuhn in the embed package, which recently became officially available on CRAN!
 ">
 <meta property="og:type" content="article">
 <meta property="og:title" content="My contribution to the tidymodels ecosystem - implementing supervised discretization step with XgBoost backend">
@@ -38,7 +38,7 @@ There’s already a lot of cool features that the tidymodels ecosystem offers, w
 
 
 
-There’s already a lot of cool features that the tidymodels ecosystem offers, which makes data science and predictive modelling easy and effective, but at times I lacked this one: automated, supervised discretization procedure of numeric variables. In this blogpost I’d like to present to you a new step that I implemented with Max Kuhn with a PR into the embed package, which recently became officially available on CRAN!
+There’s already a lot of cool features that the tidymodels ecosystem offers, which make data science and predictive modelling easy and effective, but at times I lacked this one: automated, supervised discretization preprocessing of numeric variables. In this blogpost I’d like to present to you a new step that I implemented with Max Kuhn in the embed package, which recently became officially available on CRAN!
 ">
 <meta name="twitter:description" content="
 
@@ -46,7 +46,7 @@ There’s already a lot of cool features that the tidymodels ecosystem offers, w
 
 
 
-There’s already a lot of cool features that the tidymodels ecosystem offers, which makes data science and predictive modelling easy and effective, but at times I lacked this one: automated, supervised discretization procedure of numeric variables. In this blogpost I’d like to present to you a new step that I implemented with Max Kuhn with a PR into the embed package, which recently became officially available on CRAN!
+There’s already a lot of cool features that the tidymodels ecosystem offers, which make data science and predictive modelling easy and effective, but at times I lacked this one: automated, supervised discretization preprocessing of numeric variables. In this blogpost I’d like to present to you a new step that I implemented with Max Kuhn in the embed package, which recently became officially available on CRAN!
 ">
 <meta property="og:locale" content="en-us">
 
@@ -313,17 +313,18 @@ if (!doNotTrack) {
           
           <div class="post-content markdown" itemprop="articleBody">
             <div class="main-content-wrap">
-              <p>There’s already a lot of cool features that the <code>tidymodels</code> ecosystem offers, which makes data science and predictive modelling easy and effective, but at times I lacked this one: automated, supervised discretization procedure of numeric variables. In this blogpost I’d like to present to you a new step that I implemented with Max Kuhn with a PR into the <code>embed</code> package, which recently became officially available on CRAN!</p>
+              <p>There’s already a lot of cool features that the <code>tidymodels</code> ecosystem offers, which make data science and predictive modelling easy and effective, but at times I lacked this one: automated, supervised discretization preprocessing of numeric variables. In this blogpost I’d like to present to you a new step that I implemented with Max Kuhn in the <code>embed</code> package, which recently became officially available on CRAN!</p>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>One could ask: why do we need such step at all, if we could simply use the raw numeric variables and fit an XgBoost model (or any other tree-based algorithm) on top of them? One answer to this question could be when one needs to use an interpretable, linear model on top of binned, numerical data to account for non-linear patterns. In such a situation using the step presented in this blog could come very handy, as it would save the data scientist a lot of time getting a first idea about how good such an implementation could be (and fine-tune the splits later with proper analysis).</p>
-<p>Another idea that comes to my mind, and proved to give very good results in my real-life projects, is to combine the predictions of a linear model (e.g. Elastic-Net) trained on top of binned, numerical data, with the very same umodified variables trained using a boosting algorithm. The reason why it may work well in many cases is that stacking predictions this way may smoothen the results of the boosting algorithm in situations when there isn’t a lot of training data available.</p>
+<p>Another idea that comes to my mind, and proved to give very good results in my real-life projects, is to combine the predictions of a linear model (e.g. Elastic-Net) trained on top of binned, numerical data, with the very same unmodified variables trained using a boosting algorithm. The reason why it may work well in many cases is that stacking predictions this way can smoothen the results of the boosting algorithm in situations when there isn’t a lot of training data available.</p>
 </div>
 <div id="status-quo" class="section level1">
 <h1>Status Quo</h1>
-<p>So far there was only one function in the <code>tidymodels</code> ecosystem that allowed for binning numerical variables and it was <code>step_discretize</code>. The problem with it is that it ‘blindly’ bins your data into a predefined number of bins, and doesn’t take into consideration the relation with the target variable. You can quess the result - such binning approach isn’t particularly powerful. Therefore I’ve decided to contribute to the <code>tidymodels</code> ecosystem by creating a PR and implementing a new function called <code>step_discretize_xgb</code>. After some discusions with Max, he proposed to implement an additional variant of this function called <code>step_discretize_cart</code>.</p>
-<p>What do both functions do? In a nutshell, they perform supervised discretization of numerical variables specified in the recipe, while using the information about the target to perfom it in an optimal way. The first function uses <code>xgboost</code> and the second <code>rpart</code> as the backend engine. Both approaches implement an internal validation scheme (early stopping and prunning respectively), to give results prone to overfitting (which is often the problem with binning strategies). Additionally, both of them are compatible with the <code>tune</code> package, which means that you can optimize their parameters to your particular data science use case.</p>
-<p>In which situation should each implementation be used? It’s unclear when one of the approaches could prove better - ideally you should try out both. Perhaps <code>step_discretize_xgb</code> could give slightly better results when you’re dealing with a bigger data volume and <code>step_discretize_cart</code> with smaller data, but that’s just my subjective gut feeling. Let’s see now a short, practical example below!</p>
+<p>So far there was only one function in the <code>tidymodels</code> ecosystem that allowed for binning numerical variables and it is <code>step_discretize</code>. The problem with it is that it ‘blindly’ bins your data into a predefined number of bins, and doesn’t take into consideration the relation with the target variable. You can quess the result - such binning approach isn’t particularly powerful. Therefore I’ve decided to contribute to the <code>tidymodels</code> ecosystem by creating a PR and implementing a new function called <code>step_discretize_xgb</code>. After some discussions with Max, he proposed to implement an additional variant of this function called <code>step_discretize_cart</code>.</p>
+<p>What do both functions do? In a nutshell, they perform supervised discretization of numerical variables specified in the recipe, while using the information about the target to perfom it in an optimal way. The first function uses <code>xgboost</code> and the second <code>rpart</code> as the backend engine. Both approaches make use of an internal validation scheme (early stopping and prunning respectively), to give results prone to overfitting (which is often the problem with binning strategies). Additionally, both of them are compatible with the <code>tune</code> package, which means that you can optimize their parameters to your particular data science use case.</p>
+<p>In which situation should each implementation be used? Honestly, it’s unclear to me when one of these approaches could prove better - ideally you should try out both. Perhaps <code>step_discretize_xgb</code> could give slightly better results when you’re dealing with a bigger data volume and <code>step_discretize_cart</code> with smaller one, but that’s just my subjective gut feeling. Let’s see now a short, practical example!</p>
+<p>If you’re interested in a wider introduction of the <code>embed</code> package, you can check this <a href="https://www.tidyverse.org/blog/2020/06/embed-0-1-0/">blogpost</a> written recently by Max.</p>
 </div>
 <div id="initial-setup" class="section level1">
 <h1>Initial setup</h1>
@@ -347,7 +348,7 @@ if (!doNotTrack) {
 <span id="cb2-8"><a href="#cb2-8"></a><span class="kw">library</span>(modeldata)</span>
 <span id="cb2-9"><a href="#cb2-9"></a><span class="kw">library</span>(embed)</span>
 <span id="cb2-10"><a href="#cb2-10"></a><span class="kw">library</span>(tune)</span></code></pre></div>
-<p>Let’s use our good-old <code>credit_data</code> dataset for illustration purposes. It’s actually quite common in financial services to use the technique described in this post as it captures non-linear patterns and gives interpretable results.</p>
+<p>Let’s use our good old <code>credit_data</code> dataset for illustration purposes. It’s actually quite common in financial services to use the technique described in this post, as it captures non-linear patterns and gives interpretable results.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a></span>
 <span id="cb3-2"><a href="#cb3-2"></a><span class="kw">data</span>(<span class="st">&quot;credit_data&quot;</span>)</span>
 <span id="cb3-3"><a href="#cb3-3"></a></span>
@@ -372,7 +373,7 @@ if (!doNotTrack) {
 <span id="cb3-22"><a href="#cb3-22"></a><span class="co">## $ debt      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2500, 260, 0, 0, 0, 200…</span></span>
 <span id="cb3-23"><a href="#cb3-23"></a><span class="co">## $ amount    &lt;int&gt; 800, 1000, 2000, 900, 310, 650, 1600, 200, 1200, 1200, 1150…</span></span>
 <span id="cb3-24"><a href="#cb3-24"></a><span class="co">## $ price     &lt;int&gt; 846, 1658, 2985, 1325, 910, 1645, 1800, 1093, 1957, 1468, 1…</span></span></code></pre></div>
-<p>We’re applying pretty standard data splitting strategy. Let’s split the dataset in a 80:20 proportion between the training and test sets. Additionally, let’s apply 3-times repeated 5-fold cross-validation as we have relatively many parameters to tune. Repeating the process will help us find the best (non-overfitting) parameters.</p>
+<p>We’re applying a pretty standard data splitting strategy. Let’s split the dataset in a 80:20 proportion between the training and test sets. Additionally, let’s apply 3-times repeated 5-fold cross-validation as we have relatively many parameters to tune. Repeating the process will help us find the best (non-overfitting) parameters.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a></span>
 <span id="cb4-2"><a href="#cb4-2"></a>target &lt;-<span class="st"> &quot;status&quot;</span></span>
 <span id="cb4-3"><a href="#cb4-3"></a>split &lt;-<span class="st"> </span><span class="kw">initial_split</span>(credit_data, <span class="dt">prop =</span> <span class="fl">0.80</span>, <span class="dt">strata =</span> <span class="kw">all_of</span>(target))</span>
@@ -403,8 +404,9 @@ if (!doNotTrack) {
 </div>
 <div id="formulating-recipes-and-workflows" class="section level1">
 <h1>Formulating recipes and workflows</h1>
-<p>Let’s specify in total four different recipes: two using <code>step_discretize_xgb</code> and two <code>step_discretize_cart</code> respectively. For each method there is a ’*_default’ and ’*_tune’ version, where the first one applies default parameter values and the second one <code>tune()</code> placeholders. At the end of the process we’ll have a chance to assess performance differences betweeen both methods, as well as their default and fine-tuned versions.</p>
-<p>Apart from that each recipe implements pretty standard steps:</p>
+<p>Let’s specify in total four different recipes: two using <code>step_discretize_xgb</code> and two <code>step_discretize_cart</code> respectively. For each method there is a ’*_default’ and ’*_tune’ version, where the first one applies default parameter values and the second one passes <code>tune()</code> placeholders. At the end of the process we’ll have a chance to assess performance differences betweeen both methods, as well as their default and fine-tuned versions.</p>
+<p>If you’re interested in getting to know more about the parameters of each function, their impact on the result of binning and some comments regarding tuning, you can should get familiar with their respective help pages which describe those issues comprehensively (<code>?step_discretize_xgb() / ?step_discretize_cart()</code>).</p>
+<p>Apart from that each recipe implements pretty standard preprocessing steps:</p>
 <ul>
 <li>median imputation for numerical variables</li>
 <li>creates an additional factor level for missing values for nominal variables</li>
@@ -468,7 +470,7 @@ if (!doNotTrack) {
 <span id="cb6-55"><a href="#cb6-55"></a><span class="st">  </span><span class="kw">step_dummy</span>(<span class="kw">all_nominal</span>(), <span class="op">-</span><span class="kw">all_outcomes</span>()) <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb6-56"><a href="#cb6-56"></a><span class="st">  </span><span class="kw">step_upsample</span>(<span class="kw">one_of</span>(target))</span></code></pre></div>
 <p>Let’s compare bins produced by each of the default versions. What you will notice in the <code>step_discretize_xgb</code> output below is that the function might produce slightly different results on every run. The reason for this is that the function uses an internal <code>early_stopping</code> validation scheme to prevent overfitting, which uses a small sample from the training data. The larger the dataset, the more stable the results will be on every run, however, volatility might be quite high for smaller datasets. Therefore it’s important to perform repeated CV to find the optimal parameters.</p>
-<p>Let’s analyse the results using a persistant random seed from <code>withr</code>. In this particular example only <code>time</code> variable was not binned, most other variables were binned using a single split, and more complicated bins were only derived for <code>seniority</code> variable.</p>
+<p>Let’s analyse the results using a persistant random seed from <code>withr</code>. In this particular example only <code>time</code> variable is not binned, most other variables are binned using a single split, and more complicated bins are only derived for the <code>seniority</code> variable.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a></span>
 <span id="cb7-2"><a href="#cb7-2"></a>withr<span class="op">::</span><span class="kw">with_seed</span>(</span>
 <span id="cb7-3"><a href="#cb7-3"></a>    <span class="dv">91</span>,</span>
@@ -510,7 +512,7 @@ if (!doNotTrack) {
 <span id="cb7-39"><a href="#cb7-39"></a><span class="co">## $ debt_X.1750..Inf.     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0,…</span></span>
 <span id="cb7-40"><a href="#cb7-40"></a><span class="co">## $ amount_X.1065..Inf.   &lt;dbl&gt; 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0,…</span></span>
 <span id="cb7-41"><a href="#cb7-41"></a><span class="co">## $ price_X.994..Inf.     &lt;dbl&gt; 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1,…</span></span></code></pre></div>
-<p>On the other hand, <code>step_discretize_cart</code> hardly finds any meaningful splits except for the <code>seniority</code> variable for which three bins were derived. All other numerical variables were preserved in their original form.</p>
+<p>On the other hand, <code>step_discretize_cart</code> hardly finds any meaningful splits for most variables except for <code>seniority</code>, for which three bins are derived. All other numerical are were preserved in their original form.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a></span>
 <span id="cb8-2"><a href="#cb8-2"></a>recipe_cart_default <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb8-3"><a href="#cb8-3"></a><span class="st">  </span><span class="kw">prep</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
@@ -546,7 +548,7 @@ if (!doNotTrack) {
 <span id="cb8-33"><a href="#cb8-33"></a><span class="co">## $ job_others            &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span id="cb8-34"><a href="#cb8-34"></a><span class="co">## $ job_partime           &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span id="cb8-35"><a href="#cb8-35"></a><span class="co">## $ job_unknown           &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span></code></pre></div>
-<p>Lastly, we will bind the initially created modelling engine with each individual recipe, which forms a so called <code>workflow.</code> These will be optimized using a parameter grid in the next step.</p>
+<p>Lastly, let’s bind the initially created modelling engine with each individual recipe, which forms a so called <code>workflow.</code> These will be optimized using a parameter grid in the next step.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a></span>
 <span id="cb9-2"><a href="#cb9-2"></a>workflow_xgb_default &lt;-<span class="st"> </span><span class="kw">workflow</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb9-3"><a href="#cb9-3"></a><span class="st">  </span><span class="kw">add_model</span>(engine) <span class="op">%&gt;%</span><span class="st"> </span></span>
@@ -612,7 +614,7 @@ if (!doNotTrack) {
 <span id="cb10-43"><a href="#cb10-43"></a>  <span class="kw">min_n</span>(),</span>
 <span id="cb10-44"><a href="#cb10-44"></a>  <span class="dt">size =</span> <span class="dv">25</span></span>
 <span id="cb10-45"><a href="#cb10-45"></a>  )</span></code></pre></div>
-<p>In the next step we will bind the specified workflows with the tuning grids using <code>tune_grid()</code> function. It will fit all model possibilites using the CV scheme. Keep in mind that we have relatively many parameters to tune across many folds, therefore training all models may take a while.</p>
+<p>In the next step we bind the specified workflows with the tuning grids using <code>tune_grid()</code> function. It will fit all model possibilites using the CV scheme. Keep in mind that we have relatively many parameters to tune across many folds, therefore training all models may take a while.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a></span>
 <span id="cb11-2"><a href="#cb11-2"></a><span class="co">### XgBoost</span></span>
 <span id="cb11-3"><a href="#cb11-3"></a>fits_xgb_default &lt;-<span class="st"> </span><span class="kw">tune_grid</span>(</span>
@@ -650,7 +652,7 @@ if (!doNotTrack) {
 </div>
 <div id="analyzing-results" class="section level1">
 <h1>Analyzing results</h1>
-<p>After all models have been estimated let’s see which one gives the best results. From the tibble below we can see that the default <code>cart</code> performs better than the default <code>xgb</code> recipe. On the other hand, <code>xbg</code> gives better results than <code>cart</code> after fine-tunning. What’s also interesting is that the best performing model has much lower performance volatility than all the others.</p>
+<p>After all models have been estimated let’s see which one gives the best results. From the tibble below we can see that the default <code>cart</code> performs better than the default <code>xgb</code> recipe. On the other hand, <code>xbg</code> gives better results than <code>cart</code> after fine-tunning.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a></span>
 <span id="cb12-2"><a href="#cb12-2"></a>compare_results &lt;-<span class="st"> </span><span class="cf">function</span>(tune, type){</span>
 <span id="cb12-3"><a href="#cb12-3"></a>  <span class="kw">show_best</span>(tune, <span class="st">&quot;roc_auc&quot;</span>, <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
@@ -686,7 +688,7 @@ if (!doNotTrack) {
 <div id="finalizing-the-best-workflow" class="section level1">
 <h1>Finalizing the best workflow</h1>
 <p>In the last step I’d like to assess if our best model doesn’t overfit to the test set. Before doing it I need to finalize our workflow with the best-performing parameter combination obtained with <code>select_best()</code>. The <code>tune</code> package has a set of <code>finalize_*</code> functions, however, neither <code>finalize_workflow()</code> or <code>finalize_recipe()</code> was working for my example. I will submit a PR to address this issue.</p>
-<p>In the meantime, we’re also able to finalize our <code>workflow</code> using a workaround. The best engine parameters were finalized using the <code>finalize_model()</code> function. When it comes to updating our recipe I had to use the <code>update</code>() function and point individual parameters from <code>select_best()</code>. Lastly, I updated both the model, as well as the recipe in the workflow using the <code>update_*</code> functions.</p>
+<p>In the meantime, we’re also able to finalize our <code>workflow</code> using a workaround. The best engine parameters were finalized using the <code>finalize_model()</code> function. When it comes to updating our recipe I had to use the <code>update()</code> function and point individual parameters from <code>select_best()</code>. Lastly, I updated both the model, as well as the recipe in the workflow using the <code>update_*</code> functions.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a></span>
 <span id="cb14-2"><a href="#cb14-2"></a>engine_xgb_tune_fin &lt;-<span class="st"> </span><span class="kw">finalize_model</span>(</span>
 <span id="cb14-3"><a href="#cb14-3"></a>  engine, </span>
@@ -713,7 +715,7 @@ if (!doNotTrack) {
 <span id="cb15-6"><a href="#cb15-6"></a><span class="co">##   &lt;chr&gt;    &lt;chr&gt;          &lt;dbl&gt;</span></span>
 <span id="cb15-7"><a href="#cb15-7"></a><span class="co">## 1 accuracy binary         0.737</span></span>
 <span id="cb15-8"><a href="#cb15-8"></a><span class="co">## 2 roc_auc  binary         0.824</span></span></code></pre></div>
-<p>In the last step I used the <code>last_fit()</code> function that refits the workflow with the final parameters on the entire training data and evaluates the model on the test data. As you can see, the model has a performance of 0.82 AUC on the test data set. I believe that proves that we have a pretty stable model that generalizes quite well to unseen data.</p>
+<p>In the last step I used the <code>last_fit()</code> function that refits the workflow with the final parameters on the entire training data and evaluates the model on the test data. As you can see, the model has a performance of 0.82 AUC on the test data set. I believe that proves that we have a pretty stable model that generalizes quite well to unseen observations.</p>
 </div>
 <div id="wrapping-up" class="section level1">
 <h1>Wrapping up</h1>
@@ -948,8 +950,6 @@ if (!doNotTrack) {
     
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
 
 
@@ -969,18 +969,6 @@ function updateMinWidth() {
   var w3 = getComputedStyle(sidebar).getPropertyValue("left");
   main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
 }
-</script>
-
-<script>
-$(document).ready(function() {
-  hljs.configure({ classPrefix: '', useBR: false });
-  $('pre.code-highlight > code, pre > code').each(function(i, block) {
-    if (!$(this).hasClass('codeblock')) {
-      $(this).addClass('codeblock');
-    }
-    hljs.highlightBlock(block);
-  });
-});
 </script>
 
 
