@@ -9,6 +9,7 @@
 # https://omahar.org/post/submitting-a-post-with-blogdown/
 # https://tclavelle.github.io/blog/blogdown_github/
 # https://amber.rbind.io/2017/11/15/syntaxhighlighting/
+# https://www.r-bloggers.com/adding-syntax-highlight/
 
 baseURL = "https://konradsemsch.netlify.com/"
 languageCode = "en-us"
